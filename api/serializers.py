@@ -96,3 +96,9 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = '__all__'
+
+
+class HistoricalDiagnosisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HistoricalDiagnosis
+        fields = '__all__'

@@ -20,12 +20,12 @@ class User(AbstractUser):
         ('Patient', 'Patient'),
     )
 
-    username = models.CharField(unique=True, max_length=60, null=True)
+    username = models.CharField(unique=True, max_length=60, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='Patient')
 
-    address = models.CharField(max_length=200, null=True)
-    gender = models.CharField(max_length=6, null=True)
-    phone_number = models.CharField(max_length=17, null=True)  # Needs validator
+    address = models.CharField(max_length=200, null=True, blank=True)
+    gender = models.CharField(max_length=6, null=True, blank=True)
+    phone_number = models.CharField(max_length=17, null=True, blank=True)  # Needs validator
 
     REQUIRED_FIELDS = []
 
@@ -52,8 +52,8 @@ class Doctor(User):
 
 
 class Patient(User):
-    DOB = models.DateField(null=True)
-    my_doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True)
+    DOB = models.DateField(null=True, blank=True)
+    my_doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, null=True, blank=True)
 
     PATIENT_ROLE_CHOICES = (
         ('Patient', 'Patient'),
@@ -83,7 +83,7 @@ class Medication(models.Model):
     frequency = models.CharField(max_length=50, null=True, choices=frequency_choices)
     name = models.CharField(max_length=100, null=True)
 
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -118,30 +118,41 @@ class Message(models.Model):
 
 
 class Groups(models.Model):
-    name = models.CharField(max_length=100, null=True)
+    groupName = models.CharField(max_length=100, null=True)
     dateCreated = models.DateField(auto_now_add=True)
 
+    patients = models.ManyToManyField('Patient', related_name='our_group')  # many-to-many relation
+
     def __str__(self):
-        return self.name
+        return self.groupName
 
 
 # check datatypes
 class CheckIn(models.Model):
-    # mood_choices = [
-    #     ('', ''),
-    #     ('', ''),
-    # ]
-    #
-    # feetSituation_choices = [
-    #     ('', ''),
-    #     ('', ''),
-    # ]
-    feetSituation = models.CharField(max_length=100, null=True)  # key value
+    MOOD_CHOICES = [
+        ("1", "I'm feeling great"),
+        ("2", "I'm feeling good"),
+        ("3", "I'm feeling ok"),
+        ("4", "I'm feeling bad"),
+        ("5", "I'm feeling awful"),
+    ]
+
+    FEET_SITUATION_CHOICES = [
+        ('cuts', 'cuts'),
+        ('redness', 'redness'),
+        ('swelling', 'swelling'),
+        ('sores', 'sores'),
+        ('blisters', 'blisters'),
+        ('corns', 'corns'),
+        ('calluses', 'calluses'),
+        ('change_to_the_skin_or_nails', 'change to the skin or nails'),
+    ]
+    feetSituation = models.CharField(max_length=100, choices=FEET_SITUATION_CHOICES, null=True)  # key value
     FBS = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-    mood = models.CharField(max_length=50, null=True)  # key value
+    mood = models.CharField(max_length=50, choices=MOOD_CHOICES, null=True)
     sleepHours = models.DecimalField(max_digits=5, decimal_places=2, null=True)
 
-    patient = models.ForeignKey(Patient, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.FBS
@@ -155,7 +166,7 @@ class Biomarkers(models.Model):
     height = models.DecimalField(max_digits=4, decimal_places=2, null=True)
     date = models.DateField(null=True)
 
-    patient = models.ForeignKey(Patient, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.date
@@ -167,10 +178,10 @@ class Goal(models.Model):
     achievement = models.TextField(null=True)
     image = models.ImageField(null=True)
 
-    patient = models.ForeignKey(Patient, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.name
+        return self.goalName
 
 
 class Badge(models.Model):
@@ -187,7 +198,7 @@ class CBT(models.Model):
     behavior = models.TextField()
     date = models.DateField(null=True)
 
-    patient = models.ForeignKey(Patient, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.date
@@ -217,15 +228,25 @@ class Question(models.Model):
 class Evaluation(models.Model):
     points = models.IntegerField()
 
-    patient = models.ForeignKey(Patient, null=True, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, null=True, on_delete=models.CASCADE)
-    challenge = models.ForeignKey(Challenge, null=True, on_delete=models.CASCADE)
-    checkIn = models.ForeignKey(CheckIn, null=True, on_delete=models.CASCADE)
-    goal = models.ForeignKey(Goal, null=True, on_delete=models.CASCADE)
-    badge = models.ForeignKey(Badge, null=True, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, null=True, on_delete=models.CASCADE)
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
+    activity = models.ForeignKey(Activity, null=True, blank=True, on_delete=models.CASCADE)
+    challenge = models.ForeignKey(Challenge, null=True, blank=True, on_delete=models.CASCADE)
+    checkIn = models.ForeignKey(CheckIn, null=True, blank=True, on_delete=models.CASCADE)
+    goal = models.ForeignKey(Goal, null=True, blank=True, on_delete=models.CASCADE)
+    badge = models.ForeignKey(Badge, null=True, blank=True, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.points
 
+
+class HistoricalDiagnosis(models.Model):
+    diagnosisName = models.CharField(max_length=150, null=True, blank=True)
+    number = models.IntegerField(null=True, blank=True)
+    diagnosisDate = models.DateField(null=True, blank=True)
+
+    patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.diagnosisName
 

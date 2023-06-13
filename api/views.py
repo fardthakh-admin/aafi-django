@@ -100,6 +100,12 @@ def apiOverView(request):
         'Question Delete': '/question-delete/<str:pk>/',
         'Question Update': '/question-update/<str:pk>/',
 
+        'HistoricalDiagnosis': '/historicalDiagnosis-list/',
+        'HistoricalDiagnosis Detail View': '/historicalDiagnosis-detail/<str:pk>/',
+        'HistoricalDiagnosis Create': '/historicalDiagnosis-create/',
+        'HistoricalDiagnosis Delete': '/historicalDiagnosis-delete/<str:pk>/',
+        'HistoricalDiagnosis Update': '/historicalDiagnosis-update/<str:pk>/',
+
     }
     return Response(api_urls)
 
@@ -786,3 +792,47 @@ def QuestionUpdate(request, pk):
 
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def HistoricalDiagnosisList(request):
+    historicalDiagnosis = HistoricalDiagnosis.objects.all()
+    serializer = HistoricalDiagnosisSerializer(historicalDiagnosis, many=True)
+
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def HistoricalDiagnosisDetail(request, pk):
+    historicalDiagnosis = HistoricalDiagnosis.objects.get(id=pk)
+    serializer = HistoricalDiagnosisSerializer(historicalDiagnosis, many=False)
+
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def HistoricalDiagnosisCreate(request):
+    serializer = HistoricalDiagnosisSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def HistoricalDiagnosisDelete(request, pk):
+    historicalDiagnosis = HistoricalDiagnosis.objects.get(id=pk)
+    historicalDiagnosis.delete()
+
+    return Response('Item successfully deleted!')
+
+
+@api_view(['POST'])
+def HistoricalDiagnosisUpdate(request, pk):
+    historicalDiagnosis = HistoricalDiagnosis.objects.get(id=pk)
+    serializer = HistoricalDiagnosisSerializer(instance=historicalDiagnosis, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)

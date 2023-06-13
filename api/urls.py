@@ -95,4 +95,10 @@ urlpatterns = [
     path('question-delete/<str:pk>/', views.QuestionDelete, name="question-delete"),
     path('question-update/<str:pk>/', views.QuestionUpdate, name="question-update"),
 
+    path('historicalDiagnosis-list/', views.HistoricalDiagnosisList, name="historicalDiagnosis-list"),
+    path('historicalDiagnosis-detail/<str:pk>/', views.HistoricalDiagnosisDetail, name="historicalDiagnosis-detail"),
+    path('historicalDiagnosis-create/', views.HistoricalDiagnosisCreate, name="historicalDiagnosis-create"),
+    path('historicalDiagnosis-delete/<str:pk>/', views.HistoricalDiagnosisDelete, name="historicalDiagnosis-delete"),
+    path('historicalDiagnosis-update/<str:pk>/', views.HistoricalDiagnosisUpdate, name="historicalDiagnosis-update"),
+
 ]
