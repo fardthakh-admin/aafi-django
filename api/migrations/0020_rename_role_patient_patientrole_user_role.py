@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             model_name="user",
             name="role",
             field=models.CharField(
-                choices=[("Doctor", "Doctor"), ("Patient", "Patient")],
+                choices=[("doctor", "doctor"), ("Patient", "Patient")],
                 default="Patient",
                 max_length=10,
             ),

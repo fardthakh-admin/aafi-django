@@ -62,7 +62,7 @@ class Patient(User):
     patientRole = models.CharField(max_length=20, choices=PATIENT_ROLE_CHOICES, default='Patient')
 
     def is_sponsor(self):
-        return self.role == 'Sponsor'
+        return self.patientRole == 'Sponsor'
 
     def save(self, *args, **kwargs):
         self.role = 'Patient'

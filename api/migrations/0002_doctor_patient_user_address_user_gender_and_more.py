@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="Doctor",
+            name="doctor",
             fields=[
                 (
                     "user_ptr",
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "verbose_name": "Doctor",
+                "verbose_name": "doctor",
             },
             bases=("api.user",),
             managers=[
