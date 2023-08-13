@@ -28,8 +28,8 @@ INSTALLED_APPS = [
     "api.apps.ApiConfig",
     "frontend.apps.FrontendConfig",
 
-    'knox',
     'rest_framework',
+    'knox',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +68,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": "Aafi",
         "USER": "postgres",
-        "PASSWORD": "Dawood2002#",
+        "PASSWORD": "1234",
         "HOST": "localhost",
         "PORT": "5432",
     }
