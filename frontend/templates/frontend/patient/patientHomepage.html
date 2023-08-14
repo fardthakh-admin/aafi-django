@@ -25,7 +25,7 @@
                     <a class="nav-link" href="#">My page</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    <a class="nav-link" id="logout-button" style="cursor: pointer;">Logout</a>
                 </li>
             </ul>
         </div>
@@ -117,9 +117,11 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
     <script src="{% static 'js/charts.js' %}"></script>
-    <script src="{% static 'js/login.js' %}"></script>
+    <script src="{% static 'js/logout.js' %}"></script>
+
+    <!-- <script src="{% static 'js/logout.js' %}"></script> -->
     <!-- <script src="js/popper.min.js"></script>
     <script src="js/code.jquery.com_jquery-3.7.0.min.js"></script>
     <script src="js/bootstrap.js"></script> -->

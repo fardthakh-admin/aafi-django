@@ -139,7 +139,7 @@ class UserLogin(KnoxLoginView):
         serializer.is_valid(raise_exception = True)
         user = serializer._validated_data['user']
         login(request, user)
-        # redirect('patientHomepage')
+        redirect('patientHomepage')
         # redirect('doctorHomepage')
         return super(UserLogin, self).post(request, format=None)
 

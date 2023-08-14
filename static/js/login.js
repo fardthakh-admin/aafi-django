@@ -1,7 +1,4 @@
 const loginForm = document.getElementById('login-form');
-const logoutBtn = document.getElementById('logout-btn');
-let token;
-
 
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -19,27 +16,16 @@ loginForm.addEventListener('submit', async (e) => {
         });
 
         const data = await response.json();
-        token = data.token;
-        const userId = data.user_id;
-
+        const token = data.token;
+        // const userId = data.user_id;
+        
+        
         // Save token and userId to localStorage or cookies for later use
+        localStorage.setItem('authToken', token);
 
-        // Hide login form, show logout button
-        loginForm.style.display = 'none';
-        logoutBtn.style.display = 'block';
-    } catch (error) {
-        console.error('Error:', error);
-    }
-});
-
-logoutBtn.addEventListener('click', async () => {
-    try {
-        const response = await fetch('/api/logout/', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Token ${token}`,
-            },
-        });
+        // Redirect to the home page
+        window.location.href = '/patient/patientHomepage/';
+        
     } catch (error) {
         console.error('Error:', error);
     }

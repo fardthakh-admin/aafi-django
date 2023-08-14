@@ -4,18 +4,23 @@ from . import views
 
 urlpatterns = [
     path('', views.apiOverView, name="api-overview"),
+
+    # Authentication and registration
     path('register/', views.RegisterUser.as_view(), name="register"),
     path('login/', views.UserLogin.as_view(), name = 'login'),
     path('logout/', knox_views.LogoutView.as_view(), name = 'logout'),
-    path('logoutall/', knox_views.LogoutAllView.as_view(), name = 'logoutall'),
+
+    # Users list
     path('user-list/', views.UserList, name="user-list"),
 
+    # Doctors list 
     path('doctor-list/', views.DoctorList, name="doctor-list"),
     path('doctor-detail/<str:pk>/', views.DoctorDetail, name="doctor-detail"),
     path('doctor-create/', views.DoctorCreate, name="doctor-create"),
     path('doctor-update/<str:pk>/', views.DoctorUpdate, name="doctor-update"),
     path('doctor-delete/<str:pk>/', views.DoctorDelete, name="doctor-delete"),
 
+    # Patients List
     path('patient-list/', views.PatientList, name="patient-list"),
     path('patient-detail/<str:pk>/', views.PatientDetail, name="patient-detail"),
     path('patient-create/', views.PatientCreate, name="patient-create"),
