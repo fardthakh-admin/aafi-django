@@ -1,11 +1,127 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>homepage</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
 </head>
 <body>
-<p>Patient Homepage</p>
-<button><a href="{% url 'logout' %}">Logout</a></button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand text-primary" href="#">TechCare</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">My page</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class=" container m-1 bg-light ">
+        <div class="row">
+
+            <div class=" col-lg-3">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action">
+                        Patients
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">Calender</a>
+                    <a href="#" class="list-group-item list-group-item-action">Chat</a>
+
+                </div>
+
+            </div>
+
+
+            <div class=" col-9">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="barChart1"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="circularBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <hr>
+
+                <table class="table">
+                    <caption> " Sample medical dataset "</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">PatientID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Gender</th>
+                            <th scope="col">Age</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row " class=" text-primary">1</th>
+                            <td>2032</td>
+                            <td>Ahmad</td>
+                            <td>M</td>
+                            <td>25</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class=" text-primary">2</th>
+                            <td>3698</td>
+                            <td>Lara</td>
+                            <td>F</td>
+                            <td>32</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class=" text-primary">3</th>
+                            <td>5866</td>
+                            <td>Bana</td>
+                            <td>F</td>
+                            <td>27</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class=" text-primary">4</th>
+                            <td>6866</td>
+                            <td>Omar</td>
+                            <td>M</td>
+                            <td>38</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class=" text-primary">5</th>
+                            <td>6556</td>
+                            <td>Noor</td>
+                            <td>F</td>
+                            <td>31</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/charts.js' %}"></script>
+    <script src="{% static 'js/login.js' %}"></script>
+    <!-- <script src="js/popper.min.js"></script>
+    <script src="js/code.jquery.com_jquery-3.7.0.min.js"></script>
+    <script src="js/bootstrap.js"></script> -->
 </body>
 </html>

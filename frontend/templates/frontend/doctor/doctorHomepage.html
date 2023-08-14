@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +8,8 @@
 </head>
 <body>
 <p>Doctor Homepage</p>
-<button><a href="{% url 'logout' %}">Logout</a></button>
+<button id="logout-btn">Logout</button>
+
+<script src="{% static 'js/authentication.js' %}"></script>
 </body>
 </html>

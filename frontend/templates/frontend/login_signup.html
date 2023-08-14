@@ -15,15 +15,15 @@
 
     <div class="wrapper">
         <div class="title"><span>Login Form</span></div>
-        <form method="POST" action="{% url 'login' %}">
+        <form id="login-form" >
             {% csrf_token %}
             <div class="row">
                 <i class="fas fa-user"></i>
-                <input type="text" name="username" placeholder="Enter your username" required>
+                <input type="text" name="username" placeholder="Enter your username" id="username" required>
             </div>
             <div class="row">
                 <i class="fas fa-lock"></i>
-                <input type="password" name="password" placeholder="Enter your password" required>
+                <input type="password" name="password" placeholder="Enter your password" id="password" required>
             </div>
             {% if messages %}
             <div class="messages">
@@ -182,6 +182,9 @@
 
 </div>
 
+
+
+<script src="{% static 'js/authentication.js' %}"></script>
 {% endblock content %}
 </body>
 </html>
