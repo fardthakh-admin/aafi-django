@@ -29,12 +29,14 @@ INSTALLED_APPS = [
     "frontend.apps.FrontendConfig",
 
     'rest_framework',
+    'corsheaders',
     'knox',
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -125,10 +127,5 @@ MEDIA_ROOT = BASE_DIR / 'static/images'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
-        'knox.auth.TokenAuthentication',
-    ]
-}
+CORS_ORIGIN_ALLOW_ALL = True # ALLOWS ALL FRONTEND PORTS TO ACCESS OUR APP
+CORS_ALLOW_CREDENTIALS = True # ALLOWS FRONTEND TO GET COOKIE

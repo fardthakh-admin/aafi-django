@@ -1,13 +1,15 @@
 asgiref==3.7.2
 boto3==1.28.25
-botocore==1.31.25        
-certifi==2023.7.22       
+botocore==1.31.25
+certifi==2023.7.22
 cffi==1.15.1
 charset-normalizer==3.2.0
 click==8.1.6
 colorama==0.4.6
-cryptography==41.0.3     
+cryptography==41.0.3
 Django==4.2.4
+django-cors-headers==4.2.0
+django-rest-auth==0.9.5
 django-rest-knox==4.2.0
 djangorestframework==3.14.0
 dynaconf==3.2.1
@@ -22,6 +24,7 @@ Pillow==10.0.0
 psycopg2==2.9.7
 pycparser==2.21
 pyhcl==0.4.4
+PyJWT==2.8.0
 python-dateutil==2.8.2
 pytz==2023.3
 requests==2.31.0

@@ -4,11 +4,10 @@ from . import views
 
 urlpatterns = [
     path('', views.login_page, name="login"),
-    path('logout/', views.logout_user, name="logout"),
-    path('patientSignup/', views.patient_signup, name="patientSignup"),
-    path('doctorSignup/', views.doctor_signup, name="doctorSignup"),
+    path('patient-signup/', views.patient_signup, name="patientSignup"),
+    path('doctor-signup/', views.doctor_signup, name="doctorSignup"),
 
-    path('patient/patientHomepage/', views.patient_homepage, name="patientHomepage"),
-    path('doctor/doctorHomepage/', views.doctor_homepage, name="doctorHomepage"),
+    path('patient/patient-homepage/', views.patient_homepage, name="patient-homepage"),
+    path('doctor/doctor-homepage/', views.doctor_homepage, name="doctor-homepage"),
 
 ]

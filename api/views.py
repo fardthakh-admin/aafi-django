@@ -1,14 +1,14 @@
-from django.contrib.auth import login
-from django.shortcuts import redirect
+from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import generics, permissions
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from knox.views import LoginView as KnoxLoginView , LogoutView as KnoxLogoutView
-from knox.models import AuthToken
+
 from .serializers import *
 from .models import *
-from .models import Medication
+
+import jwt, datetime
+
 
 
 
@@ -119,29 +119,75 @@ def apiOverView(request):
     return Response(api_urls)
 
 
-class RegisterUser(generics.GenericAPIView):
-    serializer_class = UserRegistrationSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data = request.data)
+# AUTHENTICATION VIEWS
+class RegisterUser(APIView):
+    def post(self, request):
+        serializer = UserRegistrationSerializer(data = request.data)
         serializer.is_valid(raise_exception = True)
-        user = serializer.save()
-        return Response({
-            "user" : UserSerializer(user, context = self.get_serializer_context()).data,
-            "token" : AuthToken.objects.create(user)[1]
-        })
+        serializer.save()
+        
+        return Response(serializer.data)
 
-class UserLogin(KnoxLoginView):
-    permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format = None):
-        serializer = AuthTokenSerializer(data = request.data)
-        serializer.is_valid(raise_exception = True)
-        user = serializer._validated_data['user']
-        login(request, user)
-        redirect('patientHomepage')
-        # redirect('doctorHomepage')
-        return super(UserLogin, self).post(request, format=None)
+class UserLogin(APIView):
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+
+        user = User.objects.get(username = username)
+
+        if user is None:
+            raise AuthenticationFailed('User not found!')
+        
+        if not user.check_password(password):
+            raise AuthenticationFailed('Incorrect password!')
+        
+        payload = {
+            'id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 60),
+            'iat': datetime.datetime.utcnow()
+        }
+
+        token = jwt.encode(payload, 'secret', algorithm = 'HS256')
+
+        response = Response()
+
+        response.set_cookie(key = 'jwt', value = token, httponly = True) # httponly means we dont want the frontend to access the token
+        response.data = {
+            'jwt': token
+        }
+
+        return response
+
+
+class UserView(APIView):
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+        
+        try:
+            payload = jwt.decode(token, 'secret', algorithms = ['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+
+        user = User.objects.get(id = payload['id'])
+        serializer = UserSerializer(user)
+
+        return Response(serializer.data)
+
+
+class LogoutUser(APIView):
+    def post(self, request):
+        response = Response()
+        
+        response.delete_cookie('jwt')
+        response.data = {
+            'message': 'Success!'
+        }
+
+        return response
 
 
 @api_view(['GET'])
@@ -162,7 +208,7 @@ def DoctorList(request):
 
 @api_view(['GET'])
 def DoctorDetail(request, pk):
-    doctors = Doctor.objects.get(id=pk)
+    doctors = Doctor.objects.get(id = pk)
     serializer = DoctorSerializer(doctors, many=False)
 
     return Response(serializer.data)
