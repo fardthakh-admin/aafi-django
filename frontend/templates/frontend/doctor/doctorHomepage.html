@@ -1,66 +1,10 @@
+{% extends 'main.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechCare</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'styles/bootstrap.css' %}">
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand text-primary" href="#">TechCare</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    {% if request.user.is_patient %}
-                    <a class="nav-link" href="{% url 'patient-homepage' %}">
-                        Home 
-                        <span class="sr-only">
-                            (current)
-                        </span>
-                    </a>
-
-                    {% else %}
-                    <a class="nav-link" href="{% url 'doctor-homepage' %}">
-                        Home 
-                        <span class="sr-only">
-                            (current)
-                        </span>
-                    </a>
-                    {% endif %}
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">My page</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
+{% block content %}
     <div class=" container-fluid m-1 bg-light ">
         <div class="row">
-            <div class=" col-3">
-                <div class="list-group">
-                    <a href="http://127.0.0.1:5500/patient%20page.html" class="list-group-item list-group-item-action">
-                        Patients
-                    </a>
-                    <a href="{% url 'calendar' %}" class="list-group-item list-group-item-action">
-                        Calender
-                    </a>
-                    <a href="http://127.0.0.1:5500/chat%20page.html" class="list-group-item list-group-item-action">
-                        Chat
-                    </a>
-                </div>
-            </div>
-
+            {% include 'sidebar.html' %}
 
             <div class=" col-9">
                 <div class="container">
@@ -110,5 +54,4 @@
     <script src="{% static 'js/code.jquery.com_jquery-3.7.0.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.js' %}"></script>
     <script src="{% static 'js/doctor/list-patients.js' %}"></script>
-</body>
-</html>
+{% endblock content %}

@@ -101,7 +101,11 @@ def doctor_homepage(request):
     return render(request, 'frontend/doctor/doctorHomepage.html')
 
 
-
 @login_required(login_url='/login')
 def calendar(request):
     return render(request, 'frontend/calendar.html')
+
+
+@login_required(login_url='/login')
+def patients_list(request):
+    return render(request, 'frontend/doctor/patients.html')

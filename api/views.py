@@ -9,21 +9,20 @@ from .models import *
 
 import jwt, datetime
 
-
-
-
 @api_view(['GET'])
 def apiOverView(request):
     api_urls = {
         'register_user': '/register/',
-        'login_user': 'login/',
-        'logout_user': 'logout/',
+        'login_user': '/login/',
+        'logout_user': '/logout/',
 
         'Doctors': '/doctor-list/',
-        'Doctor Detail View': '/doctor-detail/<str:pk>/',
-        'Doctor Create': '/doctor-create/',
-        'Doctor Delete': '/doctor-delete/<str:pk>/',
-        'Doctor Update': '/doctor-update/<str:pk>/',
+        'Doctor_Detail_View': '/doctor-detail/<str:pk>/',
+        'Doctor_Create': '/doctor-create/',
+        'Doctor_Delete': '/doctor-delete/<str:pk>/',
+        'Doctor_Update': '/doctor-update/<str:pk>/',
+        'Patients_Page': '/patients/',
+
 
         'Patients': '/patient-list/',
         'Patient Detail View': '/patient-detail/<str:pk>/',
@@ -241,6 +240,17 @@ def DoctorDelete(request, pk):
     doctor.delete()
 
     return Response('Item successfully deleted!')
+
+
+@api_view(['GET'])
+def Patients_Page(request):
+    user = User.objects.get(id = request.user.id)
+    patients = Patient.objects.filter(my_doctor = user)
+    serializer = PatientPageListSerializer(patients, many=True)
+
+    return Response(serializer.data)
+    
+
 
 
 @api_view(['GET'])

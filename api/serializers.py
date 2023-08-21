@@ -43,6 +43,13 @@ class PatientSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'gender',  'DOB']
 
 
+class PatientPageListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Patient
+        fields = ['username', 'last_name', 'DOB', 'gender', 'email', 'phone_number']
+        
+
+
 class MedicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Medication

@@ -1,0 +1,32 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class=" container-fluid m-1 bg-light ">
+    <div class="row">
+        {% include 'sidebar.html' %}        
+        <div class=" col-xl-9">
+            <table class="table table-striped  ">
+                <thead>
+                    <tr>
+
+                        <th scope="col" class="table-primary">First Name</th>
+                        <th scope="col" class="table-primary"> Surname</th>
+                        <th scope="col" class="table-primary"> Date of Birth</th>
+                        <th scope="col" class="table-primary">Gender</th>
+                        <th scope="col" class="table-primary">Email Address</th>
+                        <th scope="col" class="table-primary">Contact Phone Number</th>
+
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                                                         
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/doctor/patients-page-list.js' %}"></script>
+{% endblock content %}

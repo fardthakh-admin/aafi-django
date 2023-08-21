@@ -26,6 +26,7 @@ urlpatterns = [
     path('patient-create/', views.PatientCreate, name="patient-create"),
     path('patient-delete/<str:pk>/', views.PatientDelete, name="patient-delete"),
     path('patient-update/<str:pk>/', views.PatientUpdate, name="patient-update"),
+    path('patients/', views.Patients_Page, name="patients"),
 
     path('medication-list/', views.MedicationList, name="medication-list"),
     path('medication-detail/<str:pk>/', views.MedicationDetail, name="medication-detail"),
