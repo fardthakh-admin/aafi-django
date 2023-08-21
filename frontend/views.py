@@ -14,7 +14,7 @@ def login_page(request):
     if request.user.is_authenticated:
         if request.user.is_patient():
             return redirect('patientHomepage')
-        if request.user.is_doctor():
+        else:
             return redirect('doctorHomepage')
 
     if request.method == 'POST':
@@ -99,3 +99,9 @@ def patient_homepage(request):
 @login_required(login_url='/login')
 def doctor_homepage(request):
     return render(request, 'frontend/doctor/doctorHomepage.html')
+
+
+
+@login_required(login_url='/login')
+def calendar(request):
+    return render(request, 'frontend/calendar.html')

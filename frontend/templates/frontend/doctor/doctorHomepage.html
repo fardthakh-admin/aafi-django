@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechCare</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="{% static 'styles/bootstrap.css' %}">
 </head>
 
 <body>
@@ -21,8 +21,22 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="http://127.0.0.1:5500/index.html">Home <span
-                            class="sr-only">(current)</span></a>
+                    {% if request.user.is_patient %}
+                    <a class="nav-link" href="{% url 'patient-homepage' %}">
+                        Home 
+                        <span class="sr-only">
+                            (current)
+                        </span>
+                    </a>
+
+                    {% else %}
+                    <a class="nav-link" href="{% url 'doctor-homepage' %}">
+                        Home 
+                        <span class="sr-only">
+                            (current)
+                        </span>
+                    </a>
+                    {% endif %}
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">My page</a>
@@ -38,7 +52,7 @@
                     <a href="http://127.0.0.1:5500/patient%20page.html" class="list-group-item list-group-item-action">
                         Patients
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a href="{% url 'calendar' %}" class="list-group-item list-group-item-action">
                         Calender
                     </a>
                     <a href="http://127.0.0.1:5500/chat%20page.html" class="list-group-item list-group-item-action">
@@ -72,45 +86,16 @@
                             <th scope="col">PatientID</th>
                             <th scope="col">Name</th>
                             <th scope="col">Gender</th>
-                            <th scope="col">Age</th>
-
+                            <th scope="col">DOB</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="table-body">
                         <tr>
-                            <th scope="row " class=" text-primary">1</th>
-                            <td>2032</td>
-                            <td>Ahmad</td>
-                            <td>M</td>
-                            <td>25</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class=" text-primary">2</th>
-                            <td>3698</td>
-                            <td>Lara</td>
-                            <td>F</td>
-                            <td>32</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class=" text-primary">3</th>
-                            <td>5866</td>
-                            <td>Bana</td>
-                            <td>F</td>
-                            <td>27</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class=" text-primary">4</th>
-                            <td>6866</td>
-                            <td>Omar</td>
-                            <td>M</td>
-                            <td>38</td>
-                        </tr>
-                        <tr>
-                            <th scope="row" class=" text-primary">5</th>
-                            <td>6556</td>
-                            <td>Noor</td>
-                            <td>F</td>
-                            <td>31</td>
+                            <th scope="row " class=" text-primary" id="record-number">loading...</th>
+                            <td id="patient-id">loading...</td>
+                            <td id="patient-name">loading...</td>
+                            <td id="patient-gender">loading...</td>
+                            <td id="patient-DOB">loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -120,10 +105,10 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'js/charts.js' %}"></script>
+    <script src="{% static 'js/doctor/charts.js' %}"></script>
     <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/code.jquery.com_jquery-3.7.0.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/doctor/list-patients.js' %}"></script>
 </body>
-
 </html>

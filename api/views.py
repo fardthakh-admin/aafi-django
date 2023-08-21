@@ -245,7 +245,8 @@ def DoctorDelete(request, pk):
 
 @api_view(['GET'])
 def PatientList(request):
-    patients = Patient.objects.all()
+    user = User.objects.get(id = request.user.id)
+    patients = Patient.objects.filter(my_doctor = user)
     serializer = PatientSerializer(patients, many=True)
 
     return Response(serializer.data)

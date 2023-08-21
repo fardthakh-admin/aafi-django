@@ -40,7 +40,7 @@ class DoctorSerializer(serializers.ModelSerializer):
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
-        fields = '__all__'
+        fields = ['id', 'username', 'gender',  'DOB']
 
 
 class MedicationSerializer(serializers.ModelSerializer):

@@ -10,4 +10,9 @@ urlpatterns = [
     path('patient/patient-homepage/', views.patient_homepage, name="patient-homepage"),
     path('doctor/doctor-homepage/', views.doctor_homepage, name="doctor-homepage"),
 
+
+    path('calendar/', views.calendar, name="calendar"),
+
+
+
 ]
