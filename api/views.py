@@ -1,8 +1,9 @@
+from rest_framework import authentication, permissions
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.authtoken.serializers import AuthTokenSerializer
+# from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from .serializers import *
 from .models import *
@@ -129,6 +130,8 @@ class RegisterUser(APIView):
 
 
 class UserLogin(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+
     def post(self, request):
         username = request.data['username']
         password = request.data['password']

@@ -29,8 +29,8 @@ INSTALLED_APPS = [
     "frontend.apps.FrontendConfig",
 
     'rest_framework',
-    'corsheaders',
-    'knox',
+    'rest_framework.authtoken',
+    'corsheaders',    
 ]
 
 MIDDLEWARE = [

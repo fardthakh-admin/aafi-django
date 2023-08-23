@@ -109,3 +109,7 @@ def calendar(request):
 @login_required(login_url='/login')
 def patients_list(request):
     return render(request, 'frontend/doctor/patients.html')
+
+@login_required(login_url='/login')
+def doctor_chat_page(request):
+    return render(request, 'frontend/doctor/doctor-chat.html')
