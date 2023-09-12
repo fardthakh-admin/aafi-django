@@ -37,3 +37,12 @@ tzdata==2023.3
 urllib3==1.26.16
 validators==0.21.2
 win32-setctime==1.1.0
+
+autopep8
+dj-database-url     
+gunicorn
+numpy
+psycopg
+psycopg2
+pycodestyle
+python-decouple

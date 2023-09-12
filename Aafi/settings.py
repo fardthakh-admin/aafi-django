@@ -70,7 +70,7 @@ WSGI_APPLICATION = "Aafi.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "Aafi",
+        "NAME": "aafi",
         "USER": "postgres",
         "PASSWORD": "1234",
         "HOST": "localhost",
