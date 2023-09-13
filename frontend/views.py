@@ -13,9 +13,9 @@ def login_page(request):
     # to restrict the user from visiting login page url if he is logged in
     if request.user.is_authenticated:
         if request.user.is_patient():
-            return redirect('patientHomepage')
+            return redirect('patient-homepage')
         else:
-            return redirect('doctorHomepage')
+            return redirect('doctor-homepage')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -35,17 +35,17 @@ def login_page(request):
                 if user.is_patient():
                     # Log in the patient and redirect to the patient homepage
                     login(request, user)
-                    return redirect('patientHomepage')
+                    return redirect('patient-homepage')
                 elif user.is_Doctor():
                     # Log in the doctor and redirect to the doctor if approved
                     login(request, user)
-                    return redirect('doctorHomepage')
+                    return redirect('doctor-homepage')
             else:
                 # Display error message if authentication fails
                 messages.error(request, 'Invalid username or password')
 
     context = {'page': page}
-    return render(request, 'frontend/login_signup.html', context)
+    return render(request, 'login_signup.html', context)
 
 
 @login_required(login_url='/login')
