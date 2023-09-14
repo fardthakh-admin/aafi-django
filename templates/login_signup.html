@@ -1,0 +1,187 @@
+{% load static %}
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration</title>
+    <link rel="stylesheet" href="{% static 'styles/registration_style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"/>
+</head>
+<body>
+{% block content %}
+
+
+<div class="container">
+
+    <div class="wrapper">
+        <div class="title"><span>Login Form</span></div>
+        <h2>Log In</h2>
+       
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="row">
+                <i class="fas fa-user"></i>
+                <input type="text" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="row">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <p style="color:red; text-align:center; font-weight:600">{{ message }}</p>
+                {% endfor %}
+            </div>
+            <br>
+            {% endif %}
+            <div class="pass"><a href="#">Forgot password?</a></div>
+            <div class="row button">
+                <input type="submit" value="Submit">
+            </div>
+            <div class="signup-link">Not a member?
+                <label class="dropdown"><a href=""> Signup now </a>
+                    <div class="dropdown-content">
+                        <a href="{% url 'patientSignup' %}">As Patient</a>
+                        <a href="{% url 'doctorSignup' %}">As Doctor</a>
+                    </div>
+                </label>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% if page == 'patientSignup' %}
+<div class="signup_container">
+    <div class="wrapper">
+        <div class="title"><span>Patient Form</span></div>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="row">
+                <i class="fas fa-user"></i>
+                {{form.username}}
+            </div>
+
+            <div class="row">
+                <i class="fas fa-envelope"></i>
+                {{form.email}}
+            </div>
+
+            <div class="row">
+                <i class="fas fa-lock"></i>
+                {{form.password}}
+            </div>
+
+            <div class="row">
+                <i class="fa fa-address-card"></i>
+                {{form.address}}
+            </div>
+
+            <div class="row"
+                 style="padding-bottom: 35px; margin-bottom: 10px; border: 1px solid #bdbdbd; border-radius: 5px;">
+                <i class="fas fa-venus-mars"></i>
+                <label style="color: #908f8f; padding-left: 60px; padding-right: 10px">
+                    Choose your gender:
+                </label>
+                {% for value, label in form.gender.field.choices %}
+                <div class="radio" style="display: inline-flex; margin-right: 10px;">
+                    <input type="radio" name="{{ form.gender.name }}" value="{{ value }}"
+                           id="id_{{ form.gender.name }}_{{ forloop.counter0 }}"
+                           {% if form.gender.value == value %}
+                           checked
+                           {% endif %} style="margin-top: 13px;">
+                    <label for="id_{{ form.gender.name }}_{{ forloop.counter0 }}"
+                           style="display: inline-block; margin-left: 5px; margin-top: 9px;">{{ label }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <i class="fa fa-phone"></i>
+                {{form.phone_number}}
+            </div>
+            <div class="row">
+                <i class="fas fa-calendar-alt"></i>
+                {{form.DOB}}
+            </div>
+
+            <div class="row button">
+                <input type="submit" value="Submit">
+            </div>
+
+            <div class="signup-link">Already have an account?
+                <label><a href="{% url 'login' %}">
+                    Login now</a></label>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% if page == 'doctorSignup' %}
+<div class="signup_container">
+    <div class="wrapper">
+        <div class="title"><span>Doctor Form</span></div>
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="row">
+                <i class="fas fa-user"></i>
+                {{form.username}}
+            </div>
+
+            <div class="row">
+                <i class="fas fa-envelope"></i>
+                {{form.email}}
+            </div>
+
+            <div class="row">
+                <i class="fas fa-lock"></i>
+                {{form.password}}
+            </div>
+
+            <div class="row">
+                <i class="fa fa-address-card"></i>
+                {{form.address}}
+            </div>
+
+            <div class="row"
+                 style="padding-bottom: 35px; margin-bottom: 10px; border: 1px solid #bdbdbd; border-radius: 5px;">
+                <i class="fas fa-venus-mars"></i>
+                <label style="color: #908f8f; padding-left: 60px; padding-right: 10px">
+                    Choose your gender:
+                </label>
+                {% for value, label in form.gender.field.choices %}
+                <div class="radio" style="display: inline-flex; margin-right: 10px;">
+                    <input type="radio" name="{{ form.gender.name }}" value="{{ value }}"
+                           id="id_{{ form.gender.name }}_{{ forloop.counter0 }}_doctor"
+                           {% if form.gender.value == value %}
+                           checked
+                           {% endif %} style="margin-top: 13px;">
+                    <label for="id_{{ form.gender.name }}_{{ forloop.counter0 }}"
+                           style="display: inline-block; margin-left: 5px; margin-top: 9px;">{{ label }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="row">
+                <i class="fa fa-phone"></i>
+                {{form.phone_number}}
+            </div>
+
+            <div class="row button">
+                <input type="submit" value="Submit">
+            </div>
+
+            <div class="signup-link">Already have an account?
+                <label><a href="{% url 'login' %}">
+                    Login now</a></label>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+
+</div>
+
+{% endblock content %}
+</body>
+</html>
