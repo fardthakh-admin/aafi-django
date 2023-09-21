@@ -47,6 +47,11 @@ def login_page(request):
     context = {'page': page}
     return render(request, 'login_signup.html', context)
 
+   # def trivia_template_view(request):
+    
+    #  return render(request, 'patient/trivia.html')
+
+
 
 @login_required(login_url='/login')
 def logout_user(request):
@@ -113,3 +118,13 @@ def patients_list(request):
 @login_required(login_url='/login')
 def doctor_chat_page(request):
     return render(request, 'frontend/doctor/doctor-chat.html')
+
+
+    
+@login_required(login_url='/login')
+def mind_activities_view(request):
+    return render(request,'frontend/patient/activities.html')
+
+@login_required(login_url='/login')
+def quiz_question_view(request):
+    return render(request,'frontend/patient/quiz.html')

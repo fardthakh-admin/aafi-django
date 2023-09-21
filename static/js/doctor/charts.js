@@ -1,5 +1,4 @@
 
-
 const ctx1 = document.getElementById('barChart1').getContext('2d');
 const ctx2 = document.getElementById('circularBarChart').getContext('2d');
 

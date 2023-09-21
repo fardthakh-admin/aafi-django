@@ -1,4 +1,6 @@
+{% extends 'main.html' %}
 {% load static %}
+{% block content %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,43 +11,21 @@
     <link rel="stylesheet" href="css/bootstrap.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand text-primary" href="#">TechCare</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<style>
+    .col-9{
+    position: fixed;
+    margin-left: 250px;
+    background-color: #f8f8f8;
+    margin-right: 0;
+    padding-right: 0;
+    }
+</style>
 
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">My page</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="logout-button" style="cursor: pointer;">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class=" container m-1 bg-light ">
-        <div class="row">
-
-            <div class=" col-lg-3">
-                <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">
-                        Patients
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">Calender</a>
-                    <a href="#" class="list-group-item list-group-item-action">Chat</a>
-
-                </div>
-
-            </div>
-
+  
+  <div class=" container m-1 bg-light ">
+         <div class="row">
+                   
+            {% include 'sidebar.html' %}     
 
             <div class=" col-9">
                 <div class="container">
@@ -116,7 +96,7 @@
             </div>
         </div>
     </div>
-
+</div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
     <script src="{% static 'js/charts.js' %}"></script>
     <script src="{% static 'js/logout.js' %}"></script>
@@ -127,3 +107,4 @@
     <script src="js/bootstrap.js"></script> -->
 </body>
 </html>
+{% endblock content %}

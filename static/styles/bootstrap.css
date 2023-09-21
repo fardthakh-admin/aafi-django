@@ -9940,4 +9940,7 @@ a.text-dark:focus {
   }
 }
 
-/*# sourceMappingURL=bootstrap.css.map */
+
+.col-lg-3{
+  padding-left: 0;
+}
