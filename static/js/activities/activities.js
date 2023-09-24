@@ -4,27 +4,10 @@
  * Author: Samin Yasar
  * Date: 20/August/2021
  */
-
+//These lines select various HTML elements by their IDs and assign them
+// to corresponding variables. These variables will be used to interact with
+// the DOM (Document Object Model) and display quiz-related information
 // DOM Select
-
-
-//const API_URL = "/api/quiz-questions/";
-
-//async function getQuestions() {
-  //  try {
-      //  const response = await fetch(API_URL);
-      //  const data = await response.json();
-
-      //  if (data && data.length) {
-//return data;
-      //  } else {
-           // throw new Error("No questions found in the response.");
-      //  }
-   // } catch (err) {
-      //  return err;
-  //  }
-///}
-
 const quizTopicSpan = document.getElementById("quizTopicSpan");
 const quizNumberEl = document.getElementById("quizNumberEl");
 const quizIncorrectSpan = document.getElementById("quizIncorrectSpan");
@@ -34,7 +17,13 @@ const quizQuestionEl = document.getElementById("quizQuestionEl");
 const quizOptionListEl = document.getElementById("quizOptionListEl");
 const quizControls = document.getElementById("quizControls");
 
+// Here, global variables are defined to store various aspects 
+// of the quiz, such as the number of quizzes, time limits, pass mark percentage,
+//  and variables to keep track of time, 
+// current quiz number, incorrect and correct answers, and other related data.
+
 // Global Variables
+
 const quizAmount = 20;
 const timePerQuiz = 10;
 const passMark = 70; // ! in percentage
@@ -47,6 +36,10 @@ let intervalId = null;
 
 const correctAnswers = [];
 const answers = [];
+// Here, global variables are defined to store various aspects of 
+// the quiz, such as the number of quizzes, time limits, 
+// pass mark percentage, and variables to keep track of time, 
+// current quiz number, incorrect and correct answers, and other related data.
 
 const quizCategories = {
     nature: 17,
@@ -56,23 +49,34 @@ const quizCategories = {
     animals: 27,
     gadgets: 30,
 };
-
+//This code randomly selects a quiz category from quizCategories by generating 
+//a random index within the range of available categories.
 const quizTopic =
     Object.keys(quizCategories)[
         Math.floor(Math.random() * Object.keys(quizCategories).length)
     ];
-
+//This line assigns the numerical ID of the selected quiz category to quizCategoryId.
+// This ID will be 
+//used when making API requests to fetch questions for the selected category.
 const quizCategoryId = quizCategories[quizTopic];
+//These lines define an array of quiz difficulties ("easy," "medium," and "hard")
+// and randomly select a difficulty level to
+// use when fetching questions.
 const quizDifficulties = ["easy", "medium", "hard"];
 const quizDifficulty =
     quizDifficulties[Math.floor(Math.random() * quizDifficulties.length)];
-
-    const API_URL = "/quiz-questions/"
+//This line defines the URL for the API endpoint from which the quiz
+// questions will be fetched.
+  const API_URL = '/api/question-list/';
 
 // Functionalities
 /**
  * Start counting time in every single second.
  */
+
+//This function, startCountdown(), is responsible for starting a countdown 
+//timer for each quiz. It uses the setInterval function to update the timer 
+//display on the page every second (1000 milliseconds).
 function startCountdown() {
     let currentWidth = 100;
 
@@ -94,7 +98,9 @@ function startCountdown() {
 
 /**
  * Return the final result of the user.
- *
+ * This function, getResult(), calculates and displays
+ *  the user's final result at the end of the quiz. It compares the user's
+ *  score with the pass mark and displays a message accordingly.
  */
 function getResult() {
     const percentage = parseInt((passMark * quizAmount) / 100);
@@ -151,22 +157,30 @@ function updateResult() {
  * Render all the question into the corresponding placeholder.
  *
  * @param {Object} questions - All the questions as an array of object.
+ * 
+ * This function, renderQuestion(questions), takes an array of question 
+ * objects as an argument and returns another function. This returned function 
+ * is responsible for rendering each question and its options on the quiz interface. 
+ * It iterates through the questions, displays them, and sets up event listeners
+ *  for user interactions.
  */
 function renderQuestion(questions) {
     let currentQuizIndex = 0;
 
     return function () {
-        // ? Render the next question!
+        // Render the next question!
         quizQuestionEl.innerHTML =
             quizOptionListEl.innerHTML =
             quizControls.innerHTML =
-                ""; // remove all the items which are inserted before
+                "";
 
         if (currentQuizIndex <= questions.length - 1) {
             const quiz = questions[currentQuizIndex];
-            const options = quiz.incorrect_answers
-                .concat(quiz.correct_answer)
-                .sort(() => Math.random() - 0.5); // concat the `correct_answer` property value with the `incorrect_answers` array to create a bunch of options and also sorted it
+
+            // Check if quiz.incorrect_answers is an array
+            const options = Array.isArray(quiz.incorrect_answers)
+                ? quiz.incorrect_answers.concat(quiz.correct_answer).sort(() => Math.random() - 0.5)
+                : [quiz.correct_answer]; // Use only the correct answer if incorrect_answers is not an array
 
             quizNumberEl.innerHTML = `
                 <h3>#${currentQuiz} <span>of ${questions.length}</span></h3>
@@ -179,7 +193,7 @@ function renderQuestion(questions) {
                 (match, charCode) => {
                     return String.fromCharCode(charCode);
                 }
-            ); // ! Convert the HTML entity code to text string. {Note: Only works for entity which has digit but not work for characters entity}
+            );
 
             options.forEach((option, ind) => {
                 const optionHeading = ["a", "b", "c", "d"];
@@ -207,7 +221,7 @@ function renderQuestion(questions) {
                             el.classList.remove("btn-selected-option")
                         );
 
-                    answers.push(e.target.dataset.answer); // push the item to user's answer array
+                    answers.push(e.target.dataset.answer);
                     updateResult();
                     nextQuestion();
                 });
@@ -216,41 +230,48 @@ function renderQuestion(questions) {
             currentQuiz++;
             ++currentQuizIndex;
         } else {
-            // ? Quiz is completed!
+            // Quiz is completed!
             getResult();
         }
     };
 }
-
 /**
  * Request to the `opentdb.com` server to get all questions.
  * @return {string[]} - Return all the questions as an array.
  */
-async function getQuestions() {
-    const defaultQuestion = {
-        category: "mathematics",
-        correct_answer: "3.1416",
-        difficulty: "easy",
-        incorrect_answers: ["3.1614", "2.3498", "3.1415"],
-        question: "What is the rounded value of PI?",
-        type: "multiple",
-    }; // * If the API request will not response any questions then this default question will be pass
 
+// This getQuestions() function sends a request to the API defined by 
+// API_URL to fetch quiz questions. It uses the fetch API to make 
+// the request and await for the response. If the API returns valid
+//  questions, it logs the response and returns the questions as an array of 
+//  objects. If there are no questions or an error occurs, it throws an error
+//   message and returns an empty array.
+
+javascript
+async function getQuestions() {
     try {
-        const { results: questions = [defaultQuestion] } = await (
-            await fetch(API_URL)
-        ).json();
-        if (questions.length) {
-            throw questions;
+        const response = await fetch(API_URL);
+        const data = await response.json();
+
+        console.log("API Response:", data); // Debugging: Log the API response
+
+        if (Array.isArray(data) && data.length > 0) {
+            return data;
+        } else {
+            throw "No questions were returned by the API.";
         }
     } catch (err) {
-        return err;
+        console.error("API Error:", err); // Debugging: Log API errors
+        return [defaultQuestion];
     }
 }
 
-/**
- * Initializer function of this project.
- */
+// The init() function is the entry point of the application.
+// It initializes the quiz by first fetching questions using the
+//  getQuestions() function. Then, it sets up the countdown timer, 
+//  updates the quiz topic displayed on the page, and calls renderQuestion
+//  (questions) to start rendering the quiz questions. 
+// If any error occurs during initialization, it displays an error message.
 async function init() {
     try {
         const questions = await getQuestions();
@@ -276,3 +297,5 @@ async function init() {
 
 // * Initialize the app
 init();
+//Finally, these lines call the init()
+// function to start the quiz application when the page loads.

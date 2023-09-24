@@ -217,9 +217,12 @@ class Question(models.Model):
     option1 = models.CharField(max_length=250, null=True)
     option2 = models.CharField(max_length=250, null=True)
     option3 = models.CharField(max_length=250, null=True)
+    category = models.CharField(max_length=250, null=True)
 
     points = models.IntegerField(null=True)
-    correct = models.IntegerField(null=True)
+    correct_answer = models.CharField(max_length=250, null=True)
+    incorrect_answers = models.CharField(max_length=250, null=True)
+
 
     def __str__(self):
         return self.question

@@ -3,9 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-# from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework import generics
-
 from .serializers import *
 from .models import *
 
