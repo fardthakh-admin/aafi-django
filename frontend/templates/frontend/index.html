@@ -1,0 +1,74 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .image {
+            background-image: url("{% static 'image/4.avif' %}");
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 100px;
+            text-align: center;
+        }
+        .action-buttons ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .action-buttons ul li {
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 8px;
+            padding-bottom: 2px;
+        }
+        .action-buttons a {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 24px;
+            
+        }
+        .content-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="image">
+        <div class="container">
+            <div class="row justify-content-center align-items-center"> 
+                <div class="col-md-6">
+                    <h1>Welcome to Our Diabetes Care Platform</h1>
+                    <p>Empowering you to take control of your diabetes and live a healthier life.</p>
+                    <div class="action-buttons">
+                        <ul>
+                            <li><a href="{% url 'login' %}">Login</a></li>
+                            <li><a href="#">Signup as a Patient</a></li>
+                            <li><a href="#">Signup as a Doctor</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2 content-container">
+                <h2>About Us</h2>
+                <p>
+                    Our platform is dedicated to providing comprehensive support and information for individuals dealing with diabetes.
+                    We offer personalized solutions and a community of experts to help you on your journey to better health.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock content %}

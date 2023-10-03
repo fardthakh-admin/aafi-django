@@ -6,6 +6,13 @@ from django.contrib import messages
 from api.models import User
 from frontend.forms import PatientForm, DoctorForm
 
+def index(request):
+    return render(request, 'frontend/index.html'),
+
+def logout_page(request):
+    logout(request)
+    return redirect('login')
+
 
 def login_page(request):
     page = 'login'
@@ -68,7 +75,7 @@ def patient_signup(request):
 
     context = {'page': page,
                'form': form, }
-    return render(request, 'frontend/login_signup.html', context)
+    return render(request, 'frontend/patient_signup.html', context)
 
 
 def doctor_signup(request):
@@ -88,7 +95,7 @@ def doctor_signup(request):
 
     context = {'page': page,
                'form': form, }
-    return render(request, 'frontend/login_signup.html', context)
+    return render(request, 'frontend/doctor_signup.html', context)
 
 
 @login_required(login_url='/login')
