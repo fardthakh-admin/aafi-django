@@ -1,0 +1,66 @@
+
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bites Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+   
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'styles/bootstrap.css'%}" />
+</head>
+<style>
+  table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  background-color: #faf7f7;
+  padding: 0.75rem;
+  vertical-align: top;
+  text-align: center;
+
+
+}
+h2{
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    background-color:#faf7f7;
+   
+
+}
+
+</style>
+
+<h2>Bites table</h2>
+<table width="100%">
+    <thead>
+        <tr>
+            <th>Document</th>
+            <th>Field Name</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in document_data %}
+            <tr>
+                <td rowspan="{{ entry.data|length }}">{{ entry.name }}</td>
+                {% for key, value in entry.data.items %}
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+                <tr>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+
+
+</html>
+{% endblock content %}

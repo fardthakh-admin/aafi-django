@@ -1,3 +1,8 @@
+from django.shortcuts import render
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+from firebase import firebase
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
@@ -5,6 +10,23 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from api.models import User
 from frontend.forms import PatientForm, DoctorForm
+from frontend.models import bites
+
+cred = credentials.Certificate("C:\\Users\\Administrator\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-9a66893349.json" )
+default_app=firebase_admin.initialize_app(cred)
+db = firestore.client()
+firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
+
+
+config = {
+    'apiKey': 'AIzaSyDYH31LLGfe492t4xklzTeZrIy_Rs-Om3M',
+    'authDomain': 'techcare-diabetes.firebaseapp.com',
+    'projectId': 'techcare-diabetes',
+    'storageBucket': 'techcare-diabetes.appspot.com',
+    'messagingSenderId': '1086234468488',
+    'appId': '1:1086234468488:web:d32c01a322df2e0e76ff3d',
+    'measurementId': 'G-VWVCF3QKTZ'
+}
 
 
 def login_page(request):
@@ -128,3 +150,19 @@ def mind_activities_view(request):
 @login_required(login_url='/login')
 def quiz_question_view(request):
     return render(request,'frontend/patient/quiz.html')
+
+
+def bites_view(request):
+    db = firestore.client()
+    collection = db.collection("bites")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    context = {'document_data': document_data}
+    return render(request, 'frontend/techcare_data/bites_table.html', context)
+
+
+
+
+
+
+

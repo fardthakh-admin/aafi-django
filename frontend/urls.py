@@ -17,8 +17,8 @@ urlpatterns = [
     path('calendar/', views.calendar, name="calendar"),
     path('patient-homepage/activities.html', views.mind_activities_view, name='mind_activities'),
     path('patient-homepage/quiz.html', views.quiz_question_view, name='quiz question'),
-    
-    
+    path('bites_table.html', views.bites_view, name='bites_table'),
+
 
  
 
