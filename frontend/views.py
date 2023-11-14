@@ -35,6 +35,13 @@ def logout_page(request):
     logout(request)
     return redirect('login')
 
+def index(request):
+    return render(request, 'frontend/index.html'),
+
+def logout_page(request):
+    logout(request)
+    return redirect('login')
+
 
 def login_page(request):
     page = 'login'
