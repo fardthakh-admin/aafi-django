@@ -1,6 +1,6 @@
-
 {% extends 'main.html' %}
 {% load static %}
+
 {% block content %}
 <!DOCTYPE html>
 <html lang="en">
@@ -14,53 +14,141 @@
     <link rel="stylesheet" href="{% static 'styles/bootstrap.css'%}" />
 </head>
 <style>
-  table, th, td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  background-color: #faf7f7;
-  padding: 0.75rem;
-  vertical-align: top;
-  text-align: center;
+    h2 {
+      font-family: "Times New Roman", Times, serif;
+      text-align: left;
+      background-color: #faf9f9;
+      padding: 10px;
+    }
+  
+    .container {
+      margin-top: 20px;
+      margin-left: 0;
+      width: 100%;
+    }
+  
+    .document-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      border-spacing: 0;
+    }
+  
+    .document-table th,
+    .document-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 2px solid #dee2e6;
+    }
+  
+    .document-number {
+      font-weight: bold;
+      color: #007bff;
+    }
+  
+    .document-id {
+      font-weight: bold;
+    }
+  
+    .document-title {
+      color: #666;
+    }
+  
+    .edit-delete-buttons {
+      display: flex;
+      justify-content: space-around;
+    }
+  
+    .document-table thead th {
+      background-color: #faf9f9;
+      color: #666;
+    }
+  
+    .document-table tbody tr {
+      background-color: #faf9f9; 
+    }
+  
+    .document-table tbody tr:hover {
+      background-color: #e0e0e0;
+    }
+  
+    .text-primary {
+      font-weight: bold;
+      color: #007bff;
+    }
+    .danger{
+        background-color: #dc3545;
+        border-color: #dc3545;
+       
+     }
+     .danger:hover{
+        background-color: #dc3545;
+        color: white;
+     }
 
 
+
+     .success{
+      background-color: #04AA6D;
+      background-color: #04AA6D;
+        margin-left: 100px;
+        height: fit-content;
+        
+     }
+    .success:hover {
+       background-color: #04AA6D;
+       color: white;
 }
-h2{
-    font-family: "Times New Roman", Times, serif;
-    text-align: center;
-    background-color:#faf7f7;
-   
 
-}
+  </style>
+  
 
-</style>
+<body>
+  <div class="container mt-4">
+      <div class="row">
+          <div class="col-md-3">
+              {% include 'sidebar.html' %}
+          </div>
+          <div class="col-md-9">
+            <div class="button-row d-flex justify-content-between mb-4">
+                <h2>Bites Data</h2>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'create_document' %}"  class="btn success">Create</a>
+                    <form method="post" action="{% url 'delete_document' document_id='125544646516' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+              <table class="document-table">
+                  <thead>
+                      <tr>
+                          <th>#</th>
+                          <th>Patient ID</th>
+                          <th>Title</th>
+                          <th>Category</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for entry in document_data %}
+                          <tr>
+                              <td class="document-number">{{ forloop.counter }}</td>
+                              <td class="document-id"><a href="{% url 'document_detail' document_name=entry.name %}">{{ entry.name }}</a></td>
+                              <td class="document-title">{{ entry.data.title }}</td>
+                              <td class="document-category">{{ entry.data.categories }}</td>
+                           
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
 
-<h2>Bites table</h2>
-<table width="100%">
-    <thead>
-        <tr>
-            <th>Document</th>
-            <th>Field Name</th>
-            <th>Value</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in document_data %}
-            <tr>
-                <td rowspan="{{ entry.data|length }}">{{ entry.name }}</td>
-                {% for key, value in entry.data.items %}
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-                <tr>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+
 </body>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
-
-
 </html>
+
 {% endblock content %}

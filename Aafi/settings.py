@@ -1,4 +1,7 @@
 from pathlib import Path
+import firebase_admin
+from firebase_admin import credentials, firestore
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,7 +60,8 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / 'templates'
+            os.path.join(BASE_DIR, 'templates'), 
+            BASE_DIR / 'templates',  
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -70,6 +74,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = "Aafi.wsgi.application"
 
@@ -138,3 +143,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ORIGIN_ALLOW_ALL = True # ALLOWS ALL FRONTEND PORTS TO ACCESS OUR APP
 CORS_ALLOW_CREDENTIALS = True # ALLOWS FRONTEND TO GET COOKIE
+
+cred = credentials.Certificate("C:\\Users\\Administrator\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-9a66893349.json")
+default_app = firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\Administrator\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-9a66893349.json"

@@ -47,3 +47,4 @@ pycodestyle
 python-decouple
 djangorestframework-jwt
 djangorestframework-simplejwt
+firebase-admin==6.2.0

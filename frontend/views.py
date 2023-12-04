@@ -11,9 +11,11 @@ from django.contrib import messages
 from api.models import User
 from frontend.forms import PatientForm, DoctorForm
 from frontend.models import bites
+import logging
+from .forms import DocumentForm
+from django.http import JsonResponse
+from .models import collection
 
-cred = credentials.Certificate("C:\\Users\\Administrator\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-9a66893349.json" )
-default_app=firebase_admin.initialize_app(cred)
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
 
@@ -166,17 +168,68 @@ def quiz_question_view(request):
     return render(request,'frontend/patient/quiz.html')
 
 
+
+
+
 def bites_view(request):
-    db = firestore.client()
+    db = firestore.Client()
     collection = db.collection("bites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     context = {'document_data': document_data}
     return render(request, 'frontend/techcare_data/bites_table.html', context)
 
+def document_detail(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("bites")
+    document_ref = collection.document(document_name)
+    document_data = document_ref.get().to_dict()
+
+    if not document_data:
+     
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    return render(request, 'frontend/techcare_data/document_detail.html', {'document_data': document_data})
 
 
+def create_document(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+                'tags': form.cleaned_data['tags'],
+                'difficulty': form.cleaned_data['difficulty'],
+                'category': form.cleaned_data['category'],
+                'content': form.cleaned_data['content'],
+            }
+            db.collection("bites").document().set(data)  
+            return redirect('bites_view') 
+    else:
+        form = DocumentForm()
 
+    return render(request, 'frontend/techcare_data/create_document.html', {'form': form})
 
+def delete_document(request, document_id):
+    if request.method == 'POST':
+        db.collection('bites').document("vF6FnRYwG5tFGsBvMgYO").delete()
+        return JsonResponse({'status': 'success', 'message': 'Document deleted successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
+def get_all_collections(request):
+    db = firestore.client()
+    all_collections = [collection.id for collection in db.collections()]
+    
+    return render(request, 'frontend/techcare_data/collections.html', {'collections': all_collections})
 
+def handle_form_submission(request):
+    if request.method == 'POST':
+        selected_collection = request.POST.get('collection_dropdown')
+        if selected_collection == 'bites':
+            return redirect('bites_view')  
+       ## elif 
+        ##selected_collection == 'another_collection':
+           ## return redirect('another_collection_view')  
+
+    return render(request, 'frontend/techcare_data/collections.html')

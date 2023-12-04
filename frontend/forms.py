@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from api.models import Doctor, Patient
+from .models import bites
 
 
 class PatientForm(ModelForm):
@@ -65,3 +66,13 @@ class DoctorForm(ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=65)
     password = forms.CharField(max_length=65, widget=forms.PasswordInput)
+
+
+    
+class DocumentForm(forms.Form):
+    patient_id = forms.CharField(label='Patient ID', max_length=100)
+    title = forms.CharField(label='Title', max_length=100)
+    tags = forms.CharField(label='Tags', max_length=100)
+    content = forms.CharField(label='Content', max_length=100)
+    difficulty = forms.CharField(label='Difficulty', max_length=100)
+    category = forms.CharField(label='Category', max_length=100)

@@ -1,0 +1,72 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collections</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+     
+        body {
+            margin-left: 0;
+        }
+
+        .container {
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .col-md-9 {
+            padding-left: 0;
+        }
+        .success {
+            color: green;
+            margin: 20px;
+        }
+
+        .success:hover {
+          background-color: #04AA6D;
+           color: white;
+ }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                {% include 'sidebar.html' %}
+            </div>
+            <div class="col-md-9">
+                <form method="post" action="{% url 'handle_form_submission' %}">
+                    {% csrf_token %}
+                    <label for="collection_dropdown" class="form-label">Select Collection:</label>
+                    <select name="collection_dropdown" id="collection_dropdown" class="form-select">
+                        {% for collection in collections %}
+                            <option value="{{ collection }}">{{ collection }}</option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn success" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
+        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
+{% endblock %}
