@@ -25,7 +25,7 @@ class bites(models.Model):
     categories = models.CharField(max_length=100)
     content = models.TextField()
     difficulty = models.IntegerField()
-    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=100)
 
     def __str__(self):
@@ -48,7 +48,7 @@ class collection(models.Model):
     majorAssessment = models.CharField(max_length=100, default=None)
     psychomarkers = models.CharField(max_length=100, default=None)
     scenarios = models.CharField(max_length=100, default=None)
-    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     trivia = models.CharField(max_length=100, default=None)
     users = models.CharField(max_length=100, default=None)
 
@@ -57,13 +57,14 @@ class collection(models.Model):
         
 class activities(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=100, default=timezone.now)
     duration = models.IntegerField(default=0)   
     title = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
 
-    def __str__(self):
+
+def __str__(self):
         return self.title
 
 
