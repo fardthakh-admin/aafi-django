@@ -1,7 +1,21 @@
 from django.db import models
+from django.utils import timezone
+from django.contrib.auth.models import User
+from django.conf import settings
+from datetime import datetime
+
 class Document(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+class tags(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, default=None)
+    image = models.TextField()
+    title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
         return self.title
@@ -11,77 +25,202 @@ class bites(models.Model):
     categories = models.CharField(max_length=100)
     content = models.TextField()
     difficulty = models.IntegerField()
-    tags = models.CharField(max_length=100)
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name
+        return self.title
 
 class collection(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    activities = models.CharField(max_length=100)
-    badges = models.TextField()
-    biomarkers = models.TextField()
-    bites = models.TextField()
-    categories = models.CharField(max_length=100)
-    feelings = models.CharField(max_length=100)
-    inquiry = models.CharField(max_length=100)
-    item = models.CharField(max_length=100)
-    journalPrompt = models.CharField(max_length=100)
-    scenarios = models.CharField(max_length=100)
-    tags = models.CharField(max_length=100)
-    users = models.CharField(max_length=100)
+    activities = models.CharField(max_length=100, default=None)
+    assessmentQuestion = models.CharField(max_length=100, default=None)
+    badges = models.TextField(default=None)
+    biomarkers = models.TextField(default=None)
+    bites = models.TextField(default=None)
+    categories = models.CharField(max_length=100, default=None)
+    feelings = models.CharField(max_length=100, default=None)
+    inAppLinks = models.CharField(max_length=100, default=None)
+    inquiry = models.CharField(max_length=100, default=None)
+    item = models.CharField(max_length=100, default=None)
+    journal = models.CharField(max_length=100, default=None)
+    journalPrompt = models.CharField(max_length=100, default=None)
+    majorAssessment = models.CharField(max_length=100, default=None)
+    psychomarkers = models.CharField(max_length=100, default=None)
+    scenarios = models.CharField(max_length=100, default=None)
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
+    trivia = models.CharField(max_length=100, default=None)
+    users = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-       return self.name
-
-
+        return self.title
+        
 class activities(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    Activity_points= models.IntegerField()
-    CBT_points = models.IntegerField()
-    Learning_points = models.IntegerField()
-    Social_points= models.IntegerField()
-    language = models.CharField(max_length=100)
-    location = models.CharField(max_length=100)
-    time = models.IntegerField()
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, default=timezone.now)
+    duration = models.IntegerField(default=0)   
     title = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name
+        return self.title
 
-     
-class  badges (models.Model):
+
+class badges(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
+
     def __str__(self):
-        return self.name
+        return self.title
 
-
-
-class  biomarkers (models.Model):
+class biomarkers(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    Blood_glucose= models.IntegerField()
-    FBS = models.IntegerField()
-    HBA1c = models.IntegerField()
-    height= models.IntegerField()
-    sleepQuality = models.CharField(max_length=100)
-    time = models.IntegerField()
-    user = models.CharField(max_length=100)
-    weight = models.CharField(max_length=100)
+    bloodGlucose = models.IntegerField(default=0)
+    bloodGlucoseType = models.CharField(max_length=100, default=None)
+    dailyActivity = models.IntegerField(default=0)
+    dailyCarbs = models.IntegerField(default=0)
+    weeklyActivity = models.IntegerField(default=0)
+    sleepQuality = models.IntegerField(default=0)
+    time = models.IntegerField(default=0)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='biomarkers_frontend')
+    weight = models.IntegerField(default=0)
+    FBS = models.IntegerField(default=0)
+    HBA1c = models.IntegerField(default=0)
+
+    def __str__(self):
+         return f"{self.user.username}'s Biomarkers"
+
+class assessmentQuestion(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    majorAssessment = models.CharField(max_length=100)
+    max = models.IntegerField(default=0)
+    order = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
+    question = models.CharField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.title
+
+class categories(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, default=None)
+    title = models.CharField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.title
+
+class feelings(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    anger = models.BooleanField(default=False)
+    fear = models.BooleanField(default=False)
+    happiness = models.BooleanField(default=False)
+    joy = models.BooleanField(default=False)
+    love = models.BooleanField(default=False)
+    sadness = models.BooleanField(default=False)
+    shame = models.BooleanField(default=False)
+    strength = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    time =  models.DateTimeField(default=datetime.now)
+
+    def __str__(self):
+        return self.title
+
+class inAppLinks(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, default=None)
+    order = models.TextField()
+    type = models.TextField()
+    title = models.CharField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.title
+
+class inquiry(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    answer = models.CharField(max_length=100)
+    question = models.TextField()
+    time = models.DateTimeField(default=datetime.now)
+    topic = models.CharField(max_length=100, default=None)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.title
+
+class Items(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    data = models.JSONField(default=dict)
+    name = models.TextField()
 
     def __str__(self):
         return self.name
 
+class journal(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, default=None)
+    title = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+        return self.title
 
+class journalPrompt(models.Model):
+    title = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+        return self.title
 
+class majorAssessment(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    order = models.CharField(max_length=100, default=None)
+    title = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+        return self.title
 
+class psychomarkers(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    time =  models.DateTimeField(default=datetime.now)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    depression = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.title
 
+class scenarios(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    PositiveCorrectionAlternative = models.CharField(max_length=100, default=None)
+    actionreply = models.TextField()
+    correction = models.TextField()
+    positiveActionReply = models.CharField(max_length=100, default=None)
+    title = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+        return self.title
 
+class trivia(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    answer_2 = models.CharField(max_length=100, default=None)
+    answer_3 = models.TextField()
+    CBT_points = models.IntegerField(default=0)
+    correct_answer = models.IntegerField(default=0)
+    answer_1 = models.CharField(max_length=100, default=None)
+    description = models.CharField(max_length=100, default=None)
+    explanation = models.CharField(max_length=100, default=None)
+    image = models.CharField(max_length=100, default=None)
+    question = models.CharField(max_length=100, default=None)
+    learning_points = models.IntegerField(default=0)
+    order = models.IntegerField(default=0)
+    topic = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+        return self.title
+
+class users(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    email = models.TextField()
+    created_time = models.DateTimeField(auto_now_add=True)
+    gender = models.CharField(max_length=100, default=None)
+    uid = models.CharField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.title
