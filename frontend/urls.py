@@ -46,6 +46,7 @@ urlpatterns = [
     path('document/journalPrompt/<str:document_name>/', views.journalPromptdocument_detail, name='journalPromptdocument'),
     path('document/assessmentQuestion<str:document_name>/', views.assessmentQuestiondocument_detail, name='assessmentQuestiondocument'),
     path('create_document/', create_document, name='create_document'),
+    path('create_tags/' , create_tags, name='create_tags'),
     path('collections/', get_all_collections, name='collections'),
     path('handle_form_submission/', handle_form_submission, name='handle_form_submission'),
     path('badges_view/', views.badges_view, name='badges_view'),

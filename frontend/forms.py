@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from api.models import Doctor, Patient
-from .models import bites
+from .models import *
 
 
 class PatientForm(ModelForm):
@@ -72,7 +72,117 @@ class LoginForm(forms.Form):
 class DocumentForm(forms.Form):
     patient_id = forms.CharField(label='Patient ID', max_length=100)
     title = forms.CharField(label='Title', max_length=100)
-    tags = forms.CharField(label='Tags', max_length=100)
+
+    TAG_CHOICES = [
+        ('tag1', ' Title'),
+        ('tag2', ' description '),
+    ]
+
+    tags = forms.ChoiceField(label='Tags', choices=TAG_CHOICES)
     content = forms.CharField(label='Content', max_length=100)
     difficulty = forms.CharField(label='Difficulty', max_length=100)
     category = forms.CharField(label='Category', max_length=100)
+
+
+
+class TagsForm(forms.ModelForm):
+      class Meta:
+        model = tags
+        fields = "__all__"
+
+
+class ActivitiesForm(forms.ModelForm):
+     class Meta:
+        model=activities
+        fields = "__all__"
+
+class AssessmentQuestionForm(forms.ModelForm):
+     class Meta:
+        model=assessmentQuestion
+        fields = "__all__"
+
+
+class BadgesForm(forms.ModelForm):
+     class Meta:
+        model=badges
+        fields = "__all__"
+
+
+class BiomarkersForm(forms.ModelForm):
+     class Meta:
+        model=biomarkers
+        fields = "__all__"
+
+class CategoriesForm(forms.ModelForm):
+     class Meta:
+        model=categories
+        fields = "__all__"
+
+
+
+class FeelingsForm(forms.ModelForm):
+     class Meta:
+        model=feelings
+        fields = "__all__"
+
+class InAppLinksForm(forms.ModelForm):
+     class Meta:
+        model=inAppLinks
+        fields = "__all__"
+
+class InquiryForm(forms.ModelForm):
+     class Meta:
+        model=inquiry
+        fields = "__all__"
+
+
+
+class ItemsForm(forms.ModelForm):
+     class Meta:
+        model=items
+        fields = "__all__"
+
+class JournalForm(forms.ModelForm):
+     class Meta:
+        model=journal
+        fields = "__all__"
+
+
+class JournalPromptForm(forms.ModelForm):
+     class Meta:
+        model=journalPrompt
+        fields = "__all__"
+
+
+class MajorAssessmentForm(forms.ModelForm):
+     class Meta:
+        model=majorAssessment
+        fields = "__all__"
+
+class PsychomarkersForm(forms.ModelForm):
+     class Meta:
+        model=psychomarkers
+        fields = "__all__"
+
+class ScenariosForm(forms.ModelForm):
+     class Meta:
+        model=scenarios
+        fields = "__all__"
+
+
+class ShortBiteForm(forms.ModelForm):
+     class Meta:
+        model=shortBite
+        fields = "__all__"
+
+
+class TriviaForm(forms.ModelForm):
+     class Meta:
+        model=trivia
+        fields = "__all__"
+
+
+class UsersForm(forms.ModelForm):
+     class Meta:
+        model=users
+        fields = "__all__"

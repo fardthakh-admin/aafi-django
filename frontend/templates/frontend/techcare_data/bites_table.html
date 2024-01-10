@@ -114,9 +114,9 @@
                 <h2>Bites Data</h2>
                 <div class="btn-group" role="group">
                     <a href="{% url 'create_document' %}"  class="btn success">Create</a>
-                    <form method="post" action="{% url 'delete_document' document_id='125544646516' %}">
+                    <form method="post" >
                         {% csrf_token %}
-                        <button type="submit" class="btn danger">Delete</button>
+
                     </form>
                 </div>
             </div>
@@ -133,7 +133,7 @@
                       {% for entry in document_data %}
                           <tr>
                               <td class="document-number">{{ forloop.counter }}</td>
-                              <td class="document-id"><a href="{% url 'document_detail' document_name=entry.name %}">{{ entry.name }}</a></td>
+                              <td class="document-id"><a href="{% url 'bitesdocument' document_name=entry.name %}">{{ entry.name }}</a></td>
                               <td class="document-title">{{ entry.data.title }}</td>
                               <td class="document-category">{{ entry.data.categories }}</td>
                            

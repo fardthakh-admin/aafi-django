@@ -14,6 +14,7 @@ from api.models import User
 from frontend.models import bites
 import logging
 from .forms import DocumentForm
+from .forms import TagsForm
 from django.http import JsonResponse
 from .models import collection
 from .models import assessmentQuestion
@@ -656,3 +657,18 @@ def usersdocument_detail(request, document_name):
 def sidebar(request):
     firestore_collections = get_firestore_collections()
     return render(request, 'sidebar.html', {'firestore_collections': firestore_collections}) 
+
+def create_tags(request):
+    if request.method == 'POST':
+        form = Tags(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+                'description': form.cleaned_data['tags'],   
+            }
+            db.collection("tags").document().set(data)  
+            return redirect('tags_view') 
+    else:
+        form = TagsForm()
+
+    return render(request, 'frontend/techcare_data/create_tags.html', {'form': form})

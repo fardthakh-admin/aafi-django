@@ -148,7 +148,7 @@ class inquiry(models.Model):
     def __str__(self):
         return self.title
 
-class Items(models.Model):
+class items(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     data = models.JSONField(default=dict)
     name = models.TextField()
