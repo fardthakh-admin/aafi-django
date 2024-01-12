@@ -33,16 +33,6 @@ class users(models.Model):
          return self.__all__
 
 
-class majorAssessment(models.Model):
-    order = models.CharField(max_length=100, default=None, blank=False, null=False)
-    title = models.CharField(max_length=100, default=None, blank=False, null=False)
-    numberOfQuestions = models.IntegerField(blank=False, null=False)
-    description = models.CharField(max_length=100, default=None, blank=False, null=False)
-
-    def __str__(self):
-        return f"Order: {self.order}, Title: {self.title}, Questions: {self.numberOfQuestions}, Description: {self.description}"
-
-
 
 class bites(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
@@ -116,17 +106,8 @@ class biomarkers(models.Model):
     def __str__(self):
           return self.__all__
 
-class assessmentQuestion(models.Model):
-    #document = models.ForeignKey(Document, related_name='assessment_questions', on_delete=models.CASCADE)
-    majorAssessment = models.ForeignKey( majorAssessment, on_delete=models.CASCADE)
-    max = models.IntegerField(default=0)
-    order = models.IntegerField(default=0)
-    points = models.IntegerField(default=0)
-    question = models.CharField(max_length=100, default=None)
 
-    def __str__(self):
-       return self.__all__
-
+ 
 class categories(models.Model):
     #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, default=None)

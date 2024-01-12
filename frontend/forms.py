@@ -96,15 +96,15 @@ class ActivitiesForm(forms.ModelForm):
         model=activities
         fields = "__all__"
 
-class AssessmentQuestionForm(forms.ModelForm):
-    # Get a list of tuples for majorAssessment choices
-    MAJOR_ASSESSMENT_CHOICES = [(obj.id, obj.title) for obj in majorAssessment.objects.all()]
+# class AssessmentQuestionForm(forms.ModelForm):
+#     # Get a list of tuples for majorAssessment choices
+#     MAJOR_ASSESSMENT_CHOICES = [(obj.id, obj.title) for obj in majorAssessment.objects.all()]
 
-    majorAssessment = forms.ChoiceField(choices=MAJOR_ASSESSMENT_CHOICES, label='Major Assessment')
+#     majorAssessment = forms.ChoiceField(choices=MAJOR_ASSESSMENT_CHOICES, label='Major Assessment')
 
-    class Meta:
-        model = assessmentQuestion
-        fields = ['majorAssessment', 'max', 'order', 'points', 'question']
+#     class Meta:
+#         model = assessmentQuestion
+#         fields = ['majorAssessment', 'max', 'order', 'points', 'question']
 
 
 class BadgesForm(forms.ModelForm):
@@ -160,10 +160,7 @@ class JournalPromptForm(forms.ModelForm):
         fields = "__all__"
 
 
-class MajorAssessmentForm(forms.ModelForm):
-     class Meta:
-        model=majorAssessment
-        fields = "__all__"
+
 
 class PsychomarkersForm(forms.ModelForm):
      class Meta:
