@@ -51,6 +51,7 @@ urlpatterns = [
     path('create_badges/', create_badges,  name='create_badges'),
     path('create_biomarkers/', create_biomarkers,  name='create_biomarkers'),
     path('create_categories/', create_categories,  name='create_categories'),
+    path('create_shortBite/', create_shortBite,  name='create_shortBite'),
     path('create_feelings/', create_feelings, name='create_feelings'),
     path('create_inAppLinks/', create_inAppLinks, name='create_inAppLinks'),
     path('create_inquiry/',create_inquiry, name='create_inquiry'),
