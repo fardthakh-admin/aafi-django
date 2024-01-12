@@ -114,7 +114,7 @@
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>inAppLinks Data</h2>
                 <div class="btn-group" role="group">
-                    <a   class="btn success">Create</a>
+                    <a  href="{% url 'create_inAppLinks'%}" class="btn success">Create</a>
                     <form method="post">
                       {% csrf_token %}
                       {% for entry in document_data %}

@@ -10,14 +10,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from api.models import User
- 
+from django.contrib.auth import get_user_model
 from frontend.models import bites
 import logging
 from .forms import DocumentForm
-from .forms import TagsForm
+from .forms import *
 from django.http import JsonResponse
 from .models import collection
-from .models import assessmentQuestion
+from .models import *
+from datetime import datetime
 
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
@@ -660,11 +661,11 @@ def sidebar(request):
 
 def create_tags(request):
     if request.method == 'POST':
-        form = Tags(request.POST)
+        form = TagsForm(request.POST)
         if form.is_valid():
             data = {
                 'title': form.cleaned_data['title'],
-                'description': form.cleaned_data['tags'],   
+                'description': form.cleaned_data['description'],   
             }
             db.collection("tags").document().set(data)  
             return redirect('tags_view') 
@@ -672,3 +673,344 @@ def create_tags(request):
         form = TagsForm()
 
     return render(request, 'frontend/techcare_data/create_tags.html', {'form': form})
+
+def create_activities(request):
+    if request.method == 'POST':
+        form = ActivitiesForm(request.POST)
+        if form.is_valid():
+            data = {
+                ' tags': form.cleaned_data[' tags'],
+                'description': form.cleaned_data['description'],   
+                 'title': form.cleaned_data['title'],
+                'duration': form.cleaned_data['duration'],  
+            }
+            db.collection("activities").document().set(data)  
+            return redirect('activities_view') 
+    else:
+        form = ActivitiesForm()
+
+    return render(request, 'frontend/techcare_data/create_activities.html', {'form': form})
+
+
+def create_assessmentQuestion(request):
+       if request.method == 'POST':
+         form = AssessmentQuestionForm(request.POST)
+         if form.is_valid():
+            data = {
+                ' majorAssessment': form.cleaned_data[' majorAssessment'],   
+                'max': form.cleaned_data['max'],
+                'order': form.cleaned_data['order'],  
+                'points': form.cleaned_data['points'],  
+                'question': form.cleaned_data['question'],  
+            }
+            db.collection("assessmentQuestion").document().set(data)  
+            return redirect('assessmentQuestion_view') 
+       else:
+           form = AssessmentQuestionForm()
+
+       return render(request, 'frontend/techcare_data/create_assessmentQuestion.html', {'form': form})
+
+
+def create_badges(request):
+       if request.method == 'POST':
+         form = BadgesForm(request.POST)
+         if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],   
+                
+            }
+            db.collection("badges").document().set(data)  
+            return redirect('badges_view') 
+       else:
+           form = BadgesForm()
+
+       return render(request, 'frontend/techcare_data/create_badges.html', {'form': form})
+
+def create_biomarkers(request):
+    if request.method == 'POST':
+        form = BiomarkersForm(request.POST)
+        if form.is_valid():
+            data = {
+                'dailyActivity': form.cleaned_data['dailyActivity'],
+                'dailyCarbs': form.cleaned_data['dailyCarbs'],
+                'sleepQuality': form.cleaned_data['sleepQuality'],
+                'time': form.cleaned_data['time'],
+                'user': form.cleaned_data['user'],
+                'weeklyActivity': form.cleaned_data['weeklyActivity'],
+                'weight': form.cleaned_data['weight'],
+                'FBS': form.cleaned_data['FBS'],
+                'HBA1c': form.cleaned_data['HBA1c'],
+                'bloodGlocose': form.cleaned_data['bloodGlocose'],
+                'bloodGlucoseType': form.cleaned_data['bloodGlucoseType'],
+            }
+            db.collection("biomarkers").document().set(data)
+            return redirect('biomarkers_view')
+    else:
+        form = BiomarkersForm()
+
+    return render(request, 'frontend/techcare_data/create_biomarkers.html', {'form': form})
+
+   
+def create_categories(request):
+       if request.method == 'POST':
+         form = CategoriesForm(request.POST)
+         if form.is_valid():
+            data = {
+                'description': form.cleaned_data['description'], 
+                'title': form.cleaned_data['title'],   
+              
+            }
+            db.collection("categories").document().set(data)  
+            return redirect('categories_view') 
+       else:
+           form = BadgesForm()
+
+       return render(request, 'frontend/techcare_data/create_categories.html', {'form': form})
+
+
+   
+def create_feelings(request):
+       if request.method == 'POST':
+         form = FeelingsForm(request.POST)
+         if form.is_valid():
+            data = {
+                ' anger': form.cleaned_data['anger'], 
+                'fear': form.cleaned_data['fear'], 
+                ' happiness': form.cleaned_data['happiness'], 
+                'joy': form.cleaned_data['joy'],   
+                ' love': form.cleaned_data['love'], 
+               'sadness': form.cleaned_data['sadness'], 
+               ' shame': form.cleaned_data['shame'], 
+                'strength': form.cleaned_data['strength'],   
+                ' time': form.cleaned_data['time'], 
+
+            }
+            db.collection("feelings").document().set(data)  
+            return redirect('feelings_view') 
+       else:
+           form = BadgesForm()
+
+       return render(request, 'frontend/techcare_data/create_feelings.html', {'form': form})
+
+
+def create_inAppLinks(request):
+    if request.method == 'POST':
+        form = InAppLinksForm(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+                'description': form.cleaned_data['description'],
+                'order': form.cleaned_data['order'],
+                'type': form.cleaned_data['type'],
+                
+            }
+            db.collection("inAppLinks").document().set(data)  
+            return redirect('inAppLinks_view') 
+    else:
+        form = InAppLinksForm()
+
+        
+    return render(request, 'frontend/techcare_data/create_inAppLinks.html', {'form': form})
+from django.contrib.auth import get_user_model
+
+from django.contrib.auth import get_user_model
+
+def create_inquiry(request):
+    if request.method == 'POST':
+        form = InquiryForm(request.POST)
+        if form.is_valid():
+            # Get the User object
+            user_id = form.cleaned_data['user'].id  # Extract the user ID
+
+            # Create the data to be saved in Firestore
+            data = {
+                'question': form.cleaned_data['question'],
+                'answer': form.cleaned_data['answer'],
+                'topic': form.cleaned_data['topic'],
+                'user': user_id,
+                'time': form.cleaned_data['time'],
+            }
+
+            # Save the data to Firestore
+            db.collection("inquiry").document().set(data)  
+
+            return redirect('inquiry_view') 
+    else:
+        form = InquiryForm()
+
+    return render(request, 'frontend/techcare_data/create_inquiry.html', {'form': form})
+
+
+
+
+def create_journal(request):
+    if request.method == 'POST':
+        form = JournalForm(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+                'description': form.cleaned_data['description'],
+              
+            }
+            db.collection("journal").document().set(data)  
+            return redirect('journal_view') 
+    else:
+        form = JournalForm()
+
+        
+    return render(request, 'frontend/techcare_data/create_journal.html', {'form': form})
+
+
+def create_journalPrompt(request):
+    if request.method == 'POST':
+        form = JournalPromptForm(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+              
+            }
+            db.collection("journalPrompt").document().set(data)  
+            return redirect('journalPrompt_view') 
+    else:
+        form = JournalPromptForm()
+
+        
+    return render(request, 'frontend/techcare_data/create_journalPrompt.html', {'form': form})
+
+
+
+def create_majorAssessment(request):
+    if request.method == 'POST':
+        form = MajorAssessmentForm(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+                'numberOfQuestions': form.cleaned_data['numberOfQuestions'],
+                'description': form.cleaned_data['description'],
+                'order': form.cleaned_data['order'],  # Removed the space before 'order'
+            }
+            db.collection("majorAssessment").document().set(data)  
+            return redirect('majorAssessment_view') 
+    else:
+        form = MajorAssessmentForm()
+
+    return render(request, 'frontend/techcare_data/create_majorAssessment.html', {'form': form})
+
+def create_psychomarkers(request):
+    if request.method == 'POST':
+        form = PsychomarkersForm(request.POST)
+        if form.is_valid():
+            user_id = form.cleaned_data['user'].id
+            data = {
+                'time': form.cleaned_data['time'],
+                'user': user_id,  # Assuming 'user' is a ForeignKey in your model, use the user_id
+                'depression': form.cleaned_data['depression'],
+            }
+            db.collection("psychomarkers").document().set(data)
+            return redirect('psychomarkers_view')
+        else:
+            form = PsychomarkersForm()
+
+    return render(request, 'frontend/techcare_data/create_psychomarkers.html', {'form': form})
+
+def create_scenarios(request):
+    if request.method == 'POST':
+        form = ScenariosForm(request.POST)
+        if form.is_valid():
+            data = {
+                'PositiveCorrectionAlternative': form.cleaned_data['PositiveCorrectionAlternative'],
+                'actionreply': form.cleaned_data['actionreply'],
+                'correction': form.cleaned_data['correction'],
+                'positiveActionReply': form.cleaned_data['positiveActionReply'],
+                'title': form.cleaned_data['title'],
+            }
+            db.collection("scenarios").document().set(data)
+            return redirect('scenarios_view')
+    else:
+        form = ScenariosForm()
+
+    return render(request, 'frontend/techcare_data/create_scenarios.html', {'form': form})
+
+
+    
+def create_shortBite(request):
+    if request.method == 'POST':
+        form = ShortBiteForm(request.POST)
+        if form.is_valid():
+            data = {
+                'order': form.cleaned_data['order'],
+                'title': form.cleaned_data['title'],
+            }
+            db.collection("shortBite").document().set(data)
+            return redirect('shortBite_view')
+    else:
+        form = ShortBiteForm()
+
+    return render(request, 'frontend/techcare_data/create_shortBite.html', {'form': form})
+
+
+def create_trivia(request):
+    if request.method == 'POST':
+        form = TriviaForm(request.POST)
+        if form.is_valid():
+            data = {
+                'CBT_points': form.cleaned_data['CBT_points'],
+                'answer_1': form.cleaned_data['answer_1'],
+                'answer_2': form.cleaned_data['answer_2'],
+                'answer_3': form.cleaned_data['answer_3'],
+                'correct_answer': form.cleaned_data['correct_answer'],
+                'description': form.cleaned_data['description'],
+                'explanation': form.cleaned_data['explanation'],
+                'image': form.cleaned_data['image'],
+                'learning_points': form.cleaned_data['learning_points'],
+                'order': form.cleaned_data['order'],
+                'question': form.cleaned_data['question'],
+                'topic': form.cleaned_data['topic'],
+                
+            }
+            db.collection("trivia").document().set(data)
+            return redirect('trivia_view')
+    else:
+        form = TriviaForm()
+
+    return render(request, 'frontend/techcare_data/create_trivia.html', {'form': form})
+
+
+from datetime import datetime
+
+def create_users(request):
+    if request.method == 'POST':
+        form = UsersForm(request.POST)
+        if form.is_valid():
+            data = {
+                'uid': form.cleaned_data['uid'],
+                'gender': form.cleaned_data['gender'],
+                'email': form.cleaned_data['email'],
+                'display_name': form.cleaned_data['display_name'],
+                'created_time': datetime.now(),  
+            }
+            db.collection("users").document().set(data)
+            return redirect('users_view')
+    else:
+        form = UsersForm()
+
+    return render(request, 'frontend/techcare_data/create_users.html', {'form': form})
+
+
+def create_items(request):
+    if request.method == 'POST':
+        form = ItemsForm(request.POST)
+        if form.is_valid():
+            item_instance = items(
+                data_title=form.cleaned_data['data_title'],
+                name=form.cleaned_data['name'],
+                data_categories=form.cleaned_data['data_categories'],
+               
+            )
+            item_instance.save()
+            
+            return redirect('items_view')
+    else:
+        form = ItemsForm()
+
+    return render(request, 'frontend/techcare_data/create_items.html', {'form': form})

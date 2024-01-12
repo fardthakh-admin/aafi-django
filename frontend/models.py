@@ -12,16 +12,40 @@ class Document(models.Model):
         return self.title
 
 class tags(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, default=None)
     image = models.TextField()
     title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+          return self.__all__
+
+
+class users(models.Model):
+  #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    email = models.TextField()
+    created_time = models.DateTimeField(auto_now_add=True)
+    gender = models.CharField(max_length=100, default=None)
+    uid = models.CharField(max_length=100, default=None)
+    display_name = models.CharField(max_length=100, default=None)
+
+    def __str__(self):
+         return self.__all__
+
+
+class majorAssessment(models.Model):
+    order = models.CharField(max_length=100, default=None, blank=False, null=False)
+    title = models.CharField(max_length=100, default=None, blank=False, null=False)
+    numberOfQuestions = models.IntegerField(blank=False, null=False)
+    description = models.CharField(max_length=100, default=None, blank=False, null=False)
+
+    def __str__(self):
+        return f"Order: {self.order}, Title: {self.title}, Questions: {self.numberOfQuestions}, Description: {self.description}"
+
+
 
 class bites(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+  #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
     categories = models.CharField(max_length=100)
     content = models.TextField()
     difficulty = models.IntegerField()
@@ -29,7 +53,7 @@ class bites(models.Model):
     title = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.title
+          return self.__all__
 
 class collection(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
@@ -42,7 +66,7 @@ class collection(models.Model):
     feelings = models.CharField(max_length=100, default=None)
     inAppLinks = models.CharField(max_length=100, default=None)
     inquiry = models.CharField(max_length=100, default=None)
-    item = models.CharField(max_length=100, default=None)
+    items = models.CharField(max_length=100, default=None)
     journal = models.CharField(max_length=100, default=None)
     journalPrompt = models.CharField(max_length=100, default=None)
     majorAssessment = models.CharField(max_length=100, default=None)
@@ -53,10 +77,10 @@ class collection(models.Model):
     users = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+         return self.__all__
         
 class activities(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     description = models.CharField(max_length=100, default=timezone.now)
     duration = models.IntegerField(default=0)   
@@ -65,18 +89,18 @@ class activities(models.Model):
 
 
 def __str__(self):
-        return self.title
+         return self.__all__
 
 
 class badges(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.title
+      return self.__all__
 
 class biomarkers(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     bloodGlucose = models.IntegerField(default=0)
     bloodGlucoseType = models.CharField(max_length=100, default=None)
     dailyActivity = models.IntegerField(default=0)
@@ -90,29 +114,29 @@ class biomarkers(models.Model):
     HBA1c = models.IntegerField(default=0)
 
     def __str__(self):
-         return f"{self.user.username}'s Biomarkers"
+          return self.__all__
 
 class assessmentQuestion(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    majorAssessment = models.CharField(max_length=100)
+    #document = models.ForeignKey(Document, related_name='assessment_questions', on_delete=models.CASCADE)
+    majorAssessment = models.ForeignKey( majorAssessment, on_delete=models.CASCADE)
     max = models.IntegerField(default=0)
     order = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
     question = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+       return self.__all__
 
 class categories(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, default=None)
     title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+       return self.__all__
 
 class feelings(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     anger = models.BooleanField(default=False)
     fear = models.BooleanField(default=False)
     happiness = models.BooleanField(default=False)
@@ -125,20 +149,20 @@ class feelings(models.Model):
     time =  models.DateTimeField(default=datetime.now)
 
     def __str__(self):
-        return self.title
+        return self.__all__
 
 class inAppLinks(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, default=None)
     order = models.TextField()
     type = models.TextField()
     title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+        return self.__all__
 
 class inquiry(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     answer = models.CharField(max_length=100)
     question = models.TextField()
     time = models.DateTimeField(default=datetime.now)
@@ -146,49 +170,43 @@ class inquiry(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.title
+          return self.__all__
 
 class items(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    data = models.JSONField(default=dict)
-    name = models.TextField()
+    name = models.CharField(max_length=255,default=None)
+    data_title = models.CharField(max_length=255,default=None)
+    data_categories = models.CharField(max_length=255,default=None)
 
     def __str__(self):
-        return self.name
+        return self__all__
+
 
 class journal(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     description = models.CharField(max_length=100, default=None)
     title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+         return self.__all__
 
 class journalPrompt(models.Model):
     title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+         return self.__all__
 
-class majorAssessment(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    order = models.CharField(max_length=100, default=None)
-    title = models.CharField(max_length=100, default=None)
-
-    def __str__(self):
-        return self.title
 
 class psychomarkers(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     time =  models.DateTimeField(default=datetime.now)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     depression = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.title
+          return self.__all__
 
 class scenarios(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     PositiveCorrectionAlternative = models.CharField(max_length=100, default=None)
     actionreply = models.TextField()
     correction = models.TextField()
@@ -196,15 +214,15 @@ class scenarios(models.Model):
     title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+        return self.__all__
 
 class trivia(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+  #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    CBT_points = models.IntegerField(default=0)
+    answer_1 = models.CharField(max_length=100, default=None)
     answer_2 = models.CharField(max_length=100, default=None)
     answer_3 = models.TextField()
-    CBT_points = models.IntegerField(default=0)
     correct_answer = models.IntegerField(default=0)
-    answer_1 = models.CharField(max_length=100, default=None)
     description = models.CharField(max_length=100, default=None)
     explanation = models.CharField(max_length=100, default=None)
     image = models.CharField(max_length=100, default=None)
@@ -214,14 +232,14 @@ class trivia(models.Model):
     topic = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+         return self.__all__
 
-class users(models.Model):
-    document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    email = models.TextField()
-    created_time = models.DateTimeField(auto_now_add=True)
-    gender = models.CharField(max_length=100, default=None)
-    uid = models.CharField(max_length=100, default=None)
+
+
+class shortBite(models.Model):
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    order= order = models.IntegerField(default=0)
+    title = models.CharField(max_length=100, default=None)
 
     def __str__(self):
-        return self.title
+         return self.__all__
