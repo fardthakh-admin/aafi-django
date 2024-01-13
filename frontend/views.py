@@ -997,19 +997,26 @@ def create_users(request):
     return render(request, 'frontend/techcare_data/create_users.html', {'form': form})
 
 
+
 def create_items(request):
     if request.method == 'POST':
         form = ItemsForm(request.POST)
         if form.is_valid():
-            item_instance = items(
-                data_title=form.cleaned_data['data_title'],
-                name=form.cleaned_data['name'],
-                data_categories=form.cleaned_data['data_categories'],
-               
-            )
-            item_instance.save()
-            
-            return redirect('items_view')
+            name = form.cleaned_data['name']
+            data_title = form.cleaned_data['data']['title']
+            data_categories = form.cleaned_data['data']['categories']
+
+            data = {
+                'name': name,
+                'data': {
+                    'hi': data_title,
+                    'hi': data_categories,
+                },
+            }
+
+            db.collection("items").document().set(data)
+            return redirect('users_view')
+         
     else:
         form = ItemsForm()
 

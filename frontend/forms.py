@@ -4,6 +4,7 @@ from api.models import Doctor, Patient
 from .models import *
 
 
+
 class PatientForm(ModelForm):
     GENDER_CHOICES = [
         ('Female', 'Female'),
@@ -142,11 +143,19 @@ class InquiryForm(forms.ModelForm):
         fields = "__all__"
 
 
-
 class ItemForm(forms.ModelForm):
     class Meta:
+        model = Item
+        fields = ['title', 'categories']
+
+
+
+class ItemsForm(forms.ModelForm):
+      data = ItemForm()
+
+      class Meta:
         model = items
-        fields = ['name', 'data_title', 'data_categories']
+        fields = ['data', 'name']
 
 class JournalForm(forms.ModelForm):
      class Meta:

@@ -153,10 +153,17 @@ class inquiry(models.Model):
     def __str__(self):
           return self.__all__
 
+
+class Item(models.Model):
+    title = models.CharField(max_length=255)
+    categories = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.title} - {self.categories}"
+
 class items(models.Model):
     name = models.CharField(max_length=255,default=None)
-    data_title = models.CharField(max_length=255,default=None)
-    data_categories = models.CharField(max_length=255,default=None)
+    data = models.OneToOneField(Item, default=None,on_delete=models.CASCADE)
 
     def __str__(self):
         return self__all__
