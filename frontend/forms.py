@@ -97,15 +97,6 @@ class ActivitiesForm(forms.ModelForm):
         model=activities
         fields = "__all__"
 
-# class AssessmentQuestionForm(forms.ModelForm):
-#     # Get a list of tuples for majorAssessment choices
-#     MAJOR_ASSESSMENT_CHOICES = [(obj.id, obj.title) for obj in majorAssessment.objects.all()]
-
-#     majorAssessment = forms.ChoiceField(choices=MAJOR_ASSESSMENT_CHOICES, label='Major Assessment')
-
-#     class Meta:
-#         model = assessmentQuestion
-#         fields = ['majorAssessment', 'max', 'order', 'points', 'question']
 
 
 class BadgesForm(forms.ModelForm):
@@ -142,20 +133,34 @@ class InquiryForm(forms.ModelForm):
         model=inquiry
         fields = "__all__"
 
+class MajorAssessmentForm(forms.ModelForm):
+     class Meta:
+        model=majorAssessment
+        fields = "__all__"
 
-class ItemForm(forms.ModelForm):
-    class Meta:
-        model = Item
-        fields = ['title', 'categories']
-
-
-
-class ItemsForm(forms.ModelForm):
-      data = ItemForm()
-
+class AssessmentQuestionForm(forms.ModelForm):
       class Meta:
-        model = items
-        fields = ['data', 'name']
+        model=assessmentQuestion
+        fields = "__all__"
+
+
+# # class ItemsForm(forms.ModelForm):
+# #     class Meta:
+# #         model = items
+# # #         fields = ['name', 'data']
+
+# #     title = forms.CharField(max_length=100, required=False)
+# #     categories = forms.CharField(max_length=100, required=False)
+
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         title = cleaned_data.get('title')
+#         categories = cleaned_data.get('categories')
+        
+#         if title is not None or categories is not None:
+#             cleaned_data['data'] = {'title': title, 'categories': categories}
+#         return cleaned_data
+
 
 class JournalForm(forms.ModelForm):
      class Meta:

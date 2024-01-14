@@ -264,7 +264,6 @@ def handle_form_submission(request):
 
 
 def activities_view(request):
-    db = firestore.client()
     db = firestore.Client()
     collection = db.collection("activities")
     documents = collection.stream()
@@ -997,26 +996,45 @@ def create_users(request):
     return render(request, 'frontend/techcare_data/create_users.html', {'form': form})
 
 
+# def create_items(request):
+#     if request.method == 'POST':
+#         form = ItemsForm(request.POST)
+#         if form.is_valid():
+#             item_instance = items(
+#                 data_title=form.cleaned_data['data_title'],
+#                 name=form.cleaned_data['name'],
+#                 data_categories=form.cleaned_data['data_categories'],
+               
+#             )
+#             item_instance.save()
+            
+#             return redirect('items_view')
+#     else:
+#         form = ItemsForm()
 
+#     return render(request, 'frontend/techcare_data/create_items.html', {'form': form})
 def create_items(request):
     if request.method == 'POST':
         form = ItemsForm(request.POST)
         if form.is_valid():
+            # Extract form data
             name = form.cleaned_data['name']
-            data_title = form.cleaned_data['data']['title']
-            data_categories = form.cleaned_data['data']['categories']
+            data_title = form.cleaned_data['data_title']
+            data_categories = form.cleaned_data['data_categories']
 
+            # Create a dictionary for the data
             data = {
                 'name': name,
                 'data': {
-                    'hi': data_title,
-                    'hi': data_categories,
-                },
+                    'title': data_title,
+                    'categories': data_categories,
+                }
             }
 
-            db.collection("items").document().set(data)
-            return redirect('users_view')
-         
+            # Add the data to the Firestore collection
+            db.collection("items").add(data)
+
+            return redirect('items_view')
     else:
         form = ItemsForm()
 

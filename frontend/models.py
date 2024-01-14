@@ -20,6 +20,12 @@ class tags(models.Model):
     def __str__(self):
           return self.__all__
 
+class majorAssessment(models.Model):
+     description = models.CharField(max_length=100, default=None)
+     numberOfQuestions = models.IntegerField()
+     order = models.IntegerField()
+     title = models.CharField(max_length=100, default=None)
+ 
 
 class users(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
@@ -80,6 +86,13 @@ class activities(models.Model):
 
 def __str__(self):
          return self.__all__
+
+class assessmentQuestion(models.Model):
+    majorAssessment = models.ForeignKey(majorAssessment, on_delete=models.CASCADE, default=1)
+    max= models.IntegerField(default=0) 
+    order= models.IntegerField(default=0)   
+    points= models.IntegerField(default=0)  
+    question = models.CharField(max_length=100)
 
 
 class badges(models.Model):
@@ -153,20 +166,11 @@ class inquiry(models.Model):
     def __str__(self):
           return self.__all__
 
-
-class Item(models.Model):
+class items(models.Model):
     title = models.CharField(max_length=255)
+    data= models.CharField(max_length=255)
     categories = models.CharField(max_length=255)
 
-    def __str__(self):
-        return f"{self.title} - {self.categories}"
-
-class items(models.Model):
-    name = models.CharField(max_length=255,default=None)
-    data = models.OneToOneField(Item, default=None,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self__all__
 
 
 class journal(models.Model):
