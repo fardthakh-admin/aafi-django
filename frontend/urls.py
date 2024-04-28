@@ -25,6 +25,7 @@ urlpatterns = [
    # FIRESTORE PAGES
     path('bites_view/', views.bites_view, name='bites_view'),
     path('activities_view/', views.activities_view, name='activities_view'),
+    path('assets_view/', views.assets_view, name='assets_view'),
     path('bites_table/', views.bites_view, name='bites_table'),
     path('document/bites/<str:document_name>/', views.bitesdocument_detail, name='bitesdocument'),
     path('document/activities/<str:document_name>/', views.activitiesdocument_detail, name='activitiesdocument'),

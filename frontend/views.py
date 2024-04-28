@@ -19,6 +19,7 @@ from django.http import JsonResponse
 from .models import collection
 from .models import *
 from datetime import datetime
+from .models import tags
 
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
@@ -52,7 +53,6 @@ def logout_page(request):
 def login_page(request):
     page = 'login'
 
-    # to restrict the user from visiting login page url if he is logged in
     if request.user.is_authenticated:
         if request.user.is_patient():
             return redirect('patient-homepage')
@@ -68,7 +68,7 @@ def login_page(request):
         except:
             messages.error(request, 'User does not exist')
 
-        if user is not None and not user.is_active:
+        if request.user is not None and request.user.is_authenticated:
             messages.error(request, 'Your account is still pending approval.')
         else:
             user = authenticate(request, username=username, password=password)
@@ -181,8 +181,12 @@ def bites_view(request):
     collection = db.collection("bites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/bites_table.html', context)
+    form = BitesForm()   
+    db = firestore.client()
+    collection = db.collection("tags")
+    documents = collection.stream()
+    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
 
 def bitesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -199,28 +203,28 @@ def bitesdocument_detail(request, document_name):
 
 def create_document(request):
     if request.method == 'POST':
-        form = DocumentForm(request.POST)
+        form = BitesForm(request.POST)
         if form.is_valid():
             data = {
                 'title': form.cleaned_data['title'],
-                'tags': form.cleaned_data['tags'],
+                'tags': request.POST.get('tags'),
                 'difficulty': form.cleaned_data['difficulty'],
-                'category': form.cleaned_data['category'],
+                'categories': form.cleaned_data['categories'],
                 'content': form.cleaned_data['content'],
             }
             db.collection("bites").document().set(data)  
+            messages.success(request, 'Successfully created Bites.')  
             return redirect('bites_view') 
-    else:
-        form = DocumentForm()
+        else:
+            messages.error(request, 'Error creating Bites. Please check your input.')
+            return redirect('bites_view') 
 
-    return render(request, 'frontend/techcare_data/create_document.html', {'form': form})
 
 
 def get_all_collections(request):
     db = firestore.client()
     all_collections = [collection.id for collection in db.collections()]
-
-    return render(request, 'frontend/techcare_data/collections.html', {'collections': all_collections})
+    return {'collections': all_collections}
 
 def handle_form_submission(request):
     try:
@@ -249,7 +253,6 @@ def handle_form_submission(request):
 
             }
 
-            # Check if the selected collection is in the dictionary
             if selected_collection in collection_views:
                 # If yes, redirect to the corresponding view
                 return redirect(collection_views[selected_collection])
@@ -268,8 +271,24 @@ def activities_view(request):
     collection = db.collection("activities")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/activities_table.html', context)
+    form = ActivitiesForm()   
+    db = firestore.client()
+    collection = db.collection("tags")
+    documents = collection.stream()
+    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/activities_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
+
+def assets_view(request):
+    db = firestore.Client()
+    collection = db.collection("assets")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    form = ActivitiesForm()   
+    db = firestore.client()
+    collection = db.collection("tags")
+    documents = collection.stream()
+    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/activities_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
 
 
 def activitiesdocument_detail(request, document_name):
@@ -290,8 +309,8 @@ def badges_view(request):
     collection = db.collection("badges")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/badges_table.html', context)
+    form = BadgesForm() 
+    return render(request, 'frontend/techcare_data/badges_table.html', {'form': form, 'document_data': document_data})
 
 def badgesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -311,8 +330,13 @@ def biomarkers_view(request):
     collection = db.collection("biomarkers")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/biomarkers_table.html', context)
+
+    form = BiomarkersForm()   
+    db = firestore.client()
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/biomarkers_table.html', {'form': form, 'users_data': users_data ,'document_data': document_data})
 
 def biomarkersdocument_detail(request, document_name):
     db = firestore.Client()
@@ -333,8 +357,11 @@ def assessmentQuestion_view(request):
     collection = db.collection("assessmentQuestion")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/assessmentQuestion_table.html', context)
+    form = AssessmentQuestionForm()
+    collection2 = db.collection("majorAssessment")
+    documents2 = collection2.stream()
+    majorAssessment = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents2]
+    return render(request, 'frontend/techcare_data/assessmentQuestion_table.html', {'form': form, 'majorAssessment': majorAssessment, 'document_data': document_data})
 
 def assessmentQuestiondocument_detail(request, document_name):
     db = firestore.Client()
@@ -354,8 +381,8 @@ def categories_view(request):
     collection = db.collection("categories")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/categories_table.html', context)
+    form = CategoriesForm()
+    return render(request, 'frontend/techcare_data/categories_table.html', {'document_data': document_data, 'form': form})
 
 def categoriesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -375,8 +402,11 @@ def feelings_view(request):
     collection = db.collection("feelings")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/feelings_table.html', context)
+    form = FeelingsForm()
+    collection2 = db.collection("user")
+    documents2 = collection2.stream()
+    feelings = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents2]
+    return render(request, 'frontend/techcare_data/feelings_table.html', {'form': form, 'feelings': feelings, 'document_data': document_data})
 
 def feelingsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -396,8 +426,8 @@ def inAppLinks_view(request):
     collection = db.collection("inAppLinks")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/inAppLinks_table.html', context)
+    form = InAppLinksForm()
+    return render(request, 'frontend/techcare_data/inAppLinks_table.html', {'document_data': document_data, 'form': form})
 
 def inAppLinksdocument_detail(request, document_name):
     db = firestore.Client()
@@ -417,8 +447,11 @@ def inquiry_view(request):
     collection = db.collection("inquiry")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/inquiry_table.html', context)
+    form = InquiryForm()
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/inquiry_table.html', {'document_data': document_data, 'form': form, 'users_data': users_data})
 
 def inquirydocument_detail(request, document_name):
     db = firestore.Client()
@@ -439,8 +472,8 @@ def items_view(request):
     collection = db.collection("items")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/items_table.html', context)
+    form = ItemsForm()
+    return render(request, 'frontend/techcare_data/items_table.html', {'document_data': document_data, 'form': form})
 
 def itemsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -460,8 +493,8 @@ def journal_view(request):
     collection = db.collection("journal")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/journal_table.html', context)
+    form = JournalForm()
+    return render(request, 'frontend/techcare_data/journal_table.html', {'document_data': document_data, 'form': form})
 
 def journaldocument_detail(request, document_name):
     db = firestore.Client()
@@ -481,8 +514,8 @@ def journalPrompt_view(request):
     collection = db.collection("journalPrompt")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/journalPrompt_table.html', context)
+    form = JournalForm()
+    return render(request, 'frontend/techcare_data/journalPrompt_table.html', {'document_data': document_data, 'form': form})
     
 def journalPromptdocument_detail(request, document_name):
     db = firestore.Client()
@@ -502,8 +535,8 @@ def majorAssessment_view(request):
     collection = db.collection("majorAssessment")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/majorAssessment_table.html', context)
+    form = MajorAssessmentForm()
+    return render(request, 'frontend/techcare_data/majorAssessment_table.html', {'document_data': document_data, 'form': form})
 
 def majorAssessmentdocument_detail(request, document_name):
     db = firestore.Client()
@@ -525,8 +558,11 @@ def psychomarkers_view(request):
     collection = db.collection("psychomarkers")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/psychomarkers_table.html', context)
+    form = PsychomarkersForm()
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/psychomarkers_table.html',{'document_data': document_data, 'form': form, 'users_data': users_data} )
 
 def psychomarkersdocument_detail(request, document_name):
     db = firestore.Client()
@@ -546,8 +582,8 @@ def scenarios_view(request):
     collection = db.collection("scenarios")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/scenarios_table.html', context)
+    form = ScenariosForm()
+    return render(request, 'frontend/techcare_data/scenarios_table.html', {'document_data': document_data , 'form': form})
 
 def scenariosdocument_detail(request, document_name):
     db = firestore.Client()
@@ -570,8 +606,8 @@ def shortBite_view(request):
     collection = db.collection("shortBite")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/shortBite_table.html', context)
+    form = ShortBiteForm()
+    return render(request, 'frontend/techcare_data/shortBite_table.html', {'document_data': document_data, 'form': form})
     
 def shortBitedocument_detail(request, document_name):
     db = firestore.Client()
@@ -591,8 +627,8 @@ def tags_view(request):
     collection = db.collection("tags")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/tags_table.html', context)
+    form = TagsForm()
+    return render(request, 'frontend/techcare_data/tags_table.html', {'document_data': document_data, 'form': form})
 
 def tagsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -613,8 +649,8 @@ def trivia_view(request):
     collection = db.collection("trivia")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/trivia_table.html', context)
+    form = TriviaForm()
+    return render(request, 'frontend/techcare_data/trivia_table.html', {'document_data': document_data, 'form': form})
 
 def triviadocument_detail(request, document_name):
     db = firestore.Client()
@@ -635,8 +671,8 @@ def users_view(request):
     collection = db.collection("users")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'document_data': document_data}
-    return render(request, 'frontend/techcare_data/users_table.html', context)
+    form = UsersForm()
+    return render(request, 'frontend/techcare_data/users_table.html', {'document_data': document_data, 'form': form})
 
 
 def usersdocument_detail(request, document_name):
@@ -667,47 +703,52 @@ def create_tags(request):
                 'description': form.cleaned_data['description'],   
             }
             db.collection("tags").document().set(data)  
-            return redirect('tags_view') 
-    else:
-        form = TagsForm()
-
-    return render(request, 'frontend/techcare_data/create_tags.html', {'form': form})
+            messages.success(request, 'Success Creating Tags.')
+            return redirect('tags_view')
+        else:
+             messages.error(request, 'Error creating Tags. Please check your input.')
+             return redirect('tags_view')
 
 def create_activities(request):
     if request.method == 'POST':
         form = ActivitiesForm(request.POST)
         if form.is_valid():
             data = {
-                ' tags': form.cleaned_data[' tags'],
-                'description': form.cleaned_data['description'],   
-                 'title': form.cleaned_data['title'],
-                'duration': form.cleaned_data['duration'],  
+                'tags': request.POST.get('tags'),
+                'description': form.cleaned_data['description'],
+                'title': form.cleaned_data['title'],
+                'duration': form.cleaned_data['duration'],
             }
-            db.collection("activities").document().set(data)  
-            return redirect('activities_view') 
-    else:
-        form = ActivitiesForm()
-
-    return render(request, 'frontend/techcare_data/create_activities.html', {'form': form})
-
+            db = firestore.client()
+            db.collection("activities").document().set(data)
+            messages.success(request, 'Success Creating Activity.')
+            return redirect('activities_view')
+        else:
+             messages.error(request, 'Error creating activity. Please check your input.')
+             return redirect('activities_view')
+        
 
 def create_assessmentQuestion(request):
-       if request.method == 'POST':
-         form = AssessmentQuestionForm(request.POST)
-         if form.is_valid():
+    if request.method == 'POST':
+        form = AssessmentQuestionForm(request.POST)
+        if form.is_valid():
             data = {
-                ' majorAssessment': form.cleaned_data[' majorAssessment'],   
+                'majorAssessment': request.POST.get('majorAssessment'),   
                 'max': form.cleaned_data['max'],
                 'order': form.cleaned_data['order'],  
                 'points': form.cleaned_data['points'],  
                 'question': form.cleaned_data['question'],  
             }
-            db.collection("assessmentQuestion").document().set(data)  
+            db = firestore.client()
+            db.collection("assessmentQuestion").document().set(data)
+            messages.success(request, 'Successfully created Assessment Question.')  
             return redirect('assessmentQuestion_view') 
-       else:
-           form = AssessmentQuestionForm()
+        else:
+            messages.error(request, 'Error creating Assessment Question. Please check your input.')
+            return redirect('assessmentQuestion_view') 
 
-       return render(request, 'frontend/techcare_data/create_assessmentQuestion.html', {'form': form})
+
+
 
 
 def create_badges(request):
@@ -716,14 +757,13 @@ def create_badges(request):
          if form.is_valid():
             data = {
                 'title': form.cleaned_data['title'],   
-                
             }
             db.collection("badges").document().set(data)  
+            messages.success(request, 'Successfully created Badges View.')  
             return redirect('badges_view') 
-       else:
-           form = BadgesForm()
-
-       return render(request, 'frontend/techcare_data/create_badges.html', {'form': form})
+         else:
+            messages.error(request, 'Error creating Badges View. Please check your input.')
+            return redirect('badges_view') 
 
 def create_biomarkers(request):
     if request.method == 'POST':
@@ -734,38 +774,37 @@ def create_biomarkers(request):
                 'dailyCarbs': form.cleaned_data['dailyCarbs'],
                 'sleepQuality': form.cleaned_data['sleepQuality'],
                 'time': form.cleaned_data['time'],
-                'user': form.cleaned_data['user'],
+                'user_id': request.POST.get('user_id'),
                 'weeklyActivity': form.cleaned_data['weeklyActivity'],
                 'weight': form.cleaned_data['weight'],
                 'FBS': form.cleaned_data['FBS'],
                 'HBA1c': form.cleaned_data['HBA1c'],
-                'bloodGlocose': form.cleaned_data['bloodGlocose'],
+                'bloodGlucose': form.cleaned_data['bloodGlucose'],
                 'bloodGlucoseType': form.cleaned_data['bloodGlucoseType'],
             }
             db.collection("biomarkers").document().set(data)
-            return redirect('biomarkers_view')
-    else:
-        form = BiomarkersForm()
+            messages.success(request, 'Successfully created Biomarkers View.')  
+            return redirect('biomarkers_view') 
+        else:
+            messages.error(request, 'Error creating Biomarkers View. Please check your input.')
+            return redirect('biomarkers_view') 
 
-    return render(request, 'frontend/techcare_data/create_biomarkers.html', {'form': form})
 
    
 def create_categories(request):
-       if request.method == 'POST':
-         form = CategoriesForm(request.POST)
-         if form.is_valid():
+    if request.method == 'POST':
+        form = CategoriesForm(request.POST)
+        if form.is_valid():
             data = {
                 'description': form.cleaned_data['description'], 
                 'title': form.cleaned_data['title'],   
-              
             }
             db.collection("categories").document().set(data)  
+            messages.success(request, 'Successfully created Categories.')
             return redirect('categories_view') 
-       else:
-           form = BadgesForm()
-
-       return render(request, 'frontend/techcare_data/create_categories.html', {'form': form})
-
+        else:
+            messages.error(request, 'Error creating Categories. Please check your input.')
+            return redirect('categories_view') 
 
    
 def create_feelings(request):
@@ -773,24 +812,23 @@ def create_feelings(request):
          form = FeelingsForm(request.POST)
          if form.is_valid():
             data = {
-                ' anger': form.cleaned_data['anger'], 
+                'anger': form.cleaned_data['anger'], 
                 'fear': form.cleaned_data['fear'], 
-                ' happiness': form.cleaned_data['happiness'], 
+                'happiness': form.cleaned_data['happiness'], 
                 'joy': form.cleaned_data['joy'],   
-                ' love': form.cleaned_data['love'], 
+                'love': form.cleaned_data['love'], 
                'sadness': form.cleaned_data['sadness'], 
-               ' shame': form.cleaned_data['shame'], 
+               'shame': form.cleaned_data['shame'], 
                 'strength': form.cleaned_data['strength'],   
-                ' time': form.cleaned_data['time'], 
+                # 'time': form.cleaned_data['time'], 
 
             }
             db.collection("feelings").document().set(data)  
+            messages.success(request, 'Successfully created Feelings.')
             return redirect('feelings_view') 
-       else:
-           form = BadgesForm()
-
-       return render(request, 'frontend/techcare_data/create_feelings.html', {'form': form})
-
+         else:
+            messages.error(request, 'Error creating Feelings. Please check your input.')
+            return redirect('feelings_view') 
 
 def create_inAppLinks(request):
     if request.method == 'POST':
@@ -803,10 +841,12 @@ def create_inAppLinks(request):
                 'type': form.cleaned_data['type'],
                 
             }
-            db.collection("inAppLinks").document().set(data)  
+            db.collection("inAppLinks").document().set(data)
+            messages.success(request, 'Successfully created inAppLinks.')  
             return redirect('inAppLinks_view') 
-    else:
-        form = InAppLinksForm()
+        else:
+            messages.error(request, 'Error creating inAppLinks. Please check your input.')
+            return redirect('inAppLinks_view')
 
         
     return render(request, 'frontend/techcare_data/create_inAppLinks.html', {'form': form})
@@ -818,27 +858,23 @@ def create_inquiry(request):
     if request.method == 'POST':
         form = InquiryForm(request.POST)
         if form.is_valid():
-            # Get the User object
-            user_id = form.cleaned_data['user'].id  # Extract the user ID
 
-            # Create the data to be saved in Firestore
             data = {
                 'question': form.cleaned_data['question'],
                 'answer': form.cleaned_data['answer'],
                 'topic': form.cleaned_data['topic'],
-                'user': user_id,
-                'time': form.cleaned_data['time'],
+                'user': request.POST.get('user_id'),
+                'time': timezone.now(),
             }
 
             # Save the data to Firestore
             db.collection("inquiry").document().set(data)  
 
-            return redirect('inquiry_view') 
-    else:
-        form = InquiryForm()
-
-    return render(request, 'frontend/techcare_data/create_inquiry.html', {'form': form})
-
+            messages.success(request, 'Successfully created Inquiry.') 
+            return redirect('inquiry_view')
+        else:
+            messages.error(request, 'Error creating Inquiry. Please check your input.')
+            return redirect('inquiry_view')
 
 
 
@@ -852,12 +888,11 @@ def create_journal(request):
               
             }
             db.collection("journal").document().set(data)  
-            return redirect('journal_view') 
-    else:
-        form = JournalForm()
-
-        
-    return render(request, 'frontend/techcare_data/create_journal.html', {'form': form})
+            messages.success(request, 'Successfully created Journal.') 
+            return redirect('journal_view')
+        else:
+            messages.error(request, 'Error creating Journal. Please check your input.')
+            return redirect('journal_view')
 
 
 def create_journalPrompt(request):
@@ -869,12 +904,11 @@ def create_journalPrompt(request):
               
             }
             db.collection("journalPrompt").document().set(data)  
-            return redirect('journalPrompt_view') 
-    else:
-        form = JournalPromptForm()
-
-        
-    return render(request, 'frontend/techcare_data/create_journalPrompt.html', {'form': form})
+            messages.success(request, 'Successfully created JournalPrompt.') 
+            return redirect('journalPrompt_view')
+        else:
+            messages.error(request, 'Error creating JournalPrompt. Please check your input.')
+            return redirect('journalPrompt_view')
 
 
 
@@ -889,28 +923,28 @@ def create_majorAssessment(request):
                 'order': form.cleaned_data['order'],  # Removed the space before 'order'
             }
             db.collection("majorAssessment").document().set(data)  
-            return redirect('majorAssessment_view') 
-    else:
-        form = MajorAssessmentForm()
-
-    return render(request, 'frontend/techcare_data/create_majorAssessment.html', {'form': form})
+            messages.success(request, 'Successfully created MajorAssessment.') 
+            return redirect('majorAssessment_view')
+        else:
+            messages.error(request, 'Error creating MajorAssessment. Please check your input.')
+            return redirect('majorAssessment_view')
 
 def create_psychomarkers(request):
     if request.method == 'POST':
         form = PsychomarkersForm(request.POST)
         if form.is_valid():
-            user_id = form.cleaned_data['user'].id
+            # user_id = form.cleaned_data['user'].id
             data = {
-                'time': form.cleaned_data['time'],
-                'user': user_id,  # Assuming 'user' is a ForeignKey in your model, use the user_id
+                'time': datetime.now(),
+                'user': request.POST.get('user_id'),  # Assuming 'user' is a ForeignKey in your model, use the user_id
                 'depression': form.cleaned_data['depression'],
             }
             db.collection("psychomarkers").document().set(data)
+            messages.success(request, 'Successfully created Psychomarkers.') 
             return redirect('psychomarkers_view')
         else:
-            form = PsychomarkersForm()
-
-    return render(request, 'frontend/techcare_data/create_psychomarkers.html', {'form': form})
+            messages.error(request, 'Error creating Psychomarkers. Please check your input.')
+            return redirect('psychomarkers_view')
 
 def create_scenarios(request):
     if request.method == 'POST':
@@ -924,12 +958,11 @@ def create_scenarios(request):
                 'title': form.cleaned_data['title'],
             }
             db.collection("scenarios").document().set(data)
+            messages.success(request, 'Successfully created Scenarios.') 
             return redirect('scenarios_view')
-    else:
-        form = ScenariosForm()
-
-    return render(request, 'frontend/techcare_data/create_scenarios.html', {'form': form})
-
+        else:
+            messages.error(request, 'Error creating Scenarios. Please check your input.')
+            return redirect('scenarios_view')
 
     
 def create_shortBite(request):
@@ -941,11 +974,11 @@ def create_shortBite(request):
                 'title': form.cleaned_data['title'],
             }
             db.collection("shortBite").document().set(data)
+            messages.success(request, 'Successfully ShortBite Scenarios.') 
             return redirect('shortBite_view')
-    else:
-        form = ShortBiteForm()
-
-    return render(request, 'frontend/techcare_data/create_shortBite.html', {'form': form})
+        else:
+            messages.error(request, 'Error creating ShortBite. Please check your input.')
+            return redirect('shortBite_view')
 
 
 def create_trivia(request):
@@ -968,11 +1001,11 @@ def create_trivia(request):
                 
             }
             db.collection("trivia").document().set(data)
+            messages.success(request, 'Successfully Trivia Scenarios.') 
             return redirect('trivia_view')
-    else:
-        form = TriviaForm()
-
-    return render(request, 'frontend/techcare_data/create_trivia.html', {'form': form})
+        else:
+            messages.error(request, 'Error creating Trivia. Please check your input.')
+            return redirect('trivia_view')
 
 
 from datetime import datetime
@@ -989,11 +1022,11 @@ def create_users(request):
                 'created_time': datetime.now(),  
             }
             db.collection("users").document().set(data)
+            messages.success(request, 'Successfully Users Scenarios.') 
             return redirect('users_view')
-    else:
-        form = UsersForm()
-
-    return render(request, 'frontend/techcare_data/create_users.html', {'form': form})
+        else:
+            messages.error(request, 'Error creating Users. Please check your input.')
+            return redirect('users_view')
 
 
 # def create_items(request):
@@ -1018,9 +1051,9 @@ def create_items(request):
         form = ItemsForm(request.POST)
         if form.is_valid():
             # Extract form data
-            name = form.cleaned_data['name']
-            data_title = form.cleaned_data['data_title']
-            data_categories = form.cleaned_data['data_categories']
+            name = form.cleaned_data['data']
+            data_title = form.cleaned_data['title']
+            data_categories = form.cleaned_data['categories']
 
             # Create a dictionary for the data
             data = {
@@ -1033,9 +1066,8 @@ def create_items(request):
 
             # Add the data to the Firestore collection
             db.collection("items").add(data)
-
-            return redirect('items_view')
-    else:
-        form = ItemsForm()
-
-    return render(request, 'frontend/techcare_data/create_items.html', {'form': form})
+            messages.success(request, 'Successfully created Items.')  
+            return redirect('items_view') 
+        else:
+            messages.error(request, 'Error creating Items. Please check your input.')
+            return redirect('items_view') 

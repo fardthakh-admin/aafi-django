@@ -83,7 +83,14 @@ class PatientAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
-admin.site.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active')
+    # list_display_links=['name', 'price', 'active', 'category']
+    list_editable = ['first_name', 'last_name',  'is_active'] #edit list
+    search_fields = ['first_name', 'last_name', 'username', 'email', 'is_active']
+    list_filter = ['first_name', 'last_name', 'is_active', 'username', 'email']
+    # fields=['first_name', 'last_name']
+admin.site.register(User, UserAdmin)
 admin.site.register(Doctor)
 admin.site.register(Challenge)
 admin.site.register(Message)

@@ -2,6 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from api.models import Doctor, Patient
 from .models import *
+from django.forms import Textarea
 
 
 
@@ -89,13 +90,15 @@ class DocumentForm(forms.Form):
 class TagsForm(forms.ModelForm):
       class Meta:
         model = tags
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ['image']
 
 
 class ActivitiesForm(forms.ModelForm):
      class Meta:
         model=activities
-        fields = "__all__"
+        fields = ['description', 'title', 'type', 'duration']
+
 
 
 
@@ -108,7 +111,8 @@ class BadgesForm(forms.ModelForm):
 class BiomarkersForm(forms.ModelForm):
       class Meta:
         model=biomarkers
-        fields = "__all__"
+        exclude = ['user']  # all without user
+
 
 
 class CategoriesForm(forms.ModelForm):
@@ -121,7 +125,7 @@ class CategoriesForm(forms.ModelForm):
 class FeelingsForm(forms.ModelForm):
      class Meta:
         model=feelings
-        fields = "__all__"
+        exclude = ['user', 'time']
 
 class InAppLinksForm(forms.ModelForm):
      class Meta:
@@ -131,7 +135,7 @@ class InAppLinksForm(forms.ModelForm):
 class InquiryForm(forms.ModelForm):
      class Meta:
         model=inquiry
-        fields = "__all__"
+        exclude = ['time', 'user']
 
 class MajorAssessmentForm(forms.ModelForm):
      class Meta:
@@ -141,7 +145,12 @@ class MajorAssessmentForm(forms.ModelForm):
 class AssessmentQuestionForm(forms.ModelForm):
       class Meta:
         model=assessmentQuestion
-        fields = "__all__"
+        fields =['max', 'order', 'points', 'question']
+
+class ItemsForm(forms.ModelForm):
+      class Meta:
+        model=items
+        fields ="__all__"
 
 
 # # class ItemsForm(forms.ModelForm):
@@ -172,6 +181,7 @@ class JournalPromptForm(forms.ModelForm):
      class Meta:
         model=journalPrompt
         fields = "__all__"
+        
 
 
 
@@ -179,7 +189,8 @@ class JournalPromptForm(forms.ModelForm):
 class PsychomarkersForm(forms.ModelForm):
      class Meta:
         model=psychomarkers
-        fields = "__all__"
+        exclude = ['time', 'user']
+
 
 class ScenariosForm(forms.ModelForm):
      class Meta:
@@ -191,6 +202,13 @@ class ShortBiteForm(forms.ModelForm):
      class Meta:
         model=shortBite
         fields = "__all__"
+
+class BitesForm(forms.ModelForm):
+
+
+    class Meta:
+        model = bites
+        exclude = ['tags']
 
 
 class TriviaForm(forms.ModelForm):

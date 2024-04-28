@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-   
+    'widget_tweaks',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'frontend.context_processors.collections_processor'
             ],
         },
     },
@@ -82,13 +84,30 @@ WSGI_APPLICATION = "Aafi.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        'ENGINE': 'django.db.backends.postgresql',
         "NAME": "aafi",
         "USER": "postgres",
-        "PASSWORD": "12345",
+        "PASSWORD": "1234",
         "HOST": "localhost",
         "PORT": "5432",
     }
+    #  "default": {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     "NAME": "railway",
+    #     "USER": "postgres",
+    #     "PASSWORD": "dCyRjRSEXHUyYwpjdEdJqWOLSdqmpuUI",
+    #     "HOST": "viaduct.proxy.rlwy.net",
+    #     "PORT": "32989",
+    # }
+    #      'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'aafi',
+    #     'USER': 'root',
+    #     'PASSWORD': '',
+    #     'HOST': 'localhost', 
+    #     'PORT': '3306',      
+    # }
+
 }
 
 
@@ -145,8 +164,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ORIGIN_ALLOW_ALL = True # ALLOWS ALL FRONTEND PORTS TO ACCESS OUR APP
 CORS_ALLOW_CREDENTIALS = True # ALLOWS FRONTEND TO GET COOKIE
 
-cred = credentials.Certificate("C:\\Users\\Administrator\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-9a66893349.json")
+cred = credentials.Certificate("C:\\Users\\laptop center\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json")
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\Administrator\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-9a66893349.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\laptop center\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json"
+
+# APPEND_SLASH = False
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '14f5-109-107-231-8.ngrok-free.app']
+
+CSRF_TRUSTED_ORIGINS = ['https://14f5-109-107-231-8.ngrok-free.app']

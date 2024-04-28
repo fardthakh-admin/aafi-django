@@ -16,7 +16,6 @@ class tags(models.Model):
     description = models.CharField(max_length=100, default=None)
     image = models.TextField()
     title = models.CharField(max_length=100, default=None)
-
     def __str__(self):
           return self.__all__
 

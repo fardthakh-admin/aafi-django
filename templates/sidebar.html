@@ -11,7 +11,73 @@
         </a>
         <a href="{% url 'mind_activities' %}" class="list-group-item list-group-item-action">Mind Activities</a>
 
-         <a href="{% url 'collections' %}" class="list-group-item list-group-item-action">Collections</a>
-  
+        <div>
+            <div class="list-group">
+                <!-- Sidebar content goes here -->
+                <a href="#products" class="list-group-item list-group-item-action" data-toggle="collapse" aria-expanded="false" aria-controls="products">
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                    Collections 
+                </a>
+                <div class="collapse" id="products">
+                    
+                    <form id="collectionForm" method="post" action="{% url 'handle_form_submission' %}">
+                        {% csrf_token %}
+                        {% for collection in collections %}
+                            <a href="#" class="list-group-item list-group-item-action collection-item" data-value="{{ collection }}">{{ collection }}</a>
+                            <input type="hidden" name="collection_dropdown" value="{{ collection }}">
+                        {% endfor %}
+                        <button class="btn success" type="submit" style="display: none;">Submit</button>
+                    </form>
+
+
+                    {% comment %} <form id="collectionForm" method="post" action="{% url 'handle_form_submission' %}">
+                        {% csrf_token %}
+                        <select name="collection_dropdown" id="collection_dropdown" class="form-select">
+                            {% for collection in collections %}
+                                <option class="collection-item" value="{{ collection }}">{{ collection }}</option>
+                            {% endfor %}
+                        </select>
+                    </form> {% endcomment %}
+                </div> 
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Only include jQuery once -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{% comment %} <script>
+    $(document).ready(function() {
+        // Add change event listener to the dropdown
+        $('#collection_dropdown').change(function(event) {
+            // Prevent the default behavior of the dropdown
+            event.preventDefault();                
+            
+            // Get the selected value from the dropdown
+            var selectedCollection = $(this).val();
+            
+            // Set the value of the hidden input field
+            $('input[name="collection_dropdown"]').val(selectedCollection);
+            
+            // Submit the form
+            $('#collectionForm').submit();
+        });
+    });
+    </script>
+     {% endcomment %}
+
+     
+<script>
+    $(document).ready(function() {
+        // Add click event listener to collection items
+        $('.collection-item').click(function(event) {
+            event.preventDefault();                
+            var selectedCollection = $(this).attr('data-value');
+            $('input[name="collection_dropdown"]').val(selectedCollection);                
+            $('#collectionForm').submit();
+        });
+    });
+    </script>

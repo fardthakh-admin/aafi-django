@@ -113,7 +113,8 @@
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>biomarkers Data</h2>
                 <div class="btn-group" role="group">
-                  <a href="{% url 'create_biomarkers' %}" class="btn success">Create</a>
+                  {% include "frontend/techcare_data/create_biomarkers.html" %}
+                  
                     <form method="post">
                       {% csrf_token %}
                       {% for entry in document_data %}
