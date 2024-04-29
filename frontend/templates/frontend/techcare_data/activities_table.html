@@ -132,6 +132,7 @@
                           <th>Patient ID</th>
                           <th>Title</th>
                           <th> location</th>
+                          <th> Action</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -143,6 +144,23 @@
                       </td>
                         <td class="document-title">{{ entry.data.title }}</td>
                         <td class="document-">{{ entry.data.type }}</td>
+                        <td class="edit-delete-buttons">      
+
+                        <form method="POST" id="deleteForm"  action="{% url 'activities_delete' document_name=entry.name %}">
+                          {% csrf_token %}
+                          <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete()" >Delete</button>
+                      </form>
+                      <script>
+                        function confirmDelete() {
+                            if (confirm('Are you sure you want to delete this?')) {
+                                document.getElementById('deleteForm').submit();
+                            }
+                        }
+                    </script>
+                        
+                        
+                      </td>
+                        
                     </tr>
                 {% endfor %}
                   </tbody>

@@ -4,12 +4,9 @@ from django.contrib.auth.views import LogoutView, LoginView
 from .views import create_document
 from .views import get_all_collections, handle_form_submission
 from.views import *
+from . views import admin_required
 
 urlpatterns = [
-    path('login', views.login_page, name="login"),
-    path('logout/', views.logout_page, name='logout'),
-    path('patient-signup/', views.patient_signup, name="patientSignup"),
-    path('doctor-signup/', views.doctor_signup, name="doctorSignup"),
 
     path('patient-homepage/', views.patient_homepage, name="patient-homepage"),
 
@@ -86,4 +83,39 @@ urlpatterns = [
     path('trivia_view/', views.trivia_view, name='trivia_view'),
     path('users_view/', views.users_view, name='users_view'),
     path('sidebar/', views.sidebar, name='sidebar'),
+
+
+    path('activities/delete/<str:document_name>/', views.activities_delete, name='activities_delete'),
+    path('assessmentQuestion/delete/<str:document_name>/', views.assessmentQuestion_delete, name='assessmentQuestion_delete'),
+    path('badges/delete/<str:document_name>/', views.badges_delete, name='badges_delete'),
+    path('biomarkers/delete/<str:document_name>/', views.biomarkers_delete, name='biomarkers_delete'),
+    path('bites/delete/<str:document_name>/', views.bites_delete, name='bites_delete'),
+    path('categories/delete/<str:document_name>/', views.categories_delete, name='categories_delete'),
+    path('feelings/delete/<str:document_name>/', views.feelings_delete, name='feelings_delete'),
+    path('inAppLinks/delete/<str:document_name>/', views.inAppLinks_delete, name='inAppLinks_delete'),
+    path('inquiry/delete/<str:document_name>/', views.inquiry_delete, name='inquiry_delete'),
+    path('items/delete/<str:document_name>/', views.items_delete, name='items_delete'),
+    path('journal/delete/<str:document_name>/', views.journal_delete, name='journal_delete'),
+    path('journalPrompt/delete/<str:document_name>/', views.journalPrompt_delete, name='journalPrompt_delete'),
+    path('majorAssessment/delete/<str:document_name>/', views.majorAssessment_delete, name='majorAssessment_delete'),
+    path('psychomarkers/delete/<str:document_name>/', views.psychomarkers_delete, name='psychomarkers_delete'),
+    path('scenarios/delete/<str:document_name>/', views.scenarios_delete, name='scenarios_delete'),
+    path('shortBite/delete/<str:document_name>/', views.shortBite_delete, name='shortBite_delete'),
+    path('tags/delete/<str:document_name>/', views.tags_delete, name='tags_delete'),
+    path('trivia/delete/<str:document_name>/', views.trivia_delete, name='trivia_delete'),
+    path('users/delete/<str:document_name>/', views.users_delete, name='users_delete'),
+    # path('/delete/<str:document_name>/', views._delete, name='_delete'),
+
+]
+
+for pattern in urlpatterns:
+    if hasattr(pattern, 'callback') and hasattr(pattern.callback, '__name__'):
+        pattern.callback = admin_required(pattern.callback)
+
+urlpatterns += [
+    path('', views.login_page),
+    path('login', views.login_page, name="login"),
+    path('logout/', views.logout_page, name='logout'),
+    path('patient-signup/', views.patient_signup, name="patientSignup"),
+    path('doctor-signup/', views.doctor_signup, name="doctorSignup"),
 ]

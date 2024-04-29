@@ -20,10 +20,20 @@ from .models import collection
 from .models import *
 from datetime import datetime
 from .models import tags
+from django.http import HttpResponseForbidden
+from functools import wraps
 
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
 
+
+def admin_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return HttpResponseForbidden("Unauthorized") # Redirect to a permission denied page or login page
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view
 
 config = {
     'apiKey': 'AIzaSyDYH31LLGfe492t4xklzTeZrIy_Rs-Om3M',
@@ -298,7 +308,6 @@ def activitiesdocument_detail(request, document_name):
     document_data = document_ref.get().to_dict()
 
     if not document_data:
-
         return render(request, 'frontend/techcare_data/document_not_found.html')
 
     return render(request, 'frontend/techcare_data/activitiesdocument.html', {'document_data': document_data})
@@ -1071,3 +1080,287 @@ def create_items(request):
         else:
             messages.error(request, 'Error creating Items. Please check your input.')
             return redirect('items_view') 
+    return render(request, 'frontend/techcare_data/activitiesdocument.html', {'document_data': document_data})
+
+        
+def activities_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("activities")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Activity deleted successfully!')
+    return redirect('activities_view')
+    
+def assessmentQuestion_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("assessmentQuestion")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'AssessmentQuestion deleted successfully!')
+    return redirect('assessmentQuestion_view')
+
+def badges_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("badges")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Badges deleted successfully!')
+    return redirect('badges_view')
+
+
+def biomarkers_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("biomarkers_delete")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Biomarkers deleted successfully!')
+    return redirect('biomarkers_view')
+
+def bites_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("bites")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Bites deleted successfully!')
+    return redirect('bites_view')
+
+def categories_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("categories")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Categories deleted successfully!')
+    return redirect('categories_view')
+
+def feelings_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("feelings")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Feelings deleted successfully!')
+    return redirect('feelings_view')
+
+def inAppLinks_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("inAppLinks")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'InAppLinks deleted successfully!')
+    return redirect('inAppLinks_view')
+
+def inquiry_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("inquiry")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Inquiry deleted successfully!')
+    return redirect('inquiry_view')
+
+def items_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("items")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Items deleted successfully!')
+    return redirect('items_view')
+
+def journal_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("journal")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Journal deleted successfully!')
+    return redirect('journal_view')
+
+def journalPrompt_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("journalPrompt")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'JournalPrompt deleted successfully!')
+    return redirect('journalPrompt_view')
+
+def majorAssessment_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("majorAssessment")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'MajorAssessment deleted successfully!')
+    return redirect('majorAssessment_view')
+
+def psychomarkers_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("psychomarkers")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Psychomarkers deleted successfully!')
+    return redirect('psychomarkers_view')
+
+def scenarios_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("scenarios")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Scenarios deleted successfully!')
+    return redirect('scenarios_view')
+
+def shortBite_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("shortBite")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'ShortBite deleted successfully!')
+    return redirect('shortBite_view')
+
+def tags_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("tags")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Tags deleted successfully!')
+    return redirect('tags_view')
+
+def trivia_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("trivia")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'Trivia deleted successfully!')
+    return redirect('trivia_view')
+
+def users_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("users")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'User deleted successfully!')
+    return redirect('users_view')
+
+# def _delete(request, document_name):
+#     db = firestore.Client()
+#     collection = db.collection("")
+#     document_ref = collection.document(document_name)
+#     document = document_ref.get()
+
+#     if not document.exists:
+#         return render(request, 'frontend/techcare_data/document_not_found.html')
+
+#     document_ref.delete()
+
+#     messages.success(request, ' deleted successfully!')
+#     return redirect('_view')
+    
