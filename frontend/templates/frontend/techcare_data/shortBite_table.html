@@ -131,7 +131,8 @@
                           <th>Patient ID</th>
                           <th>Tile</th>
                           <th>order</th>
-                          <th>action</th>
+                          <th>Delete</th>
+                          <th>Update</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -145,20 +146,24 @@
                         <td class="document">{{ entry.data.order }}</td>
                         <td class="edit-delete-buttons">      
 
-                          <form method="POST" id="deleteForm"  action="{% url 'shortBite_delete' document_name=entry.name %}">
+                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'shortBite_delete' document_name=entry.name %}">
                             {% csrf_token %}
-                            <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete()" >Delete</button>
+                            <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
                         </form>
                         <script>
-                          function confirmDelete() {
-                              if (confirm('Are you sure you want to delete this?')) {
-                                  document.getElementById('deleteForm').submit();
+                                                function confirmDelete(documentName) {
+                                  if (confirm('Are you sure you want to delete this?')) {
+                                      document.getElementById('deleteForm_' + documentName).submit();
+                                  }
                               }
-                          }
                       </script>
-                          
-                          
                         </td>
+
+                        <td>
+                          {% include "frontend/techcare_data/update_shortBite.html" %}
+
+                        </td>
+
                     </tr>
                 {% endfor %}
                   </tbody>

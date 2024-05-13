@@ -57,7 +57,16 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="{{ form.gender.id_for_label }}">Gender</label> {% render_field form.gender class="form-control" %}
+                                        
+                                    <div class="form-group">
+                                        <label for="tags">Gender</label>
+                                        <select name="gender" id="id_tags" class="form-control">
+                                            <option value="">Select Gender</option>
+                                            <option  value="ذكر" class="form-control">ذكر</option> 
+                                            <option  value="انثى" class="form-control">انثى</option> 
+                                        </select>
+                                    </div>
+
                                     </div>
                                     <div class="form-group">
                                         <label for="{{ form.email.id_for_label }}">Email</label> {% render_field form.email class="form-control" %}

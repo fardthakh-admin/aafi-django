@@ -1,0 +1,100 @@
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            margin-top: 20px;
+            margin: 0;
+        }
+        
+        h2 {
+            font-family: "Times New Roman", Times, serif;
+            text-align: left;
+            background-color: #faf9f9;
+            padding: 10px;
+        }
+    </style>
+</head>
+<button type="button" class="btn btn-primary btn-sm" id="updateButton" data-toggle="modal" data-target="#updateModal_{{ entry.name }}">Update</button>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-9">
+
+                <div class="modal fade" id="updateModal_{{ entry.name }}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel_{{ entry.name }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="updateModalLabel">Update Document</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'update_suggestedJournals' document_name=entry.name %}">
+                                    {% csrf_token %}
+
+                                    <div class="form-group">
+                             
+
+                                        <div class="form-group">
+                                            <label for="">journalPrompt</label>
+                                            <select name="journal" id="id_tags" class="form-control">
+                                                <option value="">Select journalPrompt</option>
+                                                {% for journalPrompt in journalPrompt_data %}
+                                                {% if journalPrompt.name == entry.data.journal|slice:"15:" %}
+                                                  <option value="/journalPrompt/{{ journalPrompt.name }}" selected>{{ journalPrompt.data.title }}</option>
+                                              {% else %}
+                                                  <option value="/journalPrompt/{{ journalPrompt.name }}">{{ journalPrompt.data.title }}</option>
+                                              {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="user">User</label>
+                                            <select name="user" id="user_id" class="form-control">
+                                              <option value="">Select User</option>
+                                              {% for user in users_data %}
+                                              {% if user.name == entry.data.user|slice:"7:" %}
+                                                  <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
+                                              {% else %}
+                                                  <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
+                                              {% endif %}
+                                              {% endfor %}
+                                          </select>
+                                        </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.description.id_for_label }}">time</label> 
+                                        <input type="date" name="time" class="form-control" value="{{ entry.data.time }}">
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            margin-top: 20px;
+            margin: 0;
+        }
+        
+        h2 {
+            font-family: "Times New Roman", Times, serif;
+            text-align: left;
+            background-color: #faf9f9;
+            padding: 10px;
+        }
+    </style>
+</head>
+<button type="button" class="btn btn-primary btn-sm" id="updateButton" data-toggle="modal" data-target="#updateModal_{{ entry.name }}">Update</button>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-9">
+
+                <div class="modal fade" id="updateModal_{{ entry.name }}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel_{{ entry.name }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="updateModalLabel">Update Document</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'update_scenarios' document_name=entry.name %}">
+                                    {% csrf_token %}
+
+                                    <div class="form-group">
+                                        <label for="{{ form.PositiveCorrectionAlternative.id_for_label }}">PositiveCorrectionAlternative</label> 
+                                        <input type="text" name="PositiveCorrectionAlternative" class="form-control" value="{{ entry.data.PositiveCorrectionAlternative }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.actionreply.id_for_label }}">Actionreply</label> 
+                                        <input type="text" name="actionreply" class="form-control" value="{{ entry.data.actionreply }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.correction.id_for_label }}">Correction</label> 
+                                        <input type="text" name="correction" class="form-control" value="{{ entry.data.correction }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.positiveActionReply.id_for_label }}">PositiveActionReply</label> 
+                                        <input type="text" name="positiveActionReply" class="form-control" value="{{ entry.data.positiveActionReply }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.title.id_for_label }}">title</label> 
+                                        <input type="text" name="title" class="form-control" value="{{ entry.data.title }}">
+                                    </div>
+
+                        
+
+                                    <div class="form-group">
+                                        <label for="tags">majorAssessment</label>
+                                        <select name="majorAssessment" id="id_tags" class="form-control">
+                                            <option value="">Select majorAssessment</option>
+                                            {% for majorAssessment in majorAssessment_data %}
+                                            {% if majorAssessment.name == entry.data.majorAssessment|slice:"17:" %}
+                                              <option value="/majorAssessment/{{ majorAssessment.name }}" selected>{{ majorAssessment.data.title }}</option>
+                                          {% else %}
+                                              <option value="/majorAssessment/{{ majorAssessment.name }}">{{ majorAssessment.data.title }}</option>
+                                          {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tags">Activities</label>
+                                        <select name="suggestedActivity" id="id_tags" class="form-control">
+                                            <option value="">Select activities</option>
+                                            {% for activities in activities_data %}
+                                            {% if activities.name == entry.data.suggestedActivity|slice:"12:" %}
+                                              <option value="/activities/{{ activities.name }}" selected>{{ activities.data.title }}</option>
+                                          {% else %}
+                                              <option value="/activities/{{ activities.name }}">{{ activities.data.title }}</option>
+                                          {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

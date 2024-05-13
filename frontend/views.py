@@ -198,6 +198,62 @@ def bites_view(request):
     tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
 
+def selfawarenessScenarios_view(request):
+    db = firestore.client()
+    collection = db.collection("selfawarenessScenarios")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("activities")
+    documents = collection.stream()
+    activity_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("selfAwarnessBites")
+    documents = collection.stream()
+    selfAwarnessBites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("inAppLinks")
+    documents = collection.stream()
+    inAppLinks_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("journalPrompt")
+    documents = collection.stream()
+    journalPrompt_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("bites")
+    documents = collection.stream()
+    bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("wildCard")
+    documents = collection.stream()
+    wildCard_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'document_data': document_data   }
+
+
+    return render(request, 'frontend/techcare_data/selfawarenessScenarios_table.html', context)
+
+def bites_view(request):
+    db = firestore.client()
+    db = firestore.Client()
+    collection = db.collection("bites")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    form = BitesForm()   
+    db = firestore.client()
+    collection = db.collection("tags")
+    documents = collection.stream()
+    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
+
+def assets_view(request):
+    db = firestore.client()
+    collection = db.collection("assets")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    db = firestore.client()
+    return render(request, 'frontend/techcare_data/assets_table.html', {'document_data': document_data})
+
+
 def bitesdocument_detail(request, document_name):
     db = firestore.Client()
     collection = db.collection("bites")
@@ -260,6 +316,22 @@ def handle_form_submission(request):
                 'tags': 'tags_view',
                 'trivia': 'trivia_view',
                 'users': 'users_view',
+                'selfawarenessScenarios': 'selfawarenessScenarios_view',
+                'assets': 'assets_view',
+                'nutrition': 'nutrition_view',
+                'readBites': 'readBites_view',
+                'readStories': 'readStories_view',
+                'selfAwarnessBites': 'selfAwarnessBites_view',
+                'selfawareness_collection': 'selfawareness_collection_view',
+                'suggestedActivities': 'suggestedActivities_view',
+                'suggestedBites': 'suggestedBites_view',
+                'suggestedInAppLinks': 'suggestedInAppLinks_view',
+                'suggestedJournals': 'suggestedJournals_view',
+                'suggestedSelfAwarnessBites': 'suggestedSelfAwarnessBites_view',
+                'suggestedWildCards': 'suggestedWildCards_view',
+                'testTrivia': 'testTrivia_view',
+                'wildCard': 'wildCard_view',
+                'selfLadder': 'selfladder_view',
 
             }
 
@@ -293,12 +365,184 @@ def assets_view(request):
     collection = db.collection("assets")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = ActivitiesForm()   
     db = firestore.client()
-    collection = db.collection("tags")
+    return render(request, 'frontend/techcare_data/assets_table.html', {'document_data': document_data})
+
+def nutrition_view(request):
+    db = firestore.Client()
+    collection = db.collection("nutrition")
     documents = collection.stream()
-    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/activities_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    db = firestore.client()
+    return render(request, 'frontend/techcare_data/nutrition_table.html', {'document_data': document_data})
+
+def readBites_view(request):
+    db = firestore.Client()
+    collection = db.collection("readBites")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    db = firestore.client()
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("bites")
+    documents = collection.stream()
+    bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/readBites_table.html', {'document_data': document_data, 'users_data': users_data, 'bites_data': bites_data})
+
+def readStories_view(request):
+    db = firestore.client()
+    collection = db.collection("readStories")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("selfawarenessScenarios")
+    documents = collection.stream()
+    selfawarenessScenarios_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/techcare_data/readStories_table.html', {'document_data': document_data, 'users_data': users_data, 'selfawarenessScenarios_data': selfawarenessScenarios_data})
+
+def selfAwarnessBites_view(request):
+    db = firestore.client()
+    collection = db.collection("selfAwarnessBites")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'document_data': document_data})
+
+def selfawareness_collection_view(request):
+    db = firestore.client()
+    collection = db.collection("selfawareness_collection")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/selfawareness_collection_table.html', {'document_data': document_data})
+
+def suggestedActivities_view(request):
+    db = firestore.client()
+    collection = db.collection("suggestedActivities")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("activities")
+    documents = collection.stream()
+    activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/suggestedActivities_table.html', {'document_data': document_data, 'users_data': users_data, 'activities_data': activities_data})
+
+def suggestedBites_view(request):
+    db = firestore.client()
+    collection = db.collection("suggestedBites")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("bites")
+    documents = collection.stream()
+    bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("selfAwarnessBites")
+    documents = collection.stream()
+    selfAwarnessBites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/suggestedBites_table.html', {'document_data': document_data, 'users_data': users_data, 'bites_data': bites_data, 'selfAwarnessBites_data': selfAwarnessBites_data})
+
+def suggestedInAppLinks_view(request):
+    db = firestore.client()
+    collection = db.collection("suggestedInAppLinks")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("inAppLinks")
+    documents = collection.stream()
+    inAppLinks_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {'document_data': document_data, 'users_data': users_data, 'inAppLinks_data': inAppLinks_data})
+
+def suggestedJournals_view(request):
+    db = firestore.client()
+    collection = db.collection("suggestedJournals")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("journalPrompt")
+    documents = collection.stream()
+    journalPrompt_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/suggestedJournals_table.html', {'document_data': document_data, 'users_data': users_data, 'journalPrompt_data': journalPrompt_data})
+
+def suggestedSelfAwarnessBites_view(request):
+    db = firestore.client()
+    collection = db.collection("suggestedSelfAwarnessBites")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("selfAwarnessBites")
+    documents = collection.stream()
+    selfAwarnessBites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/suggestedSelfAwarnessBites_table.html', {'document_data': document_data, 'users_data': users_data, 'selfAwarnessBites_data': selfAwarnessBites_data})
+def suggestedWildCards_view(request):
+    db = firestore.client()
+    collection = db.collection("suggestedWildCards")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    collection = db.collection("wildCard")
+    documents = collection.stream()
+    wildCard_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/suggestedWildCards_table.html', {'document_data': document_data, 'users_data': users_data, 'wildCard_data': wildCard_data})
+
+def selfladder_view(request):
+    db = firestore.client()
+    collection = db.collection("selfLadder")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+   
+    return render(request, 'frontend/techcare_data/selfladder_table.html', {'document_data': document_data, 'users_data': users_data})
+
+def testTrivia_view(request):
+    db = firestore.client()
+    collection = db.collection("testTrivia")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+ 
+    return render(request, 'frontend/techcare_data/testTrivia_table.html', {'document_data': document_data})
+
+def wildCard_view(request):
+    db = firestore.client()
+    collection = db.collection("wildCard")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+ 
+    return render(request, 'frontend/techcare_data/wildCard_table.html', {'document_data': document_data})
 
 
 def activitiesdocument_detail(request, document_name):
@@ -592,7 +836,16 @@ def scenarios_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = ScenariosForm()
-    return render(request, 'frontend/techcare_data/scenarios_table.html', {'document_data': document_data , 'form': form})
+
+    collection = db.collection("majorAssessment")
+    documents = collection.stream()
+    majorAssessment_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("activities")
+    documents = collection.stream()
+    activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/scenarios_table.html', {'document_data': document_data , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data})
 
 def scenariosdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1363,4 +1616,674 @@ def users_delete(request, document_name):
 
 #     messages.success(request, ' deleted successfully!')
 #     return redirect('_view')
+
+
+def update_activities(request, document_name):
+    if request.method == 'POST':
+        form = ActivitiesForm(request.POST)
+        entry_id = document_name
+        data = {
+                'tags': request.POST.get('tags'),
+                'description': request.POST.get('description'),
+                'title': request.POST.get('title'),
+                'duration': request.POST.get('duration'),
+            }
+        db = firestore.client()
+        db.collection("activities").document(entry_id).update(data)
+        messages.success(request, 'Activity updated successfully.')
+        return redirect('activities_view')
+    else:
+        messages.error(request, 'Error updating activity. Please check your input.')
+        return redirect('activities_view')
+    
+def update_assessmentQuestion(request, document_name):
+    if request.method == 'POST':
+        form = AssessmentQuestionForm(request.POST)
+        entry_id = document_name
+        data = {
+                'majorAssessment': request.POST.get('majorAssessment'),
+                'max': request.POST.get('max'),
+                'order': request.POST.get('order'),
+                'points': request.POST.get('points'),
+                'question': request.POST.get('question'),
+            }
+        db = firestore.client()
+        db.collection("assessmentQuestion").document(entry_id).update(data)
+        messages.success(request, 'assessmentQuestion updated successfully.')
+        return redirect('assessmentQuestion_view')
+    else:
+        messages.error(request, 'Error updating assessmentQuestion. Please check your input.')
+        return redirect('assessmentQuestion_view')
+    
+def update_badges(request, document_name):
+    if request.method == 'POST':
+        form = BadgesForm(request.POST)
+        entry_id = document_name
+        data = {
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("badges").document(entry_id).update(data)
+        messages.success(request, 'badges updated successfully.')
+        return redirect('badges_view')
+    else:
+        messages.error(request, 'Error updating badges. Please check your input.')
+        return redirect('badges_view')
+    
+def update_biomarkers(request, document_name):
+    if request.method == 'POST':
+        form = BiomarkersForm(request.POST)
+        entry_id = document_name
+        data = {
+                'bloodGlucose': request.POST.get('bloodGlucose'),
+                'bloodGlucoseType': request.POST.get('bloodGlucoseType'),
+                'dailyActivity': request.POST.get('dailyActivity'),
+                'dailyCarbs': request.POST.get('dailyCarbs'),
+                'weeklyActivity': request.POST.get('weeklyActivity'),
+                'sleepQuality': request.POST.get('sleepQuality'),
+                'time': request.POST.get('time'),
+                'user': request.POST.get('user'),
+                'weight': request.POST.get('weight'),
+                'FBS': request.POST.get('FBS'),
+                'HBA1c': request.POST.get('HBA1c'),
+            }
+        db = firestore.client()
+        db.collection("biomarkers").document(entry_id).update(data)
+        messages.success(request, ' biomarkers updated successfully.')
+        return redirect('biomarkers_view')
+    else:
+        messages.error(request, 'Error updating  biomarkers . Please check your input.')
+        return redirect('biomarkers_view')
+    
+def update_bites(request, document_name):
+    if request.method == 'POST':
+        form = BitesForm(request.POST)
+        entry_id = document_name
+        data = {
+                'categories': request.POST.get('categories'),
+                'content': request.POST.get('content'),
+                'difficulty': request.POST.get('difficulty'),
+                'tags': request.POST.get('tags'),
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("bites").document(entry_id).update(data)
+        messages.success(request, 'bites updated successfully.')
+        return redirect('bites_view')
+    else:
+        messages.error(request, 'Error updating bites  . Please check your input.')
+        return redirect('bites_view')
+    
+
+def update_categories(request, document_name):
+    if request.method == 'POST':
+        form = CategoriesForm(request.POST)
+        entry_id = document_name
+        data = {
+                'title': request.POST.get('title'),
+                'description': request.POST.get('description'),
+            }
+        db = firestore.client()
+        db.collection("categories").document(entry_id).update(data)
+        messages.success(request, ' categories updated successfully.')
+        return redirect('categories_view')
+    else:
+        messages.error(request, 'Error updating  categories . Please check your input.')
+        return redirect('categories_view')
+    
+def update_activities(request, document_name):
+    if request.method == 'POST':
+        form = ActivitiesForm(request.POST)
+        entry_id = document_name
+        data = {
+                'tags': request.POST.get('tags'),
+                'description': request.POST.get('description'),
+                'duration': request.POST.get('duration'),
+                'type': request.POST.get('type'),
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("activities").document(entry_id).update(data)
+        messages.success(request, 'activities updated successfully.')
+        return redirect('activities_view')
+    else:
+        messages.error(request, 'Error updating activities . Please check your input.')
+        return redirect('activities_view')
+    
+def update_feelings(request, document_name):
+    if request.method == 'POST':
+        form = FeelingsForm(request.POST)
+        entry_id = document_name
+        data = {
+                'anger': request.POST.get('anger'),
+                'fear': request.POST.get('fear'),
+                'happiness': request.POST.get('happiness'),
+                'joy': request.POST.get('joy'),
+                'love': request.POST.get('love'),
+                'sadness': request.POST.get('sadness'),
+                'shame': request.POST.get('shame'),
+                'strength': request.POST.get('strength'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+            }
+        db = firestore.client()
+        db.collection("feelings").document(entry_id).update(data)
+        messages.success(request, 'feelings updated successfully.')
+        return redirect('feelings_view')
+    else:
+        messages.error(request, 'Error updating feelings . Please check your input.')
+        return redirect('feelings_view')
+def update_inAppLinks(request, document_name):
+    if request.method == 'POST':
+        form = InAppLinksForm(request.POST)
+        entry_id = document_name
+        data = {
+                'description': request.POST.get('description'),
+                'title': request.POST.get('title'),
+                'order': request.POST.get('order'),
+                'type': request.POST.get('type'),
+            }
+        db = firestore.client()
+        db.collection("inAppLinks").document(entry_id).update(data)
+        messages.success(request, 'inAppLinks updated successfully.')
+        return redirect('inAppLinks_view')
+    else:
+        messages.error(request, 'Error updating inAppLinks . Please check your input.')
+        return redirect('inAppLinks_view')
+    
+def update_inquiry(request, document_name):
+    if request.method == 'POST':
+        form = InquiryForm(request.POST)
+        entry_id = document_name
+        data = {
+                'answer': request.POST.get('answer'),
+                'question': request.POST.get('question'),
+                'time': request.POST.get('time'),
+                'topic': request.POST.get('topic'),
+                'user': request.POST.get('user'),
+            }
+        db = firestore.client()
+        db.collection("inquiry").document(entry_id).update(data)
+        messages.success(request, 'inquiry updated successfully.')
+        return redirect('inquiry_view')
+    else:
+        messages.error(request, 'Error updating inquiry . Please check your input.')
+        return redirect('inquiry_view')
+    
+def update_items(request, document_name):
+    if request.method == 'POST':
+        form = ItemsForm(request.POST)
+        entry_id = document_name
+        data = {
+                'title': request.POST.get('title'),
+                'data': request.POST.get('data'),
+                'categories': request.POST.get('categories'),
+            }
+        db = firestore.client()
+        db.collection("items").document(entry_id).update(data)
+        messages.success(request, 'items updated successfully.')
+        return redirect('items_view')
+    else:
+        messages.error(request, 'Error updating items . Please check your input.')
+        return redirect('items_view')
+    
+def update_journal(request, document_name):
+    if request.method == 'POST':
+        form = JournalForm(request.POST)
+        entry_id = document_name
+        data = {
+                'description': request.POST.get('description'),
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("journal").document(entry_id).update(data)
+        messages.success(request, 'journal updated successfully.')
+        return redirect('journal_view')
+    else:
+        messages.error(request, 'Error updating journal . Please check your input.')
+        return redirect('journal_view')
+    
+def update_journalPrompt(request, document_name):
+    if request.method == 'POST':
+        form = JournalPromptForm(request.POST)
+        entry_id = document_name
+        data = {
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("journalPrompt").document(entry_id).update(data)
+        messages.success(request, 'journalPrompt updated successfully.')
+        return redirect('journalPrompt_view')
+    else:
+        messages.error(request, 'Error updating journalPrompt . Please check your input.')
+        return redirect('journalPrompt_view')
+    
+def update_majorAssessment(request, document_name):
+    if request.method == 'POST':
+        form = MajorAssessmentForm(request.POST)
+        entry_id = document_name
+        data = {
+                'description': request.POST.get('description'),
+                'numberOfQuestions': request.POST.get('numberOfQuestions'),
+                'order': request.POST.get('order'),
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("majorAssessment").document(entry_id).update(data)
+        messages.success(request, 'majorAssessment updated successfully.')
+        return redirect('majorAssessment_view')
+    else:
+        messages.error(request, 'Error updating majorAssessment . Please check your input.')
+        return redirect('majorAssessment_view')
+    
+def update_psychomarkers(request, document_name):
+    if request.method == 'POST':
+        form = PsychomarkersForm(request.POST)
+        entry_id = document_name
+        data = {
+                'time': request.POST.get('time'),
+                'user': request.POST.get('user'),
+                'depression': request.POST.get('depression'),
+            }
+        db = firestore.client()
+        db.collection("psychomarkers").document(entry_id).update(data)
+        messages.success(request, 'psychomarkers updated successfully.')
+        return redirect('psychomarkers_view')
+    else:
+        messages.error(request, 'Error updating psychomarkers . Please check your input.')
+        return redirect('psychomarkers_view')
+    
+def update_scenarios(request, document_name):
+    if request.method == 'POST':
+        form = ScenariosForm(request.POST)
+        entry_id = document_name
+        data = {
+                'PositiveCorrectionAlternative': request.POST.get('PositiveCorrectionAlternative'),
+                'actionreply': request.POST.get('actionreply'),
+                'correction': request.POST.get('correction'),
+                'positiveActionReply': request.POST.get('positiveActionReply'),
+                'title': request.POST.get('title'),
+                'majorAssessment': request.POST.get('majorAssessment'),
+                'suggestedActivity': request.POST.get('suggestedActivity'),
+                'type': request.POST.get('type'),
+            }
+        db = firestore.client()
+        db.collection("scenarios").document(entry_id).update(data)
+        messages.success(request, 'scenarios updated successfully.')
+        return redirect('scenarios_view')
+    else:
+        messages.error(request, 'Error updating scenarios . Please check your input.')
+        return redirect('scenarios_view')
+    
+def update_shortBite(request, document_name):
+    if request.method == 'POST':
+        form = ShortBiteForm(request.POST)
+        entry_id = document_name
+        data = {
+                'order': request.POST.get('order'),
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("shortBite").document(entry_id).update(data)
+        messages.success(request, 'shortBite updated successfully.')
+        return redirect('shortBite_view')
+    else:
+        messages.error(request, 'Error updating shortBite . Please check your input.')
+        return redirect('shortBite_view')
+    
+def update_tags(request, document_name):
+    if request.method == 'POST':
+        form = TagsForm(request.POST)
+        entry_id = document_name
+        data = {
+                'description': request.POST.get('description'),
+                'image': request.POST.get('image'),
+                'title': request.POST.get('title'),
+            }
+        db = firestore.client()
+        db.collection("tags").document(entry_id).update(data)
+        messages.success(request, 'tags updated successfully.')
+        return redirect('tags_view')
+    else:
+        messages.error(request, 'Error updating tags  . Please check your input.')
+        return redirect('tags_view')
+    
+def update_trivia(request, document_name):
+    if request.method == 'POST':
+        form = TriviaForm(request.POST)
+        entry_id = document_name
+        data = {
+                'CBT_points': request.POST.get('CBT_points'),
+                'answer_1': request.POST.get('answer_1'),
+                'answer_2': request.POST.get('answer_2'),
+                'answer_3': request.POST.get('answer_3'),
+                'correct_answer': request.POST.get('correct_answer'),
+                'description': request.POST.get('description'),
+                'explanation': request.POST.get('explanation'),
+                'image': request.POST.get('image'),
+                'question': request.POST.get('question'),
+                'learning_points': request.POST.get('learning_points'),
+                'order': request.POST.get('order'),
+                'topic': request.POST.get('topic'),
+            }
+        db = firestore.client()
+        db.collection("trivia").document(entry_id).update(data)
+        messages.success(request, 'trivia updated successfully.')
+        return redirect('trivia_view')
+    else:
+        messages.error(request, 'Error updating trivia  . Please check your input.')
+        return redirect('trivia_view')
+    
+def update_users(request, document_name):
+    if request.method == 'POST':
+        form = UsersForm(request.POST)
+        entry_id = document_name
+        data = {
+                'email': request.POST.get('email'),
+                'created_time': request.POST.get('created_time'),
+                'gender': request.POST.get('gender'),
+                'uid': request.POST.get('uid'),
+                'display_name': request.POST.get('display_name'),
+            }
+        db = firestore.client()
+        db.collection("users").document(entry_id).update(data)
+        messages.success(request, 'users updated successfully.')
+        return redirect('users_view')
+    else:
+        messages.error(request, 'Error updating users  . Please check your input.')
+        return redirect('users_view')
+    
+def update_selfawarenessScenarios(request, document_name):
+    if request.method == 'POST':
+        form = UsersForm(request.POST)
+        entry_id = document_name
+        data = {
+                'activity': request.POST.get('activity'),
+                'biteID': request.POST.get('biteID'),
+                'correction1from0to2': request.POST.get('correction1from0to2'),
+                'correction2from3to5': request.POST.get('correction2from3to5'),
+                'inAppLink': request.POST.get('inAppLink'),
+                'interactiveStatement': request.POST.get('interactiveStatement'),
+                'journal': request.POST.get('journal'),
+                'normalBite': request.POST.get('normalBite'),
+                'recommendation1': request.POST.get('recommendation1'),
+                'recommendation2': request.POST.get('recommendation2'),
+                'scenarioID': request.POST.get('scenarioID'),
+                'story': request.POST.get('story'),
+                'storyTitle': request.POST.get('storyTitle'),
+                'wildcard': request.POST.get('wildcard'),
+            }
+        db = firestore.client()
+        db.collection("selfawarenessScenarios").document(entry_id).update(data)
+        messages.success(request, 'selfawarenessScenarios updated successfully.')
+        return redirect('selfawarenessScenarios_view')
+    else:
+        messages.error(request, 'Error updating selfawarenessScenarios  . Please check your input.')
+        return redirect('selfawarenessScenarios_view')
+    
+
+def update_assets(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'assetsType': request.POST.get('assetsType'),
+                'label': request.POST.get('label'),
+                'name': request.POST.get('name'),
+                'path': request.POST.get('path'),
+            }
+        db = firestore.client()
+        db.collection("assets").document(entry_id).update(data)
+        messages.success(request, 'assets updated successfully.')
+        return redirect('assets_view')
+    else:
+        messages.error(request, 'Error updating assets  . Please check your input.')
+        return redirect('assets_view')    
+    
+def update_nutrition(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'carbContent': request.POST.get('carbContent'),
+                'name_ar': request.POST.get('name_ar'),
+                'name_en': request.POST.get('name_en'),
+                'portion': request.POST.get('portion'),
+                'proteinContent': request.POST.get('proteinContent'),
+                'totalCalories': request.POST.get('totalCalories'),
+                'weight': request.POST.get('weight'),
+            }
+        db = firestore.client()
+        db.collection("nutrition").document(entry_id).update(data)
+        messages.success(request, 'nutrition updated successfully.')
+        return redirect('nutrition_view')
+    else:
+        messages.error(request, 'Error updating nutrition . Please check your input.')
+        return redirect('nutrition_view')    
+    
+def update_readBites(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'bite': request.POST.get('bite'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+            }
+        db = firestore.client()
+        db.collection("readBites").document(entry_id).update(data)
+        messages.success(request, 'readBites updated successfully.')
+        return redirect('readBites_view')
+    else:
+        messages.error(request, 'Error updating readBites  . Please check your input.')
+        return redirect('readBites_view')    
+    
+def update_readStories(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'senario': request.POST.get('senario'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+            }
+        db = firestore.client()
+        db.collection("readStories").document(entry_id).update(data)
+        messages.success(request, 'readStories updated successfully.')
+        return redirect('readStories_view')
+    else:
+        messages.error(request, 'Error updating readStories  . Please check your input.')
+        return redirect('readStories_view')    
+    
+def update_selfAwarnessBites(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'scenarioID': request.POST.get('scenarioID'),
+                'selfawarenessBiteText': request.POST.get('selfawarenessBiteText'),
+                'selfawarenessBiteTitle': request.POST.get('selfawarenessBiteTitle'),
+                'tags': request.POST.get('tags'),
+            }
+        db = firestore.client()
+        db.collection("selfAwarnessBites").document(entry_id).update(data)
+        messages.success(request, 'selfAwarnessBites updated successfully.')
+        return redirect('selfAwarnessBites_view')
+    else:
+        messages.error(request, 'Error updating selfAwarnessBites  . Please check your input.')
+        return redirect('selfAwarnessBites_view')    
+    
+def update_selfawareness_collection(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'selfawareness_bite_text': request.POST.get('selfawareness_bite_text'),
+                'tags': request.POST.get('tags'),
+            }
+        db = firestore.client()
+        db.collection("selfawareness_collection").document(entry_id).update(data)
+        messages.success(request, 'selfawareness_collection updated successfully.')
+        return redirect('selfawareness_collection_view')
+    else:
+        messages.error(request, 'Error updating selfawareness_collection   . Please check your input.')
+        return redirect('selfawareness_collection_view')    
+    
+def update_suggestedActivities(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'activity': request.POST.get('activity'),
+                'state': request.POST.get('state'),
+                'type': request.POST.get('type'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+
+            }
+        db = firestore.client()
+        db.collection("suggestedActivities").document(entry_id).update(data)
+        messages.success(request, 'suggestedActivities updated successfully.')
+        return redirect('suggestedActivities_view')
+    else:
+        messages.error(request, 'Error updating suggestedActivities   . Please check your input.')
+        return redirect('suggestedActivities_view')    
+    
+def update_suggestedBites(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'bite': request.POST.get('bite'),
+                'state': request.POST.get('state'),
+                'user': request.POST.get('user'),
+                'selfAwarnessBite': request.POST.get('selfAwarnessBite'),
+                'time': request.POST.get('time'),
+
+            }
+        db = firestore.client()
+        db.collection("suggestedBites").document(entry_id).update(data)
+        messages.success(request, 'suggestedBites updated successfully.')
+        return redirect('suggestedBites_view')
+    else:
+        messages.error(request, 'Error updating  suggestedBites . Please check your input.')
+        return redirect('suggestedBites_view')    
+    
+def update_suggestedInAppLinks(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'inAppLink': request.POST.get('inAppLink'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+
+            }
+        db = firestore.client()
+        db.collection("suggestedInAppLinks").document(entry_id).update(data)
+        messages.success(request, 'suggestedInAppLinks updated successfully.')
+        return redirect('suggestedInAppLinks_view')
+    else:
+        messages.error(request, 'Error updating suggestedInAppLinks  . Please check your input.')
+        return redirect('suggestedInAppLinks_view')    
+    
+def update_suggestedJournals(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'journal': request.POST.get('journal'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+
+            }
+        db = firestore.client()
+        db.collection("suggestedJournals").document(entry_id).update(data)
+        messages.success(request, 'suggestedJournals updated successfully.')
+        return redirect('suggestedJournals_view')
+    else:
+        messages.error(request, 'Error updating suggestedJournals  . Please check your input.')
+        return redirect('suggestedJournals_view')    
+    
+def update_suggestedSelfAwarnessBites(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'selfAwarnessBite': request.POST.get('selfAwarnessBite'),
+                'state': request.POST.get('state'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+
+            }
+        db = firestore.client()
+        db.collection("suggestedSelfAwarnessBites").document(entry_id).update(data)
+        messages.success(request, 'suggestedSelfAwarnessBites updated successfully.')
+        return redirect('suggestedSelfAwarnessBites_view')
+    else:
+        messages.error(request, 'Error updating  suggestedSelfAwarnessBites . Please check your input.')
+        return redirect('suggestedSelfAwarnessBites_view')    
+    
+def update_suggestedWildCards(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'wildCard': request.POST.get('wildCard'),
+                'user': request.POST.get('user'),
+                'time': request.POST.get('time'),
+
+            }
+        db = firestore.client()
+        db.collection("suggestedWildCards").document(entry_id).update(data)
+        messages.success(request, 'suggestedWildCards updated successfully.')
+        return redirect('suggestedWildCards_view')
+    else:
+        messages.error(request, 'Error updating suggestedWildCards  . Please check your input.')
+        return redirect('suggestedWildCards_view')    
+    
+def update_testTrivia(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'answers': request.POST.get('answers'),
+                'correct_answer': request.POST.get('correct_answer'),
+                'correct_answer_index': request.POST.get('correct_answer_index'),
+                'order': request.POST.get('order'),
+                'question': request.POST.get('question'),
+
+            }
+        db = firestore.client()
+        db.collection("testTrivia").document(entry_id).update(data)
+        messages.success(request, 'testTrivia updated successfully.')
+        return redirect('testTrivia_view')
+    else:
+        messages.error(request, 'Error updating testTrivia  . Please check your input.')
+        return redirect('testTrivia_view')    
+    
+def update_wildCard(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'content': request.POST.get('content'),
+            }
+        db = firestore.client()
+        db.collection("wildCard").document(entry_id).update(data)
+        messages.success(request, 'wildCard updated successfully.')
+        return redirect('wildCard_view')
+    else:
+        messages.error(request, 'Error updating wildCard  . Please check your input.')
+        return redirect('wildCard_view')    
+    
+def update_selfladder(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        data = {
+                'userID': request.POST.get('userID'),
+                'type': request.POST.get('type'),
+                'time': request.POST.get('time'),
+            }
+        db = firestore.client()
+        db.collection("selfLadder").document(entry_id).update(data)
+        messages.success(request, 'selfladder updated successfully.')
+        return redirect('selfladder_view')
+    else:
+        messages.error(request, 'Error updating selfladder  . Please check your input.')
+        return redirect('selfladder_view')    
+    
+
+
+    
+
+        
+
+
     

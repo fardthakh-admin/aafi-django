@@ -171,6 +171,7 @@ db = firestore.client()
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\laptop center\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json"
 
 # APPEND_SLASH = False
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '14f5-109-107-231-8.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '72a8-109-107-231-24.ngrok-free.app']
 
-CSRF_TRUSTED_ORIGINS = ['https://14f5-109-107-231-8.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://72a8-109-107-231-24.ngrok-free.app']
+ 

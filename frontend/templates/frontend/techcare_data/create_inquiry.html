@@ -50,7 +50,7 @@
                                 <form method="post" action="{% url 'create_inquiry' %}">
                                     {% csrf_token %}
 
-                                    <div class="form-group">
+                                    {% comment %} <div class="form-group">
                                         <label for="user">User</label>
                                         <select name="user_id" id="user_id" class="form-control">
                                             <option value="">Select User</option>
@@ -58,7 +58,7 @@
                                             <option value="/users/{{ entry.name }}">{{ entry.data.display_name }}</option>
                                             {% endfor %}
                                         </select>
-                                    </div>
+                                    </div> {% endcomment %}
 
 
                                     <div class="form-group">

@@ -61,9 +61,9 @@
                                     <div class="form-group">
                                         <label for="{{ form.title.id_for_label }}">Title</label> {% render_field form.title class="form-control" %}
                                     </div>
-                                    <div class="form-group">
+                                    {% comment %} <div class="form-group">
                                         <label for="{{ form.type.id_for_label }}">Type</label> {% render_field form.type class="form-control" %}
-                                    </div>
+                                    </div> {% endcomment %}
                                     <div class="form-group">
                                         <label for="{{ form.duration.id_for_label }}">Duration</label> {% render_field form.duration class="form-control" %}
                                     </div>

@@ -128,7 +128,8 @@
                           <th>#</th>
                           <th>Patient ID</th>
                           <th>Title</th>
-                          <th>action</th>
+                          <th>Delete</th>
+                          <th>Update</th>
                        
                       </tr>
                   </thead>
@@ -141,21 +142,26 @@
                       </td>
                         <td class="document-title">{{ entry.data.title }}</td>
                         <td class="edit-delete-buttons">      
-                          <form method="POST" id="deleteForm"  action="{% url 'badges_delete' document_name=entry.name %}">
+                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'badges_delete' document_name=entry.name %}">
                               {% csrf_token %}
-                              <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete()" >Delete</button>
+                              <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
                           </form>
                           <script>
-                            function confirmDelete() {
-                                if (confirm('Are you sure you want to delete this?')) {
-                                    document.getElementById('deleteForm').submit();
-                                }
-                            }
+                                                       function confirmDelete(documentName) {
+                                  if (confirm('Are you sure you want to delete this?')) {
+                                      document.getElementById('deleteForm_' + documentName).submit();
+                                  }
+                              }
                         </script>
-                        
+                      </td>
+
+                      <td>
+                        {% include "frontend/techcare_data/update_badges.html" %}
+                      </td>
+
                     </tr>
-                   
-                  </td>
+                  
+              
                 {% endfor %}
                   </tbody>
               </table>

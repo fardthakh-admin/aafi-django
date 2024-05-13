@@ -1,0 +1,181 @@
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            margin-top: 20px;
+            margin: 0;
+        }
+        
+        h2 {
+            font-family: "Times New Roman", Times, serif;
+            text-align: left;
+            background-color: #faf9f9;
+            padding: 10px;
+        }
+    </style>
+</head>
+<button type="button" class="btn btn-primary btn-sm" id="updateButton" data-toggle="modal" data-target="#updateModal_{{ entry.name }}">Update</button>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-9">
+
+                <div class="modal fade" id="updateModal_{{ entry.name }}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel_{{ entry.name }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="updateModalLabel">Update Document</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'update_selfawarenessScenarios' document_name=entry.name %}">
+                                    {% csrf_token %}
+
+                                    <div class="form-group">
+                                        <label for="tags">Activity</label>
+                                        <select name="activity" id="id_activity" class="form-control">
+                                            <option value="">Select Activity</option>
+                                            {% for activity in activity_data %}
+                                                {% if activity.name == entry.data.activity|slice:"10:" %}
+                                                    <option value="/activity/{{ activity.name }}" selected>{{ activity.data.title }}</option>
+                                                {% else %}
+                                                    <option value="/activity/{{ activity.name }}">{{ activity.data.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tags">SelfAwarnessBites</label>
+                                        <select name="biteID" id="id_activity" class="form-control">
+                                            <option value="">Select selfAwarnessBites</option>
+                                            {% for selfAwarnessBites in selfAwarnessBites_data %}
+                                                {% if selfAwarnessBites.name == entry.data.biteID|slice:"19:" %}
+                                                    <option value="/selfAwarnessBites/{{ selfAwarnessBites.name }}" selected>{{ selfAwarnessBites.data.selfawarenessBiteTitle }}</option>
+                                                {% else %}
+                                                    <option value="/selfAwarnessBites/{{ selfAwarnessBites.name }}">{{ selfAwarnessBites.data.selfawarenessBiteTitle }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tags">InAppLink</label>
+                                        <select name="inAppLink" id="id_activity" class="form-control">
+                                            <option value="">Select InAppLink</option>
+                                            {% for inAppLink in inAppLinks_data %}
+                                                {% if inAppLink.name == entry.data.inAppLink|slice:"11:" %}
+                                                    <option value="/inAppLink/{{ inAppLink.name }}" selected>{{ inAppLink.data.title }}</option>
+                                                {% else %}
+                                                    <option value="/inAppLink/{{ inAppLink.name }}">{{ inAppLink.data.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tags">Journal</label>
+                                        <select name="journal" id="id_activity" class="form-control">
+                                            <option value="">Select Journal</option>
+                                            {% for journal in journalPrompt_data %}
+                                                {% if journal.name == entry.data.journal|slice:"15:" %}
+                                                    <option value="/journalPrompt/{{ journal.name }}" selected>{{ journal.data.title }}</option>
+                                                {% else %}
+                                                    <option value="/journalPrompt/{{ journal.name }}">{{ journal.data.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tags">NormalBite</label>
+                                        <select name="normalBite" id="id_activity" class="form-control">
+                                            <option value="">Select NormalBite</option>
+                                            {% for bites in bites_data %}
+                                                {% if bites.name == entry.data.normalBite|slice:"7:" %}
+                                                    <option value="/bites/{{ bites.name }}" selected>{{ bites.data.title }}</option>
+                                                {% else %}
+                                                    <option value="/bites/{{ bites.name }}">{{ bites.data.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="tags">WildCard</label>
+                                        <select name="wildcard" id="id_activity" class="form-control">
+                                            <option value="">Select WildCard</option>
+                                            {% for wildcard in wildCard_data %}
+                                                {% if wildcard.name == entry.data.wildcard|slice:"10:" %}
+                                                    <option value="/wildCard/{{ wildcard.name }}" selected>{{ wildcard.data.content }}</option>
+                                                {% else %}
+                                                    <option value="/wildCard/{{ wildcard.name }}">{{ wildcard.data.content }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.correction1from0to2.id_for_label }}">correction1from0to2</label> 
+                                        <input type="text" name="correction1from0to2" class="form-control" value="{{ entry.data.correction1from0to2 }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.correction2from3to5.id_for_label }}">correction2from3to5</label> 
+                                        <input type="text" name="correction2from3to5" class="form-control" value="{{ entry.data.correction2from3to5 }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.interactiveStatement.id_for_label }}">interactiveStatement</label> 
+                                        <input type="text" name="interactiveStatement" class="form-control" value="{{ entry.data.interactiveStatement }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.recommendation1.id_for_label }}">recommendation1</label> 
+                                        <input type="text" name="recommendation1" class="form-control" value="{{ entry.data.recommendation1 }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.recommendation2.id_for_label }}">recommendation2</label> 
+                                        <input type="text" name="recommendation2" class="form-control" value="{{ entry.data.recommendation2 }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> 
+                                        <input type="text" name="scenarioID" class="form-control" value="{{ entry.data.scenarioID }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.story.id_for_label }}">story</label> 
+                                        <input type="text" name="story" class="form-control" value="{{ entry.data.story }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.storyTitle.id_for_label }}">storyTitle</label> 
+                                        <input type="text" name="storyTitle" class="form-control" value="{{ entry.data.storyTitle }}">
+                                    </div>
+                                    {% comment %} <div class="form-group">
+                                        <label for="{{ form..id_for_label }}"></label> 
+                                        <input type="text" name="" class="form-control" value="{{ entry.data. }}">
+                                    </div> {% endcomment %}
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
