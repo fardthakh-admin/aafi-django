@@ -56,7 +56,7 @@ REST_FRAMEWORK = {
   ),
 }
 
-ROOT_URLCONF = "Aafi.urls"
+# ROOT_URLCONF = "Aafi.urls"
 
 TEMPLATES = [
     {
@@ -79,6 +79,7 @@ TEMPLATES = [
 ]
 
 
+# WSGI_APPLICATION = "Aafi.wsgi.application"
 WSGI_APPLICATION = "Aafi.wsgi.application"
 
 
