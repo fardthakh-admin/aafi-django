@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'widget_tweaks',
     'ckeditor',
+    
 ]
 
 MIDDLEWARE = [
@@ -164,11 +165,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ORIGIN_ALLOW_ALL = True # ALLOWS ALL FRONTEND PORTS TO ACCESS OUR APP
 CORS_ALLOW_CREDENTIALS = True # ALLOWS FRONTEND TO GET COOKIE
 
-cred = credentials.Certificate("C:\\Users\\laptop center\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json")
+cred = credentials.Certificate("techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json")
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "C:\\Users\\laptop center\\Downloads\\techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json"
 
 # APPEND_SLASH = False
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '72a8-109-107-231-24.ngrok-free.app']
