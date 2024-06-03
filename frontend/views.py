@@ -165,7 +165,13 @@ def calendar(request):
 
 @login_required(login_url='/login')
 def patients_list(request):
-    return render(request, 'frontend/doctor/patients.html')
+    # return users not supers admin and not staff
+    # CONVERT database FROM FIRESTORE TO POSTGRES
+    db = firestore.client()
+    collection = db.collection("users")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    return render(request, 'frontend/doctor/patients.html', {'document_data': document_data})
 
 @login_required(login_url='/login')
 def doctor_chat_page(request):

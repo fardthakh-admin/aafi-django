@@ -11,17 +11,31 @@
                 <thead>
                     <tr>
 
-                        <th scope="col" class="table-primary">First Name</th>
-                        <th scope="col" class="table-primary"> Surname</th>
-                        <th scope="col" class="table-primary"> Date of Birth</th>
+                        <th scope="col" class="table-primary">#</th>
+                        <th scope="col" class="table-primary">Patients ID</th>
+                        <th scope="col" class="table-primary">Name</th>
                         <th scope="col" class="table-primary">Gender</th>
                         <th scope="col" class="table-primary">Email Address</th>
-                        <th scope="col" class="table-primary">Contact Phone Number</th>
+                        <th scope="col" class="table-primary">Height</th>
+                        <th scope="col" class="table-primary">Weight</th>
+                        <th scope="col" class="table-primary">Year Of Diagnosis</th>
 
                     </tr>
                 </thead>
                 <tbody id="table-body">
-                                                         
+
+                {% for entry in document_data %}
+                    <tr>
+                        <td class="document-number">{{ forloop.counter }}</td>
+                        <td class="document-number">{{ entry.name  }}</td>
+                        <td class="document-title">{{ entry.data.display_name }}</td>
+                        <td class="document">{{ entry.data.gender }}</td>
+                        <td class="document">{{ entry.data.email }}</td>
+                        <td class="document">{{ entry.data.height }}</td>
+                        <td class="document">{{ entry.data.weight }}</td>
+                        <td class="document">{{ entry.data.yearOfDiagnosis }}</td>
+                    </tr>
+                {% endfor %}                         
                 </tbody>
             </table>
         </div>
