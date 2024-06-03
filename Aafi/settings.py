@@ -16,7 +16,7 @@ SECRET_KEY = "django-insecure-b24#+xxy#vf05zx8g+%@1p4p7iryx4uth0ulq(etw_vs54_&d!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['portal.techcare.health']
+ALLOWED_HOSTS = ['portal.techcare.health', '20.173.105.209']
 
 
 # Application definition
