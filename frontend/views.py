@@ -173,6 +173,20 @@ def patients_list(request):
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     return render(request, 'frontend/doctor/patients.html', {'document_data': document_data})
 
+
+def patients_detail(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("users")
+    document_ref = collection.document(document_name)
+    document_data = document_ref.get().to_dict()
+
+    if not document_data:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    return render(request, 'frontend/techcare_data/patientssdocument.html', {'document_data': document_data})
+
+
+
 @login_required(login_url='/login')
 def doctor_chat_page(request):
     return render(request, 'frontend/doctor/doctor-chat.html')

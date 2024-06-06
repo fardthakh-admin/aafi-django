@@ -26,8 +26,11 @@
 
                 {% for entry in document_data %}
                     <tr>
+                        
                         <td class="document-number">{{ forloop.counter }}</td>
-                        <td class="document-number">{{ entry.name  }}</td>
+                        <td class="document-id">
+                            <a href="{% url 'patientsdocument' entry.name %}">{{ entry.name }}</a>
+                        </td>
                         <td class="document-title">{{ entry.data.display_name }}</td>
                         <td class="document">{{ entry.data.gender }}</td>
                         <td class="document">{{ entry.data.email }}</td>
