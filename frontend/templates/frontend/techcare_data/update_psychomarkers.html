@@ -51,6 +51,26 @@
                                         <input type="text" name="depression" class="form-control" value="{{ entry.data.depression }}">
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="user">User</label>
+                                        <select name="user" id="user_id" class="form-control">
+                                          <option value="">Select User</option>
+                                          {% for user in users_data %}
+                                          {% if user.name == entry.data.user|slice:"7:" %}
+                                              <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
+                                          {% else %}
+                                              <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                    </div>
+
+                                <div class="form-group">
+                                    <label for="{{ form.description.id_for_label }}">time</label> 
+                                    <input type="date" name="time" class="form-control" value="{{ entry.data.time }}">
+                                </div>
+
+
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Save</button>

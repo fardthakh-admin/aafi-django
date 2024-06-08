@@ -130,6 +130,7 @@
                           <th>Patient ID</th>
                           <th>topic</th>
                           <th>question</th>
+                          <th>users</th>
                           <th>Delete</th>
                           <th>Update</th>
                       </tr>
@@ -143,6 +144,7 @@
                       </td>
                         <td class="document-title">{{ entry.data.topic }}</td>
                         <td class="document">{{ entry.data.question}}</td>
+                        <td class="document">{{ entry.data.user}}</td>
                         <td class="edit-delete-buttons">      
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'inquiry_delete' document_name=entry.name %}">

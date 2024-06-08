@@ -176,14 +176,114 @@ def patients_list(request):
 
 def patients_detail(request, document_name):
     db = firestore.Client()
-    collection = db.collection("users")
-    document_ref = collection.document(document_name)
-    document_data = document_ref.get().to_dict()
 
-    if not document_data:
+    # Fetch user document
+    user_collection = db.collection("users")
+    user_document_ref = user_collection.document(document_name)
+    user_document = user_document_ref.get()
+
+    if not user_document.exists:
         return render(request, 'frontend/techcare_data/document_not_found.html')
 
-    return render(request, 'frontend/techcare_data/patientssdocument.html', {'document_data': document_data})
+    document_data = user_document.to_dict()
+
+    # Fetch readBites data for the user
+    readbites_collection = db.collection("readBites")
+    readbites_query = readbites_collection.where('user', '==', f'/users/{document_name}').stream()
+    readbites_data = []
+    for doc in readbites_query:
+        readbites_data.append(doc.to_dict())
+
+    readstories_collection = db.collection("readStories")
+    readstories_query = readstories_collection.where('user', '==', f'/users/{document_name}').stream()
+    readstories_data = []
+    for doc in readstories_query:
+        readstories_data.append(doc.to_dict())
+
+    suggestedActivities_collection = db.collection("suggestedActivities")
+    suggestedActivities_query = suggestedActivities_collection.where('user', '==', f'/users/{document_name}').stream()
+    suggestedActivities_data = []
+    for doc in suggestedActivities_query:
+        suggestedActivities_data.append(doc.to_dict())
+
+    suggestedBites_collection = db.collection("suggestedBites")
+    suggestedBites_query = suggestedBites_collection.where('user', '==', f'/users/{document_name}').stream()
+    suggestedBites_data = []
+    for doc in suggestedBites_query:
+        suggestedBites_data.append(doc.to_dict())
+
+    suggestedInAppLinks_collection = db.collection("suggestedInAppLinks")
+    suggestedInAppLinks_query = suggestedInAppLinks_collection.where('user', '==', f'/users/{document_name}').stream()
+    suggestedInAppLinks_data = []
+    for doc in suggestedInAppLinks_query:
+        suggestedInAppLinks_data.append(doc.to_dict())
+
+    suggestedJournals_collection = db.collection("suggestedJournals")
+    suggestedJournals_query = suggestedJournals_collection.where('user', '==', f'/users/{document_name}').stream()
+    suggestedJournals_data = []
+    for doc in suggestedJournals_query:
+        suggestedJournals_data.append(doc.to_dict())
+
+    suggestedSelfAwarnessBites_collection = db.collection("suggestedSelfAwarnessBites")
+    suggestedSelfAwarnessBites_query = suggestedSelfAwarnessBites_collection.where('user', '==', f'/users/{document_name}').stream()
+    suggestedSelfAwarnessBites_data = []
+    for doc in suggestedSelfAwarnessBites_query:
+        suggestedSelfAwarnessBites_data.append(doc.to_dict())
+
+    suggestedWildCards_collection = db.collection("suggestedWildCards")
+    suggestedWildCards_query = suggestedWildCards_collection.where('user', '==', f'/users/{document_name}').stream()
+    suggestedWildCards_data = []
+    for doc in suggestedWildCards_query:
+        suggestedWildCards_data.append(doc.to_dict())
+
+    selfLadder_collection = db.collection("selfLadder")
+    selfLadder_query = selfLadder_collection.where('userID', '==', f'/users/{document_name}').stream()
+    selfLadder_data = []
+    for doc in selfLadder_query:
+        selfLadder_data.append(doc.to_dict())
+
+    psychomarkers_collection = db.collection("psychomarkers")
+    psychomarkers_query = psychomarkers_collection.where('user', '==', f'/users/{document_name}').stream()
+    psychomarkers_data = []
+    for doc in psychomarkers_query:
+        psychomarkers_data.append(doc.to_dict())
+
+    inquiry_collection = db.collection("inquiry")
+    inquiry_query = inquiry_collection.where('user', '==', f'/users/{document_name}').stream()
+    inquiry_data = []
+    for doc in inquiry_query:
+        inquiry_data.append(doc.to_dict())
+
+    biomarkers_collection = db.collection("biomarkers")
+    biomarkers_query = biomarkers_collection.where('user', '==', f'/users/{document_name}').stream()
+    biomarkers_data = []
+    for doc in biomarkers_query:
+        biomarkers_data.append(doc.to_dict())
+
+    dailyBloodGlucoseAverage_collection = db.collection("dailyBloodGlucoseAverage")
+    dailyBloodGlucoseAverage_query = dailyBloodGlucoseAverage_collection.where('user', '==', f'/users/{document_name}').stream()
+    dailyBloodGlucoseAverage_data = []
+    for doc in dailyBloodGlucoseAverage_query:
+        dailyBloodGlucoseAverage_data.append(doc.to_dict())
+
+    feelings_collection = db.collection("feelings")
+    feelings_query = feelings_collection.where('user', '==', f'/users/{document_name}').stream()
+    feelings_data = []
+    for doc in feelings_query:
+        feelings_data.append(doc.to_dict())
+
+
+    return render(request, 'frontend/techcare_data/patientssdocument.html',
+    {'document_data': document_data, 'readbites_data': readbites_data, 
+     'readstories_data': readstories_data, 'suggestedActivities_data': suggestedActivities_data, 
+     'suggestedBites_data': suggestedBites_data, 'suggestedInAppLinks_data': suggestedInAppLinks_data, 
+     'suggestedJournals_data': suggestedJournals_data, 
+    'suggestedSelfAwarnessBites_data': suggestedSelfAwarnessBites_data, 
+    'suggestedWildCards_data': suggestedWildCards_data,'selfLadder_data': selfLadder_data,
+    'psychomarkers_data': psychomarkers_data,'inquiry_data': inquiry_data,
+    'biomarkers_data' :biomarkers_data,'dailyBloodGlucoseAverage_data':dailyBloodGlucoseAverage_data,
+    'feelings_data':feelings_data,
+    })
 
 
 

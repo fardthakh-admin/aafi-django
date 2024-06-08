@@ -45,6 +45,20 @@
                             <div class="modal-body">
                                 <form method="post" action="{% url 'update_inquiry' document_name=entry.name %}">
                                     {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="user">User</label>
+                                        <select name="user" id="user_id" class="form-control">
+                                          <option value="">Select User</option>
+                                          {% for user in users_data %}
+                                          {% if user.name == entry.data.user|slice:"7:" %}
+                                              <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
+                                          {% else %}
+                                              <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
+                                          {% endif %}
+                                          {% endfor %}
+                                      </select>
+                                    </div>
+
 
                                     <div class="form-group">
                                         <label for="{{ form.question.id_for_label }}">Question</label> 

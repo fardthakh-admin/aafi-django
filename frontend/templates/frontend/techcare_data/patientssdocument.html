@@ -51,7 +51,7 @@
             </div>
             <div class="col-md-9">
                 <div class="card">
-                    <div class="card-header">
+                    {% comment %} <div class="card-header">
                         <h2 class="mb-0">Document Detail
                             <div class="btn-group" role="group">
                                 <a class="btn success btn-sm">Edit</a>
@@ -59,15 +59,200 @@
                             </div>
                         </h2>
                     </div>
-                    
+                     {% endcomment %}
                     <div class="card-body">
-                        <ul class="list-group">
+                        <h3>User Information</h3>
+                        <ul class="list-group mb-4">
                             {% for key, value in document_data.items %}
                                 <li class="list-group-item">
                                     <strong>{{ key }}:</strong> {{ value }}
                                 </li>
                             {% endfor %}
                         </ul>
+                        
+                        {% if readbites_data %}
+                        <h3>ReadBites Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for readbite in readbites_data %}
+                                {% for key, value in readbite.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                    {% if readstories_data %}
+                        <h3>ReadStories Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for readstory in readstories_data %}
+                                {% for key, value in readstory.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if suggestedActivities_data %}
+                        <h3>SuggestedActivities Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for suggestedactivities in suggestedActivities_data %}
+                                {% for key, value in suggestedactivities.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if suggestedBites_data %}
+                        <h3>SuggestedBites Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for suggestedbites in suggestedBites_data %}
+                                {% for key, value in suggestedbites.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if suggestedInAppLinks_data %}
+                        <h3>SuggestedInAppLinks Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for suggestedInAppLinks in suggestedInAppLinks_data %}
+                                {% for key, value in suggestedInAppLinks.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if suggestedJournals_data %}
+                        <h3>SuggestedJournals Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for suggestedJournals in suggestedJournals_data %}
+                                {% for key, value in suggestedJournals.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if suggestedSelfAwarnessBites_data %}
+                        <h3>SuggestedSelfAwarnessBites Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for suggestedSelfAwarnessBites in suggestedSelfAwarnessBites_data %}
+                                {% for key, value in suggestedSelfAwarnessBites.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                    {% if suggestedWildCards_data %}
+                        <h3>SuggestedWildCards Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for suggestedWildCards in suggestedWildCards_data %}
+                                {% for key, value in suggestedWildCards.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if selfLadder_data %}
+                        <h3>SelfLadder Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for selfLadder in selfLadder_data %}
+                                {% for key, value in selfLadder.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if psychomarkers_data %}
+                        <h3>Psychomarkers Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for psychomarkers in psychomarkers_data %}
+                                {% for key, value in psychomarkers.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if inquiry_data %}
+                        <h3>Inquiry Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for inquiry in inquiry_data %}
+                                {% for key, value in inquiry.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if biomarkers_data %}
+                        <h3>Biomarkers Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for biomarkers in biomarkers_data %}
+                                {% for key, value in biomarkers.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                    {% if dailyBloodGlucoseAverage_data %}
+                        <h3>DailyBloodGlucoseAverage Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for dailyBloodGlucoseAverage in dailyBloodGlucoseAverage_data %}
+                                {% for key, value in dailyBloodGlucoseAverage.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+
+                    {% if feelings_data %}
+                        <h3>Feelings Information</h3>
+                        <ul class="list-group mb-4">
+                            {% for feelings in feelings_data %}
+                                {% for key, value in feelings.items %}
+                                    <li class="list-group-item">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                        
                     </div>
                 </div>
             </div>

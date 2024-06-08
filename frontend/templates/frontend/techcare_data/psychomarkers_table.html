@@ -128,8 +128,9 @@
                       <tr>
                           <th>#</th>
                           <th>Patient ID</th>
-                          <th>Tile</th>
                           <th>depression</th>
+                          <th>users</th>
+                          <th>time</th>
                           <th>Delete</th>
                           <th>Update</th>
                       </tr>
@@ -141,8 +142,9 @@
                         <td class="document-id">
                           <a href="{% url 'psychomarkersdocument' entry.name %}">{{ entry.name }}</a>
                       </td>
-                        <td class="document-title">{{ entry.data.title}}</td>
                         <td class="document">{{ entry.data.depression }}</td>
+                        <td class="document">{{ entry.data.user }}</td>
+                        <td class="document">{{ entry.data.time }}</td>
                         <td class="edit-delete-buttons">      
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'psychomarkers_delete' document_name=entry.name %}">
