@@ -14,6 +14,8 @@ urlpatterns = [
     path('doctor-homepage/', views.doctor_homepage, name="doctor-homepage"),
     path('doctor-patients/', views.patients_list, name="patients"),
     path('doctor-chat/', views.doctor_chat_page, name="doctor-chat"),
+    
+    path('doctor-patients/search/', patient_search, name='patient-search'),
 
     path('calendar/', views.calendar, name="calendar"),
    # PATIENT PAGES
@@ -163,6 +165,7 @@ urlpatterns = [
     path('update/wildCard/<str:document_name>', update_wildCard, name='update_wildCard'),
     path('update/selfladder/<str:document_name>', update_selfladder, name='update_selfladder'),
     # path('update//<str:document_name>', update_, name='update_'),
+
 
 
 ]

@@ -46,29 +46,98 @@
                                 <form method="post" action="{% url 'update_bites' document_name=entry.name %}">
                                     {% csrf_token %}
 
-                           
-
+                                    
                                     <div class="form-group">
                                         <label for="tags">Tags</label>
                                         <select name="tags" id="id_tags" class="form-control">
                                             <option value="">Select Tag</option>
-                                            {% for tags in tags_data %}
-                                            {% if tags.name == entry.data.tags|slice:"6:" %}
-                                              <option value="/tags/{{ tags.name }}" selected>{{ tags.data.title }}</option>
-                                          {% else %}
-                                              <option value="/tags/{{ tags.name }}">{{ tags.data.title }}</option>
-                                          {% endif %}
+                                            {% for tag in tags_data %}
+                                                {% if tag.name == entry.data.tags|slice:"6:" %}
+                                                    <option value="/tags/{{ tag.name }}" selected>{{ tag.data.title }}</option>
+                                                {% else %}
+                                                    <option value="/tags/{{ tag.name }}">{{ tag.data.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="categories">Categories</label>
+                                        <select name="categories" id="id_categories" class="form-control">
+                                            <option value="">Select Categories</option>
+                                            {% for category in categories_data %}
+                                                {% if category.name == entry.data.categories|slice:"12:" %}
+                                                    <option value="/categories/{{ category.name }}" selected>{{ category.data.title }}</option>
+                                                {% else %}
+                                                    <option value="/categories/{{ category.name }}">{{ category.data.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="user">Thumbs Up Users</label>
+                                        <select name="thumbs_up_users" id="user_id" class="form-control">
+                                            <option value="">Select thumbs_up_users</option>
+                                            {% for user in users_data %}
+                                                {% if user.name == entry.data.thumbs_up_users|slice:"7:" %}
+                                                    <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
+                                                {% else %}
+                                                    <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
+                                                {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.categories.id_for_label }}">Categories</label> 
-                                        <input type="text" name="categories" class="form-control" value="{{ entry.data.categories }}">
-
+                                        <label for="user">Thumbs Down Users</label>
+                                        <select name="thumbs_down_users" id="user_id" class="form-control">
+                                            <option value="">Select thumbs_down_users</option>
+                                            {% for user in users_data %}
+                                                {% if user.name == entry.data.thumbs_down_users|slice:"7:" %}
+                                                    <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
+                                                {% else %}
+                                                    <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
                                     </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.image.id_for_label }}">Image</label> 
+                                        <input type="text" name="image" class="form-control" value="{{ entry.data.image }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.order.id_for_label }}">Order</label> 
+                                        <input type="number" name="order" class="form-control" value="{{ entry.data.order }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.Learning_ponits.id_for_label }}">Learning Ponits</label> 
+                                        <input type="number" name="Learning_ponits" class="form-control" value="{{ entry.data.Learning_ponits }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.CBT_points.id_for_label }}">CBT Ponits</label> 
+                                        <input type="number" name="CBT_points" class="form-control" value="{{ entry.data.CBT_points }}">
+                                    </div>
+                                    
+                             
+                                    <div class="form-group">
+                                        <label for="{{ form.next.id_for_label }}">Next</label> 
+                                        <input type="text" name="next" class="form-control" value="{{ entry.data.next }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> 
+                                        <input type="text" name="scenarioID" class="form-control" value="{{ entry.data.scenarioID }}">
+                                    </div>
+
+
+                             
+             
                                     <div class="form-group">
                                         <label for="{{ form.difficulty.id_for_label }}">Difficulty</label> 
                                         <input type="text" name="difficulty" class="form-control" value="{{ entry.data.difficulty }}">
+                                    </div>
 
                                     <div class="form-group">
                                         <label for="{{ form.title.id_for_label }}">Title</label> 

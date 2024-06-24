@@ -66,7 +66,40 @@
                                         <label for="{{ form.title.id_for_label }}">title</label> 
                                         <input type="text" name="title" class="form-control" value="{{ entry.data.title }}">
                                     </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.max.id_for_label }}">max</label> 
+                                        <input type="number" name="max" class="form-control" value="{{ entry.data.max }}">
+                                    </div>
 
+                                    <div class="form-group">
+                                        <label for="{{ form.feeling.id_for_label }}">feeling</label> 
+                                        <input type="text" name="feeling" class="form-control" value="{{ entry.data.feeling }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.status.id_for_label }}">status</label> 
+                                        <input type="text" name="status" class="form-control" value="{{ entry.data.status }}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.order.id_for_label }}">order</label> 
+                                        <input type="number" name="order" class="form-control" value="{{ entry.data.order }}">
+                                    </div>
+        
+                                    <div class="form-group">
+                                        <label for="{{ form.story.id_for_label }}">story</label> 
+                                        <input type="text" name="story" class="form-control" value="{{ entry.data.story }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.InteractiveStatement.id_for_label }}">InteractiveStatement</label> 
+                                        <input type="text" name="InteractiveStatement" class="form-control" value="{{ entry.data.InteractiveStatement }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.Recommendation.id_for_label }}">Recommendation</label> 
+                                        <input type="text" name="Recommendation" class="form-control" value="{{ entry.data.Recommendation }}">
+                                    </div>
+                      
                         
 
                                     <div class="form-group">
@@ -92,6 +125,48 @@
                                               <option value="/activities/{{ activities.name }}" selected>{{ activities.data.title }}</option>
                                           {% else %}
                                               <option value="/activities/{{ activities.name }}">{{ activities.data.title }}</option>
+                                          {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tags">suggestedBites</label>
+                                        <select name="suggestedBite" id="id_tags" class="form-control">
+                                            <option value="">Select suggestedBites</option>
+                                            {% for suggestedBites in suggestedBites_data %}
+                                            {% if suggestedBites.name == entry.data.suggestedBite|slice:"16:" %}
+                                              <option value="/suggestedBites/{{ suggestedBites.name }}" selected>{{ suggestedBites.data.state }}</option>
+                                          {% else %}
+                                              <option value="/suggestedBites/{{ suggestedBites.name }}">{{ suggestedBites.data.state }}</option>
+                                          {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tags">suggestedJournals</label>
+                                        <select name="suggestedJournal" id="id_tags" class="form-control">
+                                            <option value="">Select suggestedJournals</option>
+                                            {% for suggestedJournals in suggestedJournals_data %}
+                                            {% if suggestedJournals.name == entry.data.suggestedJournal|slice:"19:" %}
+                                              <option value="/suggestedJournals/{{ suggestedJournals.name }}" selected>{{ suggestedJournals.data.state }}</option>
+                                          {% else %}
+                                              <option value="/suggestedJournals/{{ suggestedJournals.name }}">{{ suggestedJournals.data.state }}</option>
+                                          {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="tags">SuggestBitesFromBank</label>
+                                        <select name="SuggestBitesFromBank" id="id_tags" class="form-control">
+                                            <option value="">Select Bites</option>
+                                            {% for bites in bites_data %}
+                                            {% if bites.name == entry.data.SuggestBitesFromBank|slice:"7:" %}
+                                              <option value="/bites/{{ bites.name }}" selected>{{ bites.data.title }}</option>
+                                          {% else %}
+                                              <option value="/bites/{{ bites.name }}">{{ bites.data.title }}</option>
                                           {% endif %}
                                             {% endfor %}
                                         </select>

@@ -10,6 +10,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from api.models import User
+from .models import users
+from django.db.models import Q
 from django.contrib.auth import get_user_model
 from frontend.models import bites
 import logging
@@ -22,6 +24,7 @@ from datetime import datetime
 from .models import tags
 from django.http import HttpResponseForbidden
 from functools import wraps
+from django.shortcuts import render, get_object_or_404
 
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
@@ -165,14 +168,26 @@ def calendar(request):
 
 @login_required(login_url='/login')
 def patients_list(request):
-    # return users not supers admin and not staff
-    # CONVERT database FROM FIRESTORE TO POSTGRES
-    db = firestore.client()
     collection = db.collection("users")
     documents = collection.stream()
-    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/doctor/patients.html', {'document_data': document_data})
+    document_data = [{'id': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    query = request.GET.get('q')
+
+    if query:
+        filtered_data = []
+        for entry in document_data:
+            if (query.lower() in entry['data'].get('display_name', '').lower()) or \
+               (query.lower() in entry['data'].get('email', '').lower()) or \
+               (query.lower() in entry['data'].get('gender', '').lower()) or \
+               (query.lower() in str(entry['data'].get('height', '')).lower()) or \
+               (query.lower() in str(entry['data'].get('weight', '')).lower()) or \
+               (query.lower() in entry['data'].get('yearOfDiagnosis', '').lower()):
+                filtered_data.append(entry)
+    else:
+        filtered_data = document_data
+
+    return render(request, 'frontend/doctor/patients.html', {'document_data': filtered_data, 'query': query})
 
 def patients_detail(request, document_name):
     db = firestore.Client()
@@ -307,16 +322,26 @@ def quiz_question_view(request):
 
 def bites_view(request):
     db = firestore.client()
-    db = firestore.Client()
+
+    # Fetching bites data
     collection = db.collection("bites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = BitesForm()   
-    db = firestore.client()
+
+    # Fetching tags data
     collection = db.collection("tags")
     documents = collection.stream()
     tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
+
+
+    form = BitesForm() 
+
+    return render(request, 'frontend/techcare_data/bites_table.html', {
+        'form': form, 
+        'tags_data': tags_data,
+        'document_data': document_data,
+    })
+
 
 def selfawarenessScenarios_view(request):
     db = firestore.client()
@@ -363,7 +388,17 @@ def bites_view(request):
     collection = db.collection("tags")
     documents = collection.stream()
     tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
+
+    collection = db.collection("categories")
+    documents = collection.stream()
+    categories_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    # Fetching users data
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data, 'categories_data': categories_data, 'users_data':users_data})
 
 def assets_view(request):
     db = firestore.client()
@@ -965,7 +1000,19 @@ def scenarios_view(request):
     documents = collection.stream()
     activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/scenarios_table.html', {'document_data': document_data , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data})
+    collection = db.collection("suggestedBites")
+    documents = collection.stream()
+    suggestedBites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("suggestedJournals")
+    documents = collection.stream()
+    suggestedJournals_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    collection = db.collection("bites")
+    documents = collection.stream()
+    bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/scenarios_table.html', {'document_data': document_data , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data,'suggestedBites_data':suggestedBites_data,'suggestedJournals_data':suggestedJournals_data, 'bites_data':bites_data})
 
 def scenariosdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1820,6 +1867,14 @@ def update_bites(request, document_name):
         form = BitesForm(request.POST)
         entry_id = document_name
         data = {
+                'image': request.POST.get('image'),
+                'order': request.POST.get('order'),
+                'Learning_ponits': request.POST.get('Learning_ponits'),
+                'CBT_points': request.POST.get('CBT_points'),
+                'next': request.POST.get('next'),
+                'scenarioID': request.POST.get('scenarioID'),
+                'thumbs_up_users': request.POST.get('thumbs_up_users'),
+                'thumbs_down_users': request.POST.get('thumbs_down_users'),
                 'categories': request.POST.get('categories'),
                 'content': request.POST.get('content'),
                 'difficulty': request.POST.get('difficulty'),
@@ -1902,6 +1957,8 @@ def update_inAppLinks(request, document_name):
                 'title': request.POST.get('title'),
                 'order': request.POST.get('order'),
                 'type': request.POST.get('type'),
+                'image': request.POST.get('image'),
+                'link': request.POST.get('link'),
             }
         db = firestore.client()
         db.collection("inAppLinks").document(entry_id).update(data)
@@ -2026,6 +2083,18 @@ def update_scenarios(request, document_name):
                 'majorAssessment': request.POST.get('majorAssessment'),
                 'suggestedActivity': request.POST.get('suggestedActivity'),
                 'type': request.POST.get('type'),
+
+                'suggestedBite': request.POST.get('suggestedBite'),
+                'suggestedJournal': request.POST.get('suggestedJournal'),
+                'max': request.POST.get('max'),
+                'feeling': request.POST.get('feeling'),
+                'status': request.POST.get('status'),
+                'order': request.POST.get('order'),
+                'story': request.POST.get('story'),
+                'InteractiveStatement': request.POST.get('InteractiveStatement'),
+                'Recommendation': request.POST.get('Recommendation'),
+                'SuggestBitesFromBank': request.POST.get('SuggestBitesFromBank'),
+
             }
         db = firestore.client()
         db.collection("scenarios").document(entry_id).update(data)
@@ -2400,10 +2469,16 @@ def update_selfladder(request, document_name):
         return redirect('selfladder_view')    
     
 
+def patient_search(request):
+    query = request.GET.get('q')
+    if query:
+        results = users.objects.filter(
+            Q(display_name__icontains=query) | Q(email__icontains=query)
+        )
+    else:
+        results = users.objects.none()
 
-    
-
-        
+    return render(request, 'frontend/techcare_data/pations_search.html', {'results': results})
 
 
-    
+# frontend/doctor/patients.html

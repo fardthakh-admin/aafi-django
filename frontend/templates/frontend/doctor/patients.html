@@ -3,14 +3,19 @@
 
 {% block content %}
 
-<div class=" container-fluid m-1 bg-light ">
+<div class="container-fluid m-1 bg-light">
     <div class="row">
-        {% include 'sidebar.html' %}        
-        <div class=" col-xl-9">
-            <table class="table table-striped  ">
+        {% include 'sidebar.html' %}
+        <div class="col-xl-9">
+            <!-- Search Form -->
+            <form method="get" action="{% url 'patients' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by name, email, etc." class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form>
+
+            <table class="table table-striped">
                 <thead>
                     <tr>
-
                         <th scope="col" class="table-primary">#</th>
                         <th scope="col" class="table-primary">Patients ID</th>
                         <th scope="col" class="table-primary">Name</th>
@@ -19,17 +24,14 @@
                         <th scope="col" class="table-primary">Height</th>
                         <th scope="col" class="table-primary">Weight</th>
                         <th scope="col" class="table-primary">Year Of Diagnosis</th>
-
                     </tr>
                 </thead>
                 <tbody id="table-body">
-
-                {% for entry in document_data %}
+                    {% for entry in document_data %}
                     <tr>
-                        
                         <td class="document-number">{{ forloop.counter }}</td>
                         <td class="document-id">
-                            <a href="{% url 'patientsdocument' entry.name %}">{{ entry.name }}</a>
+                            <a href="{% url 'patientsdocument' entry.id %}">{{ entry.id }}</a>
                         </td>
                         <td class="document-title">{{ entry.data.display_name }}</td>
                         <td class="document">{{ entry.data.gender }}</td>
@@ -38,7 +40,11 @@
                         <td class="document">{{ entry.data.weight }}</td>
                         <td class="document">{{ entry.data.yearOfDiagnosis }}</td>
                     </tr>
-                {% endfor %}                         
+                    {% empty %}
+                    <tr>
+                        <td colspan="8">No users found.</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
