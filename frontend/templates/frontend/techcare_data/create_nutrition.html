@@ -1,0 +1,110 @@
+{% load widget_tweaks %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            margin-top: 20px;
+            margin: 0;
+        }
+        
+        h2 {
+            font-family: "Times New Roman", Times, serif;
+            text-align: left;
+            background-color: #faf9f9;
+            padding: 10px;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="row">
+
+            <div class="col-md-9">
+                <button type="button" style="background:green;color:white" class="btn success" id="createButton" data-toggle="modal" data-target="#createModal">Create</button>
+
+                <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="createModalLabel">Create Document</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="{% url 'create_nutrition' %}">
+                                    {% csrf_token %}
+
+                                    <div class="form-group">
+                                        <label for="{{ form.carbContent.id_for_label }}">carbContent</label>
+                                        <input type="text" id="{{ form.carbContent.id_for_label }}" name="carbContent" class="form-control" value="{{ form.carbContent.value }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.name_ar.id_for_label }}">name_ar</label>
+                                        <input type="text" id="{{ form.name_ar.id_for_label }}" name="name_ar" class="form-control" value="{{ form.name_ar.value }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.name_en.id_for_label }}">name_en</label>
+                                        <input type="text" id="{{ form.name_en.id_for_label }}" name="name_en" class="form-control" value="{{ form.name_en.value }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.portion.id_for_label }}">portion</label>
+                                        <input type="text" id="{{ form.portion.id_for_label }}" name="portion" class="form-control" value="{{ form.portion.value }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.proteinContent.id_for_label }}">proteinContent</label>
+                                        <input type="text" id="{{ form.proteinContent.id_for_label }}" name="proteinContent" class="form-control" value="{{ form.proteinContent.value }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.totalCalories.id_for_label }}">totalCalories</label>
+                                        <input type="number" id="{{ form.totalCalories.id_for_label }}" name="totalCalories" class="form-control" value="{{ form.totalCalories.value }}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="{{ form.weight.id_for_label }}">weight</label>
+                                        <input type="number" id="{{ form.weight.id_for_label }}" name="weight" class="form-control" value="{{ form.weight.value }}">
+                                    </div>
+                                    
+                    
+
+                               
+
+
+                                    
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

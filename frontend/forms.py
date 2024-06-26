@@ -221,3 +221,9 @@ class UsersForm(forms.ModelForm):
      class Meta:
         model=users
         fields = "__all__"
+
+class NutritionForm(forms.ModelForm):
+     class Meta:
+        model=nutrition
+        fields = "__all__"
+

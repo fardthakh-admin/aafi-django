@@ -231,6 +231,22 @@ class shortBite(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     order= order = models.IntegerField(default=0)
     title = models.CharField(max_length=100, default=None)
+    
 
+    def __str__(self):
+         return self.__all__
+    
+    
+    
+class nutrition(models.Model):
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    carbContent = models.CharField(max_length=100, default=None)
+    name_ar = models.CharField(max_length=100, default=None)
+    name_en = models.CharField(max_length=100, default=None)
+    portion = models.CharField(max_length=100, default=None)
+    proteinContent = models.CharField(max_length=100, default=None)
+    totalCalories = models.IntegerField(max_length=100, default=None)
+    weight = models.IntegerField(max_length=100, default=None)
+    
     def __str__(self):
          return self.__all__

@@ -65,6 +65,8 @@ urlpatterns = [
     path('create_tags/', create_tags,  name='create_tags'),
     path('create_trivia/', create_trivia,  name='create_trivia'),
     path('create_users/', create_users, name='create_users'),
+    path('create_nutrition/', create_nutrition, name='create_nutrition'),
+
 
     path('collections/', get_all_collections, name='collections'),
     path('handle_form_submission/', handle_form_submission, name='handle_form_submission'),

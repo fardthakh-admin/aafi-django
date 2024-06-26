@@ -25,6 +25,7 @@ from .models import tags
 from django.http import HttpResponseForbidden
 from functools import wraps
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
@@ -187,7 +188,12 @@ def patients_list(request):
     else:
         filtered_data = document_data
 
-    return render(request, 'frontend/doctor/patients.html', {'document_data': filtered_data, 'query': query})
+    # Pagination setup
+    paginator = Paginator(filtered_data, 20)  # Show 20 patients per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/doctor/patients.html', {'page_obj': page_obj, 'query': query})
 
 def patients_detail(request, document_name):
     db = firestore.Client()
@@ -372,23 +378,29 @@ def selfawarenessScenarios_view(request):
     collection = db.collection("wildCard")
     documents = collection.stream()
     wildCard_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'document_data': document_data   }
+
+    paginator = Paginator(document_data, 20)  # Show 20 bites per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'page_obj': page_obj   }
 
 
     return render(request, 'frontend/techcare_data/selfawarenessScenarios_table.html', context)
 
 def bites_view(request):
     db = firestore.client()
-    db = firestore.Client()
+
+    # Fetching bites data
     collection = db.collection("bites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = BitesForm()   
-    db = firestore.client()
+    
+    # Fetching tags data
     collection = db.collection("tags")
     documents = collection.stream()
     tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    # Fetching categories data
     collection = db.collection("categories")
     documents = collection.stream()
     categories_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
@@ -398,7 +410,21 @@ def bites_view(request):
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/bites_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data, 'categories_data': categories_data, 'users_data':users_data})
+    # Pagination for bites data
+    paginator = Paginator(document_data, 20)  # Show 20 bites per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    form = BitesForm()  # Assuming BitesForm is defined in forms.py
+
+    return render(request, 'frontend/techcare_data/bites_table.html', {
+        'form': form,
+        'tags_data': tags_data,
+        'categories_data': categories_data,
+        'users_data': users_data,
+        'page_obj': page_obj,  # Pass the paginated bites data to the template
+    })
+
 
 def assets_view(request):
     db = firestore.client()
@@ -505,61 +531,127 @@ def handle_form_submission(request):
 
 def activities_view(request):
     db = firestore.Client()
-    collection = db.collection("activities")
-    documents = collection.stream()
-    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = ActivitiesForm()   
-    db = firestore.client()
-    collection = db.collection("tags")
-    documents = collection.stream()
-    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/activities_table.html', {'form': form, 'tags_data': tags_data ,'document_data': document_data})
+
+    # Fetch activities data
+    activities_collection = db.collection("activities")
+    activities_documents = activities_collection.stream()
+    activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in activities_documents]
+
+    # Paginate activities data
+    activities_paginator = Paginator(activities_data, 20)  # Show 10 activities per page
+    activities_page_number = request.GET.get('activities_page')
+    activities_page_obj = activities_paginator.get_page(activities_page_number)
+
+    form = ActivitiesForm()
+
+    # Fetch tags data
+    tags_collection = db.collection("tags")
+    tags_documents = tags_collection.stream()
+    tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in tags_documents]
+
+    # Paginate tags data
+    tags_paginator = Paginator(tags_data, 20)  # Show 10 tags per page
+    tags_page_number = request.GET.get('tags_page')
+    tags_page_obj = tags_paginator.get_page(tags_page_number)
+
+    return render(request, 'frontend/techcare_data/activities_table.html', {
+        'form': form,
+        'tags_page_obj': tags_page_obj,
+        'activities_page_obj': activities_page_obj
+    })
 
 def assets_view(request):
     db = firestore.Client()
     collection = db.collection("assets")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    db = firestore.client()
-    return render(request, 'frontend/techcare_data/assets_table.html', {'document_data': document_data})
+
+    paginator = Paginator(document_data, 20)  # 20 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/techcare_data/assets_table.html', {'page_obj': page_obj})
+
 
 def nutrition_view(request):
+    db = firestore.client()
     db = firestore.Client()
+    
+    # Fetching nutrition data
     collection = db.collection("nutrition")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    db = firestore.client()
-    return render(request, 'frontend/techcare_data/nutrition_table.html', {'document_data': document_data})
+    
+    # Implementing pagination for nutrition data
+    paginator = Paginator(document_data, 20)  # Show 20 nutrition entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    form = NutritionForm()
+    return render(request, 'frontend/techcare_data/nutrition_table.html', {
+        'form': form, 
+        'page_obj': page_obj
+    })
 
 def readBites_view(request):
     db = firestore.Client()
+    
+    # Fetching readBites data
     collection = db.collection("readBites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    db = firestore.client()
+    
+    # Fetching users data
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    # Fetching bites data
     collection = db.collection("bites")
     documents = collection.stream()
     bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/readBites_table.html', {'document_data': document_data, 'users_data': users_data, 'bites_data': bites_data})
+    
+    # Implementing pagination for readBites data
+    paginator = Paginator(document_data, 20)  # Show 20 readBites entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'frontend/techcare_data/readBites_table.html', {
+        'document_data': document_data,
+        'users_data': users_data,
+        'bites_data': bites_data,
+        'page_obj': page_obj,  # Pass page_obj to template for pagination
+    })
 
 def readStories_view(request):
-    db = firestore.client()
+    db = firestore.Client()
+    
+    # Fetching readStories data
     collection = db.collection("readStories")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+    # Fetching users data
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    # Fetching selfawarenessScenarios data
     collection = db.collection("selfawarenessScenarios")
     documents = collection.stream()
     selfawarenessScenarios_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/readStories_table.html', {'document_data': document_data, 'users_data': users_data, 'selfawarenessScenarios_data': selfawarenessScenarios_data})
+    
+    # Implementing pagination for readStories data
+    paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'frontend/techcare_data/readStories_table.html', {
+        'document_data': document_data,
+        'users_data': users_data,
+        'selfawarenessScenarios_data': selfawarenessScenarios_data,
+        'page_obj': page_obj,  # Pass page_obj to template for pagination
+    })
 
 def selfAwarnessBites_view(request):
     db = firestore.client()
@@ -567,15 +659,22 @@ def selfAwarnessBites_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'document_data': document_data})
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj})
 
 def selfawareness_collection_view(request):
     db = firestore.client()
     collection = db.collection("selfawareness_collection")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/selfawareness_collection_table.html', {'document_data': document_data})
+    return render(request, 'frontend/techcare_data/selfawareness_collection_table.html', {'page_obj': page_obj})
 
 def suggestedActivities_view(request):
     db = firestore.client()
@@ -623,7 +722,11 @@ def suggestedInAppLinks_view(request):
     documents = collection.stream()
     inAppLinks_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {'document_data': document_data, 'users_data': users_data, 'inAppLinks_data': inAppLinks_data})
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {'page_obj': page_obj, 'users_data': users_data, 'inAppLinks_data': inAppLinks_data})
 
 def suggestedJournals_view(request):
     db = firestore.client()
@@ -637,8 +740,11 @@ def suggestedJournals_view(request):
     collection = db.collection("journalPrompt")
     documents = collection.stream()
     journalPrompt_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedJournals_table.html', {'document_data': document_data, 'users_data': users_data, 'journalPrompt_data': journalPrompt_data})
+    return render(request, 'frontend/techcare_data/suggestedJournals_table.html', {'page_obj': page_obj, 'users_data': users_data, 'journalPrompt_data': journalPrompt_data})
 
 def suggestedSelfAwarnessBites_view(request):
     db = firestore.client()
@@ -652,8 +758,11 @@ def suggestedSelfAwarnessBites_view(request):
     collection = db.collection("selfAwarnessBites")
     documents = collection.stream()
     selfAwarnessBites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedSelfAwarnessBites_table.html', {'document_data': document_data, 'users_data': users_data, 'selfAwarnessBites_data': selfAwarnessBites_data})
+    return render(request, 'frontend/techcare_data/suggestedSelfAwarnessBites_table.html', {'page_obj': page_obj, 'users_data': users_data, 'selfAwarnessBites_data': selfAwarnessBites_data})
 def suggestedWildCards_view(request):
     db = firestore.client()
     collection = db.collection("suggestedWildCards")
@@ -667,7 +776,11 @@ def suggestedWildCards_view(request):
     documents = collection.stream()
     wildCard_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/suggestedWildCards_table.html', {'document_data': document_data, 'users_data': users_data, 'wildCard_data': wildCard_data})
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/techcare_data/suggestedWildCards_table.html', {'page_obj': page_obj, 'users_data': users_data, 'wildCard_data': wildCard_data})
 
 def selfladder_view(request):
     db = firestore.client()
@@ -678,17 +791,24 @@ def selfladder_view(request):
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
    
-    return render(request, 'frontend/techcare_data/selfladder_table.html', {'document_data': document_data, 'users_data': users_data})
+    return render(request, 'frontend/techcare_data/selfladder_table.html', {'page_obj': page_obj, 'users_data': users_data})
 
 def testTrivia_view(request):
     db = firestore.client()
     collection = db.collection("testTrivia")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-
+    paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
  
-    return render(request, 'frontend/techcare_data/testTrivia_table.html', {'document_data': document_data})
+    return render(request, 'frontend/techcare_data/testTrivia_table.html', {'page_obj': page_obj})
 
 def wildCard_view(request):
     db = firestore.client()
@@ -696,8 +816,10 @@ def wildCard_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
- 
-    return render(request, 'frontend/techcare_data/wildCard_table.html', {'document_data': document_data})
+    paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'frontend/techcare_data/wildCard_table.html', {'page_obj': page_obj})
 
 
 def activitiesdocument_detail(request, document_name):
@@ -713,12 +835,17 @@ def activitiesdocument_detail(request, document_name):
 
 def badges_view(request):
     db = firestore.client()
-    db = firestore.Client()
     collection = db.collection("badges")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = BadgesForm() 
-    return render(request, 'frontend/techcare_data/badges_table.html', {'form': form, 'document_data': document_data})
+    
+    paginator = Paginator(document_data, 20)  # Show 20 badges per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    form = BadgesForm()  # Assuming BadgesForm is defined in forms.py
+    
+    return render(request, 'frontend/techcare_data/badges_table.html', {'form': form, 'page_obj': page_obj})
 
 def badgesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -733,18 +860,35 @@ def badgesdocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/badgesdocument.html', {'document_data': document_data})
 
 def biomarkers_view(request):
-    db = firestore.client()
     db = firestore.Client()
-    collection = db.collection("biomarkers")
-    documents = collection.stream()
-    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    form = BiomarkersForm()   
-    db = firestore.client()
-    collection = db.collection("users")
-    documents = collection.stream()
-    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/biomarkers_table.html', {'form': form, 'users_data': users_data ,'document_data': document_data})
+    # Fetch biomarkers data
+    biomarkers_collection = db.collection("biomarkers")
+    biomarkers_documents = biomarkers_collection.stream()
+    biomarkers_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in biomarkers_documents]
+
+    # Paginate biomarkers data
+    biomarkers_paginator = Paginator(biomarkers_data, 20)  # Show 10 biomarkers per page
+    biomarkers_page_number = request.GET.get('biomarkers_page')
+    biomarkers_page_obj = biomarkers_paginator.get_page(biomarkers_page_number)
+
+    form = BiomarkersForm()
+
+    # Fetch users data
+    users_collection = db.collection("users")
+    users_documents = users_collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in users_documents]
+
+    # Paginate users data
+    users_paginator = Paginator(users_data, 20)  # Show 10 users per page
+    users_page_number = request.GET.get('users_page')
+    users_page_obj = users_paginator.get_page(users_page_number)
+
+    return render(request, 'frontend/techcare_data/biomarkers_table.html', {
+        'form': form,
+        'biomarkers_page_obj': biomarkers_page_obj,
+        'users_page_obj': users_page_obj
+    })
 
 def biomarkersdocument_detail(request, document_name):
     db = firestore.Client()
@@ -760,16 +904,36 @@ def biomarkersdocument_detail(request, document_name):
 
 
 def assessmentQuestion_view(request):
-    db = firestore.client()
     db = firestore.Client()
-    collection = db.collection("assessmentQuestion")
-    documents = collection.stream()
-    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    # Fetch assessmentQuestion data
+    assessment_collection = db.collection("assessmentQuestion")
+    assessment_documents = assessment_collection.stream()
+    assessment_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in assessment_documents]
+
+    # Paginate assessmentQuestion data
+    assessment_paginator = Paginator(assessment_data, 20)  # Show 10 assessment questions per page
+    assessment_page_number = request.GET.get('assessment_page')
+    assessment_page_obj = assessment_paginator.get_page(assessment_page_number)
+
     form = AssessmentQuestionForm()
-    collection2 = db.collection("majorAssessment")
-    documents2 = collection2.stream()
-    majorAssessment = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents2]
-    return render(request, 'frontend/techcare_data/assessmentQuestion_table.html', {'form': form, 'majorAssessment': majorAssessment, 'document_data': document_data})
+
+    # Fetch majorAssessment data
+    major_collection = db.collection("majorAssessment")
+    major_documents = major_collection.stream()
+    major_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in major_documents]
+
+    # Paginate majorAssessment data
+    major_paginator = Paginator(major_data, 20)  # Show 10 major assessments per page
+    major_page_number = request.GET.get('major_page')
+    major_page_obj = major_paginator.get_page(major_page_number)
+
+    return render(request, 'frontend/techcare_data/assessmentQuestion_table.html', {
+        'form': form,
+        'major_page_obj': major_page_obj,
+        'assessment_page_obj': assessment_page_obj
+    })
+
 
 def assessmentQuestiondocument_detail(request, document_name):
     db = firestore.Client()
@@ -789,8 +953,17 @@ def categories_view(request):
     collection = db.collection("categories")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Pagination
+    paginator = Paginator(document_data, 20)  # Show 20 categories per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     form = CategoriesForm()
-    return render(request, 'frontend/techcare_data/categories_table.html', {'document_data': document_data, 'form': form})
+    return render(request, 'frontend/techcare_data/categories_table.html', {
+        'page_obj': page_obj, 
+        'form': form
+    })
 
 def categoriesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -810,11 +983,22 @@ def feelings_view(request):
     collection = db.collection("feelings")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = FeelingsForm()
+    
     collection2 = db.collection("user")
     documents2 = collection2.stream()
     feelings = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents2]
-    return render(request, 'frontend/techcare_data/feelings_table.html', {'form': form, 'feelings': feelings, 'document_data': document_data})
+
+    # Pagination for feelings
+    paginator = Paginator(document_data, 20)  # Show 20 feelings per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    form = FeelingsForm()
+    return render(request, 'frontend/techcare_data/feelings_table.html', {
+        'form': form, 
+        'feelings': feelings, 
+        'page_obj': page_obj
+    })
 
 def feelingsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -834,8 +1018,17 @@ def inAppLinks_view(request):
     collection = db.collection("inAppLinks")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    # Pagination for inAppLinks
+    paginator = Paginator(document_data, 20)  # Show 20 inAppLinks per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     form = InAppLinksForm()
-    return render(request, 'frontend/techcare_data/inAppLinks_table.html', {'document_data': document_data, 'form': form})
+    return render(request, 'frontend/techcare_data/inAppLinks_table.html', {
+        'form': form, 
+        'page_obj': page_obj
+    })
 
 def inAppLinksdocument_detail(request, document_name):
     db = firestore.Client()
@@ -852,14 +1045,28 @@ def inAppLinksdocument_detail(request, document_name):
 def inquiry_view(request):
     db = firestore.client()
     db = firestore.Client()
+    
+    # Fetching inquiry data
     collection = db.collection("inquiry")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = InquiryForm()
+    
+    # Fetching users data
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/inquiry_table.html', {'document_data': document_data, 'form': form, 'users_data': users_data})
+    
+    # Implementing pagination for inquiry data
+    paginator = Paginator(document_data, 20)  # Show 20 inquiries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    form = InquiryForm()
+    return render(request, 'frontend/techcare_data/inquiry_table.html', {
+        'form': form, 
+        'page_obj': page_obj,
+        'users_data': users_data
+    })
 
 def inquirydocument_detail(request, document_name):
     db = firestore.Client()
@@ -873,15 +1080,25 @@ def inquirydocument_detail(request, document_name):
 
     return render(request, 'frontend/techcare_data/inquirydocument.html', {'document_data': document_data})
 
-
 def items_view(request):
     db = firestore.client()
     db = firestore.Client()
+    
+    # Fetching items data
     collection = db.collection("items")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Implementing pagination for items data
+    paginator = Paginator(document_data, 20)  # Show 20 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     form = ItemsForm()
-    return render(request, 'frontend/techcare_data/items_table.html', {'document_data': document_data, 'form': form})
+    return render(request, 'frontend/techcare_data/items_table.html', {
+        'form': form, 
+        'page_obj': page_obj
+    })
 
 def itemsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -898,11 +1115,22 @@ def itemsdocument_detail(request, document_name):
 def journal_view(request):
     db = firestore.client()
     db = firestore.Client()
+    
+    # Fetching journal data
     collection = db.collection("journal")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Implementing pagination for journal data
+    paginator = Paginator(document_data, 20)  # Show 20 journal entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     form = JournalForm()
-    return render(request, 'frontend/techcare_data/journal_table.html', {'document_data': document_data, 'form': form})
+    return render(request, 'frontend/techcare_data/journal_table.html', {
+        'form': form, 
+        'page_obj': page_obj
+    })
 
 def journaldocument_detail(request, document_name):
     db = firestore.Client()
@@ -919,11 +1147,22 @@ def journaldocument_detail(request, document_name):
 def journalPrompt_view(request):
     db = firestore.client()
     db = firestore.Client()
+    
+    # Fetching journalPrompt data
     collection = db.collection("journalPrompt")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Implementing pagination for journalPrompt data
+    paginator = Paginator(document_data, 20)  # Show 20 journalPrompt entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     form = JournalForm()
-    return render(request, 'frontend/techcare_data/journalPrompt_table.html', {'document_data': document_data, 'form': form})
+    return render(request, 'frontend/techcare_data/journalPrompt_table.html', {
+        'form': form, 
+        'page_obj': page_obj
+    })
     
 def journalPromptdocument_detail(request, document_name):
     db = firestore.Client()
@@ -940,11 +1179,22 @@ def journalPromptdocument_detail(request, document_name):
 def majorAssessment_view(request):
     db = firestore.client()
     db = firestore.Client()
+    
+    # Fetching majorAssessment data
     collection = db.collection("majorAssessment")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Implementing pagination for majorAssessment data
+    paginator = Paginator(document_data, 20)  # Show 20 majorAssessment entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     form = MajorAssessmentForm()
-    return render(request, 'frontend/techcare_data/majorAssessment_table.html', {'document_data': document_data, 'form': form})
+    return render(request, 'frontend/techcare_data/majorAssessment_table.html', {
+        'form': form, 
+        'page_obj': page_obj
+    })
 
 def majorAssessmentdocument_detail(request, document_name):
     db = firestore.Client()
@@ -963,14 +1213,28 @@ def majorAssessmentdocument_detail(request, document_name):
 def psychomarkers_view(request):
     db = firestore.client()
     db = firestore.Client()
+
+    # Fetching psychomarkers data
     collection = db.collection("psychomarkers")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    form = PsychomarkersForm()
+
+    # Implementing pagination for psychomarkers data
+    paginator = Paginator(document_data, 20)  # Show 20 psychomarkers entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Fetching users data
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    return render(request, 'frontend/techcare_data/psychomarkers_table.html',{'document_data': document_data, 'form': form, 'users_data': users_data} )
+
+    form = PsychomarkersForm()
+    return render(request, 'frontend/techcare_data/psychomarkers_table.html', {
+        'form': form,
+        'page_obj': page_obj,
+        'users_data': users_data
+    })
 
 def psychomarkersdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1008,11 +1272,15 @@ def scenarios_view(request):
     documents = collection.stream()
     suggestedJournals_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     collection = db.collection("bites")
     documents = collection.stream()
     bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/scenarios_table.html', {'document_data': document_data , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data,'suggestedBites_data':suggestedBites_data,'suggestedJournals_data':suggestedJournals_data, 'bites_data':bites_data})
+    return render(request, 'frontend/techcare_data/scenarios_table.html', {'page_obj': page_obj , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data,'suggestedBites_data':suggestedBites_data,'suggestedJournals_data':suggestedJournals_data, 'bites_data':bites_data})
 
 def scenariosdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1036,7 +1304,12 @@ def shortBite_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = ShortBiteForm()
-    return render(request, 'frontend/techcare_data/shortBite_table.html', {'document_data': document_data, 'form': form})
+
+    paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/techcare_data/shortBite_table.html', {'page_obj': page_obj, 'form': form})
     
 def shortBitedocument_detail(request, document_name):
     db = firestore.Client()
@@ -1057,7 +1330,11 @@ def tags_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = TagsForm()
-    return render(request, 'frontend/techcare_data/tags_table.html', {'document_data': document_data, 'form': form})
+
+    paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'frontend/techcare_data/tags_table.html', {'page_obj': page_obj, 'form': form})
 
 def tagsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1079,7 +1356,10 @@ def trivia_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = TriviaForm()
-    return render(request, 'frontend/techcare_data/trivia_table.html', {'document_data': document_data, 'form': form})
+    paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'frontend/techcare_data/trivia_table.html', {'page_obj': page_obj, 'form': form})
 
 def triviadocument_detail(request, document_name):
     db = firestore.Client()
@@ -1101,7 +1381,10 @@ def users_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = UsersForm()
-    return render(request, 'frontend/techcare_data/users_table.html', {'document_data': document_data, 'form': form})
+    paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'frontend/techcare_data/users_table.html', {'page_obj': page_obj, 'form': form})
 
 
 def usersdocument_detail(request, document_name):
@@ -1451,11 +1734,33 @@ def create_users(request):
                 'created_time': datetime.now(),  
             }
             db.collection("users").document().set(data)
-            messages.success(request, 'Successfully Users Scenarios.') 
+            messages.success(request, 'Successfully Create Nutrition.') 
             return redirect('users_view')
         else:
-            messages.error(request, 'Error creating Users. Please check your input.')
+            messages.error(request, 'Error creating Nutrition. Please check your input.')
             return redirect('users_view')
+        
+def create_nutrition(request):
+    if request.method == 'POST':
+        form = NutritionForm(request.POST)
+        if form.is_valid():
+            data = {
+                'carbContent': request.POST.get('carbContent'),
+                'name_ar': request.POST.get('name_ar'),
+                'name_en': request.POST.get('name_en'),
+                'portion': request.POST.get('portion'),
+                'proteinContent': request.POST.get('proteinContent'),
+                'totalCalories': request.POST.get('totalCalories'),
+                'weight': request.POST.get('weight'),                
+            }
+            db.collection("nutrition").document().set(data)
+            messages.success(request, 'Successfully Users Scenarios.') 
+            return redirect('nutrition_view')
+        else:
+            messages.error(request, 'Error creating Nutrition. Please check your input.')
+            return redirect('nutrition_view')        
+
+        
 
 
 # def create_items(request):
