@@ -169,6 +169,10 @@ urlpatterns = [
     # path('update//<str:document_name>', update_, name='update_'),
 
 
+    # path('chart/buimarkers', views.chartbiomarkers, name="chartbiomarkers"),
+
+
+
 
 ]
 

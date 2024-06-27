@@ -27,6 +27,7 @@ from functools import wraps
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 
+
 db = firestore.client()
 firebase_app = firebase.FirebaseApplication('https://techcare-diabetes.firebaseio.com', None)
 
@@ -2786,4 +2787,6 @@ def patient_search(request):
     return render(request, 'frontend/techcare_data/pations_search.html', {'results': results})
 
 
-# frontend/doctor/patients.html
+
+
+

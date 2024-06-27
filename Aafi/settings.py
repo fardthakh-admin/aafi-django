@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'widget_tweaks',
     'ckeditor',
-    
+   
 ]
 
 MIDDLEWARE = [
@@ -148,15 +148,26 @@ AUTH_USER_MODEL = "api.User"
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+# STATIC_URL = "/static/"
+# MEDIA_URL = '/images/'
+# STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
+
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static'
+# ]
+
+# MEDIA_ROOT = BASE_DIR / 'static/images'
+
 STATIC_URL = "/static/"
-MEDIA_URL = '/images/'
-STATIC_ROOT = os.path.join(BASE_DIR, '/static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')  # Ensure this is a separate directory
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'static'
+    os.path.join(BASE_DIR, 'static')  # This should be where your development static files are located
 ]
 
-MEDIA_ROOT = BASE_DIR / 'static/images'
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
