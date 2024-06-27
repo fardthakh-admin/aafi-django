@@ -531,7 +531,6 @@ def handle_form_submission(request):
 
 
 def activities_view(request):
-    db = firestore.Client()
 
     # Fetch activities data
     activities_collection = db.collection("activities")
