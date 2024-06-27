@@ -556,7 +556,7 @@ def activities_view(request):
 
     return render(request, 'frontend/techcare_data/activities_table.html', {
         'form': form,
-        'tags_page_obj': tags_page_obj,
+        'tags_data': tags_page_obj,
         'activities_page_obj': activities_page_obj
     })
 
@@ -689,7 +689,11 @@ def suggestedActivities_view(request):
     documents = collection.stream()
     activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/suggestedActivities_table.html', {'document_data': document_data, 'users_data': users_data, 'activities_data': activities_data})
+    paginator = Paginator(document_data, 20)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'frontend/techcare_data/suggestedActivities_table.html', {'page_obj': page_obj, 'users_data': users_data, 'activities_data': activities_data})
 
 def suggestedBites_view(request):
     db = firestore.client()
@@ -887,7 +891,7 @@ def biomarkers_view(request):
     return render(request, 'frontend/techcare_data/biomarkers_table.html', {
         'form': form,
         'biomarkers_page_obj': biomarkers_page_obj,
-        'users_page_obj': users_page_obj
+        'users_data': users_page_obj
     })
 
 def biomarkersdocument_detail(request, document_name):
@@ -930,7 +934,7 @@ def assessmentQuestion_view(request):
 
     return render(request, 'frontend/techcare_data/assessmentQuestion_table.html', {
         'form': form,
-        'major_page_obj': major_page_obj,
+        'majorAssessment': major_page_obj,
         'assessment_page_obj': assessment_page_obj
     })
 
@@ -2099,6 +2103,12 @@ def update_activities(request, document_name):
                 'description': request.POST.get('description'),
                 'title': request.POST.get('title'),
                 'duration': request.POST.get('duration'),
+                'type': request.POST.get('type'),
+                'track': request.POST.get('track'),
+                'audiotrackId': request.POST.get('audiotrackId'),
+                'audiotrackTitle': request.POST.get('audiotrackTitle'),
+                'lable': request.POST.get('lable'),
+               
             }
         db = firestore.client()
         db.collection("activities").document(entry_id).update(data)
@@ -2211,24 +2221,7 @@ def update_categories(request, document_name):
         messages.error(request, 'Error updating  categories . Please check your input.')
         return redirect('categories_view')
     
-def update_activities(request, document_name):
-    if request.method == 'POST':
-        form = ActivitiesForm(request.POST)
-        entry_id = document_name
-        data = {
-                'tags': request.POST.get('tags'),
-                'description': request.POST.get('description'),
-                'duration': request.POST.get('duration'),
-                'type': request.POST.get('type'),
-                'title': request.POST.get('title'),
-            }
-        db = firestore.client()
-        db.collection("activities").document(entry_id).update(data)
-        messages.success(request, 'activities updated successfully.')
-        return redirect('activities_view')
-    else:
-        messages.error(request, 'Error updating activities . Please check your input.')
-        return redirect('activities_view')
+
     
 def update_feelings(request, document_name):
     if request.method == 'POST':
