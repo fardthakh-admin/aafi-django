@@ -1,0 +1,47 @@
+<!-- frontend/techcare_data/chart_biomarkers.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Biomarkers Chart</title>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="myLineChart"></canvas>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('myLineChart').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ data_for_chartjs.labels | safe }},
+                datasets: [{
+                    label: 'Blood Glucose Levels',
+                    data: {{ data_for_chartjs.datasets.0.data | safe }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Blood Glucose'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

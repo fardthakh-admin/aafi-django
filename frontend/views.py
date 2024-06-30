@@ -864,7 +864,6 @@ def badgesdocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/badgesdocument.html', {'document_data': document_data})
 
 def biomarkers_view(request):
-    db = firestore.Client()
 
     # Fetch biomarkers data
     biomarkers_collection = db.collection("biomarkers")
@@ -2778,7 +2777,41 @@ def patient_search(request):
 
     return render(request, 'frontend/techcare_data/pations_search.html', {'results': results})
 
+def chartbiomarkers(request):
+    try:
+        # Fetch biomarkers data from Firestore
+        biomarkers_collection = db.collection("biomarkers")
+        biomarkers_documents = biomarkers_collection.stream()
 
+        # Prepare data for Chart.js
+        data_labels = []
+        data_values = []
 
+        for doc in biomarkers_documents:
+            # Ensure 'bloodGlucose' field exists in document
+            doc_data = doc.to_dict()
+            if 'time' in doc_data and 'bloodGlucose' in doc_data:
+                timestamp = doc_data['time'].strftime("%Y-%m-%d %H:%M:%S")
+                data_labels.append(timestamp)
+                data_values.append(doc_data['bloodGlucose'])
+        # Prepare data in a format suitable for JavaScript (JSON)
+        data_for_chartjs = {
+            'labels': data_labels,
+            'datasets': [{
+                'label': 'Blood Glucose Levels',
+                'data': data_values,
+                'borderColor': 'rgb(75, 192, 192)',
+                'fill': False  # Line chart should not be filled
+            }]
+        }
+
+        return render(request, 'frontend/techcare_data/chart_biomarkers.html', {'data_for_chartjs': data_for_chartjs})
+
+    except Exception as e:
+        # Handle exceptions gracefully, e.g., log the error
+        import logging
+        logging.error(f"Error fetching biomarkers data: {str(e)}")
+        # Render an error page or return an HTTP response with error details
+        return render(request, 'error.html', {'error_message': str(e)})
 
 

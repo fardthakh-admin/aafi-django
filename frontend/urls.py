@@ -4,7 +4,7 @@ from django.contrib.auth.views import LogoutView, LoginView
 from .views import create_document
 from .views import get_all_collections, handle_form_submission
 from.views import *
-from . views import admin_required
+from .views import admin_required
 
 urlpatterns = [
 
@@ -169,7 +169,7 @@ urlpatterns = [
     # path('update//<str:document_name>', update_, name='update_'),
 
 
-    # path('chart/buimarkers', views.chartbiomarkers, name="chartbiomarkers"),
+    path('chart/biomarkers', views.chartbiomarkers, name="chartbiomarkers"),
 
 
 
