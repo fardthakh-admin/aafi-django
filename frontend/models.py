@@ -109,7 +109,7 @@ class biomarkers(models.Model):
     dailyCarbs = models.IntegerField(default=0)
     weeklyActivity = models.IntegerField(default=0)
     sleepQuality = models.IntegerField(default=0)
-    time = models.IntegerField(default=0)
+    time = models.DateTimeField(null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='biomarkers_frontend')
     weight = models.IntegerField(default=0)
     FBS = models.IntegerField(default=0)

@@ -62,7 +62,7 @@
 
                                     <div class="form-group">
                                         <label for="{{ form.bloodGlucose.id_for_label }}">Blood Glucose</label> 
-                                        <input type="text" name="bloodGlucose" class="form-control" value="{{ entry.data.bloodGlucose }}">
+                                        <input type="number" name="bloodGlucose" class="form-control" value="{{ entry.data.bloodGlucose }}">
 
                                     <div class="form-group">
                                         <label for="{{ form.bloodGlucoseType.id_for_label }}">Blood Glucose Type</label> 
@@ -93,9 +93,9 @@
 
                                     <div class="form-group">
                                         <label for="{{ form.time.id_for_label }}">Time</label> 
-                                        <input type="text" name="time" class="form-control" value="{{ entry.data.time }}">
-
+                                        <input type="date" name="time" class="form-control" value="{{ entry.data.time }}">
                                     </div>
+                                    {% comment %} datetime-local {% endcomment %}
 
                                     <div class="form-group">
                                         <label for="{{ form.weight.id_for_label }}">Weight</label> 

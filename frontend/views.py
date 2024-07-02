@@ -295,17 +295,61 @@ def patients_detail(request, document_name):
         feelings_data.append(doc.to_dict())
 
 
-    return render(request, 'frontend/techcare_data/patientssdocument.html',
-    {'document_data': document_data, 'readbites_data': readbites_data, 
-     'readstories_data': readstories_data, 'suggestedActivities_data': suggestedActivities_data, 
-     'suggestedBites_data': suggestedBites_data, 'suggestedInAppLinks_data': suggestedInAppLinks_data, 
-     'suggestedJournals_data': suggestedJournals_data, 
+
+
+
+        biomarkers_data = []
+
+    # Fetch biomarkers data for the user
+    biomarkers_collection = db.collection("biomarkers")
+    biomarkers_query = biomarkers_collection.where('user', '==', f'/users/{document_name}').stream()
+
+    data_for_chartjs = {
+        'labels': [],
+        'datasets': [{
+            'label': 'Blood Glucose Levels',
+            'data': [],
+            'borderColor': 'rgb(75, 192, 192)',
+            'fill': False
+        }]
+    }
+
+    for doc in biomarkers_query:
+        doc_data = doc.to_dict()
+        if 'time' in doc_data and 'bloodGlucose' in doc_data:
+            timestamp = doc_data['time'].strftime("%Y-%m-%d %H:%M:%S")
+            data_for_chartjs['labels'].append(timestamp)
+            data_for_chartjs['datasets'][0]['data'].append(doc_data['bloodGlucose'])
+
+        biomarkers_data.append(doc_data)  # Collect all biomarkers data
+
+
+    context = {
+    'document_data': document_data,
+    'readbites_data': readbites_data, 
+    'readstories_data': readstories_data, 
+    'suggestedActivities_data': suggestedActivities_data, 
+    'suggestedBites_data': suggestedBites_data, 
+    'suggestedInAppLinks_data': suggestedInAppLinks_data, 
+    'suggestedJournals_data': suggestedJournals_data, 
     'suggestedSelfAwarnessBites_data': suggestedSelfAwarnessBites_data, 
-    'suggestedWildCards_data': suggestedWildCards_data,'selfLadder_data': selfLadder_data,
-    'psychomarkers_data': psychomarkers_data,'inquiry_data': inquiry_data,
-    'biomarkers_data' :biomarkers_data,'dailyBloodGlucoseAverage_data':dailyBloodGlucoseAverage_data,
-    'feelings_data':feelings_data,
-    })
+    'suggestedWildCards_data': suggestedWildCards_data,
+    'selfLadder_data': selfLadder_data,
+    'psychomarkers_data': psychomarkers_data,
+    'inquiry_data': inquiry_data,
+    'biomarkers_data': biomarkers_data,
+    'dailyBloodGlucoseAverage_data': dailyBloodGlucoseAverage_data,
+    'data_for_chartjs': data_for_chartjs,
+
+}
+  
+
+   
+
+
+
+
+    return render(request, 'frontend/techcare_data/patientssdocument.html', context)
 
 
 
@@ -2777,41 +2821,41 @@ def patient_search(request):
 
     return render(request, 'frontend/techcare_data/pations_search.html', {'results': results})
 
-def chartbiomarkers(request):
-    try:
-        # Fetch biomarkers data from Firestore
-        biomarkers_collection = db.collection("biomarkers")
-        biomarkers_documents = biomarkers_collection.stream()
+# def chartbiomarkers(request):
+#     try:
+#         # Fetch biomarkers data from Firestore
+#         biomarkers_collection = db.collection("biomarkers")
+#         biomarkers_documents = biomarkers_collection.stream()
 
-        # Prepare data for Chart.js
-        data_labels = []
-        data_values = []
+#         # Prepare data for Chart.js
+#         data_labels = []
+#         data_values = []
 
-        for doc in biomarkers_documents:
-            # Ensure 'bloodGlucose' field exists in document
-            doc_data = doc.to_dict()
-            if 'time' in doc_data and 'bloodGlucose' in doc_data:
-                timestamp = doc_data['time'].strftime("%Y-%m-%d %H:%M:%S")
-                data_labels.append(timestamp)
-                data_values.append(doc_data['bloodGlucose'])
-        # Prepare data in a format suitable for JavaScript (JSON)
-        data_for_chartjs = {
-            'labels': data_labels,
-            'datasets': [{
-                'label': 'Blood Glucose Levels',
-                'data': data_values,
-                'borderColor': 'rgb(75, 192, 192)',
-                'fill': False  # Line chart should not be filled
-            }]
-        }
+#         for doc in biomarkers_documents:
+#             # Ensure 'bloodGlucose' field exists in document
+#             doc_data = doc.to_dict()
+#             if 'time' in doc_data and 'bloodGlucose' in doc_data:
+#                 timestamp = doc_data['time'].strftime("%Y-%m-%d %H:%M:%S")
+#                 data_labels.append(timestamp)
+#                 data_values.append(doc_data['bloodGlucose'])
+#         # Prepare data in a format suitable for JavaScript (JSON)
+#         data_for_chartjs = {
+#             'labels': data_labels,
+#             'datasets': [{
+#                 'label': 'Blood Glucose Levels',
+#                 'data': data_values,
+#                 'borderColor': 'rgb(75, 192, 192)',
+#                 'fill': False  # Line chart should not be filled
+#             }]
+#         }
 
-        return render(request, 'frontend/techcare_data/chart_biomarkers.html', {'data_for_chartjs': data_for_chartjs})
+#         return render(request, 'frontend/techcare_data/chart_biomarkers.html', {'data_for_chartjs': data_for_chartjs})
 
-    except Exception as e:
-        # Handle exceptions gracefully, e.g., log the error
-        import logging
-        logging.error(f"Error fetching biomarkers data: {str(e)}")
-        # Render an error page or return an HTTP response with error details
-        return render(request, 'error.html', {'error_message': str(e)})
+#     except Exception as e:
+#         # Handle exceptions gracefully, e.g., log the error
+#         import logging
+#         logging.error(f"Error fetching biomarkers data: {str(e)}")
+#         # Render an error page or return an HTTP response with error details
+#         return render(request, 'error.html', {'error_message': str(e)})
 
 
