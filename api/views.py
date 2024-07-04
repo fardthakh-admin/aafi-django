@@ -7,6 +7,7 @@ from rest_framework import generics
 from .serializers import *
 from .models import *
 
+from firebase_admin import firestore
 import jwt, datetime
 
 from functools import wraps
@@ -659,9 +660,7 @@ def BiomarkersList(request):
     return Response(serializer.data)
 
 
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from firebase_admin import firestore
+
 
 @api_view(['GET'])
 @jwt_login_required
