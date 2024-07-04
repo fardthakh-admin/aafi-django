@@ -17,7 +17,7 @@ SECRET_KEY = "django-insecure-b24#+xxy#vf05zx8g+%@1p4p7iryx4uth0ulq(etw_vs54_&d!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','portal.techcare.health', '146.190.233.238', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1','portal.techcare.health', '146.190.233.238', 'localhost','10.0.2.2']
 
 
 # Application definition
@@ -91,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         "NAME": "aafi",
         "USER": "postgres",
-        "PASSWORD": "1234",
+        "PASSWORD": "12345",
         "HOST": "localhost",
         "PORT": "5432",
     }
