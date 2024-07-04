@@ -28,13 +28,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'address', 'gender', 'role', 'phone_number']
+        fields = ['id', 'username', 'email', 'address', 'gender', 'role', 'phone_number']
 
 
 class DoctorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Doctor
-        fields = '__all__'
+        exclude = ['password']
 
 
 class PatientSerializer(serializers.ModelSerializer):

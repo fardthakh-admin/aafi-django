@@ -201,10 +201,7 @@ User = get_user_model()
 
 class UserView(APIView):
     def get(self, request):
-        token = request.COOKIES.get('jwt')
-
-
-        
+        token = request.COOKIES.get('jwt')        
         try:
             payload = jwt.decode(token, 'secret', algorithms = ['HS256'])
         except jwt.ExpiredSignatureError:

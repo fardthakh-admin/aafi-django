@@ -74,7 +74,7 @@ class GroupsAdmin(admin.ModelAdmin):
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
-@admin.register(Patient)
+# @admin.register(Patient)
 class PatientAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "my_doctor":
@@ -89,15 +89,26 @@ class UserAdmin(admin.ModelAdmin):
     list_editable = ['first_name', 'last_name',  'is_active'] #edit list
     search_fields = ['first_name', 'last_name', 'username', 'email', 'is_active']
     list_filter = ['first_name', 'last_name', 'is_active', 'username', 'email']
-    # fields=['first_name', 'last_name']
+
+class DocotrAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active')
+    # list_display_links=['name', 'price', 'active', 'category']
+    list_editable = ['first_name', 'last_name',  'is_active'] #edit list
+    search_fields = ['first_name', 'last_name', 'username', 'email', 'is_active']
+    list_filter = ['first_name', 'last_name', 'is_active', 'username', 'email']
+
+class PatioenAdmin(admin.ModelAdmin):
+    list_display = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active')
+    # list_display_links=['name', 'price', 'active', 'category']
+    list_editable = ['first_name', 'last_name',  'is_active'] #edit list
+    search_fields = ['first_name', 'last_name', 'username', 'email', 'is_active']
+    list_filter = ['first_name', 'last_name', 'is_active', 'username', 'email']
+
 admin.site.register(User, UserAdmin)
-admin.site.register(Doctor)
+admin.site.register(Doctor, DocotrAdmin)
 admin.site.register(Challenge)
 admin.site.register(Message)
 admin.site.register(Badge)
 admin.site.register(Game)
 admin.site.register(Question)
-
-
-
-
+admin.site.register(Patient, PatioenAdmin)
