@@ -651,23 +651,38 @@ def CheckInUpdate(request, pk):
 
 
 @api_view(['GET'])
-@jwt_login_required
+# @jwt_login_required
 def BiomarkersList(request):
-    biomarkers = Biomarkers.objects.all()
-    serializer = BiomarkersSerializer(biomarkers, many=True)
+    try:
+        db = firestore.client()
+        biomarkers = db.collection('biomarkers')
+        bio_docs = biomarkers.stream()
 
-    return Response(serializer.data)
+        # Convert each document to a dictionary and handle DocumentReference fields
+        bios = []
+        for doc in bio_docs:
+            doc_dict = doc.to_dict()
+            # Iterate over the items in the document dictionary
+            for key, value in doc_dict.items():
+                # Check if the value is an instance of DocumentReference
+                if isinstance(value, firestore.DocumentReference):
+                    # Convert the DocumentReference to a string (e.g., the document's path or ID)
+                    doc_dict[key] = value.id  # or value.path for the full path
+            bios.append(doc_dict)
+
+        return Response(bios)
+    except Exception as e:
+        # Log the exception or handle it as appropriate
+        return Response({"error": "An error occurred while fetching biomarkers."}, status=500)
 
 
 @api_view(['GET'])
 @jwt_login_required
 def BiomarkersDetail(request, pk):
     try:
-        # Reference to the Firestore document
         doc_ref = firestore.client().collection('biomarkers').document(str(pk))
         doc = doc_ref.get()
         if doc.exists:
-            # Convert the Firestore document to dictionary
             biomarker_data = doc.to_dict()
             return Response(biomarker_data)
         else:
