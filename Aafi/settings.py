@@ -2,7 +2,7 @@ from pathlib import Path
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,7 +16,7 @@ SECRET_KEY = "django-insecure-b24#+xxy#vf05zx8g+%@1p4p7iryx4uth0ulq(etw_vs54_&d!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','portal.techcare.health', '146.190.233.238']
+ALLOWED_HOSTS = ['127.0.0.1','portal.techcare.health', '146.190.233.238', 'localhost']
 
 
 # Application definition
@@ -47,7 +47,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'api.middleware.AdminOnlyMiddleware',
+    # 'api.middleware.AdminOnlyMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -56,6 +56,7 @@ REST_FRAMEWORK = {
     'rest_framework.authentication.BasicAuthentication',
     'rest_framework_simplejwt.authentication.JWTAuthentication', 
   ),
+  
 }
 
 ROOT_URLCONF = "Aafi.urls"
@@ -89,7 +90,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         "NAME": "aafi",
         "USER": "postgres",
-        "PASSWORD": "1234",
+        "PASSWORD": "12345",
         "HOST": "localhost",
         "PORT": "5432",
     }
@@ -187,3 +188,22 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "techcare-diabetes-firebase-admin
 
 CSRF_TRUSTED_ORIGINS = ['https://72a8-109-107-231-24.ngrok-free.app']
  
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',    
+}
+
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'http://localhost:8080',
+]

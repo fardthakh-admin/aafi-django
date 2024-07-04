@@ -9,7 +9,43 @@ from .models import *
 
 import jwt, datetime
 
+from functools import wraps
+from django.contrib.auth import get_user_model
+
+
+def jwt_login_required(view_func):
+    @wraps(view_func)
+    def wrapped_view(request, *args, **kwargs):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+
+        try:
+            # Decode token and retrieve user data
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+            user = User.objects.get(id=payload['id'])
+
+            # Check if user is superuser or staff
+            if not user.is_superuser and not user.is_staff:
+                raise AuthenticationFailed('Unauthorized! User must be superuser or staff.')
+
+            request.user = user  # Set the user object in request for further use
+
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Token expired. Please log in again.')
+        except jwt.InvalidTokenError:
+            raise AuthenticationFailed('Invalid token. Please log in again.')
+        except User.DoesNotExist:
+            raise AuthenticationFailed('User not found.')
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapped_view
+
+
 @api_view(['GET'])
+@jwt_login_required
 def apiOverView(request):
     api_urls = {
         'register_user': '/register/',
@@ -160,6 +196,7 @@ class UserLogin(APIView):
 
         return response
 
+User = get_user_model()
 
 class UserView(APIView):
     def get(self, request):
@@ -192,6 +229,7 @@ class LogoutUser(APIView):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def UserList(request):
     user = User.objects.all()
     serializer = DoctorSerializer(user, many=True)
@@ -200,6 +238,7 @@ def UserList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def DoctorList(request):
     doctors = Doctor.objects.all()
     serializer = DoctorSerializer(doctors, many=True)
@@ -208,6 +247,7 @@ def DoctorList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def DoctorDetail(request, pk):
     doctors = Doctor.objects.get(id = pk)
     serializer = DoctorSerializer(doctors, many=False)
@@ -216,6 +256,7 @@ def DoctorDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def DoctorCreate(request):
     serializer = DoctorSerializer(data=request.data)
 
@@ -226,6 +267,7 @@ def DoctorCreate(request):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def DoctorUpdate(request, pk):
     doctor = Doctor.objects.get(id=pk)
     serializer = DoctorSerializer(instance=doctor, data=request.data, partial=True)
@@ -237,6 +279,7 @@ def DoctorUpdate(request, pk):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def DoctorDelete(request, pk):
     doctor = Doctor.objects.get(id=pk)
     doctor.delete()
@@ -245,6 +288,7 @@ def DoctorDelete(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def Patients_Page(request):
     user = User.objects.get(id = request.user.id)
     patients = Patient.objects.filter(my_doctor = user)
@@ -256,6 +300,7 @@ def Patients_Page(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def PatientList(request):
     user = User.objects.get(id = request.user.id)
     patients = Patient.objects.filter(my_doctor = user)
@@ -265,6 +310,7 @@ def PatientList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def PatientDetail(request, pk):
     patients = Patient.objects.get(id=pk)
     serializer = PatientSerializer(patients, many=False)
@@ -273,6 +319,7 @@ def PatientDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def PatientCreate(request):
     serializer = PatientSerializer(data=request.data)
 
@@ -283,6 +330,7 @@ def PatientCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def PatientDelete(request, pk):
     patient = Patient.objects.get(id=pk)
     patient.delete()
@@ -291,6 +339,7 @@ def PatientDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def PatientUpdate(request, pk):
     patient = Patient.objects.get(id=pk)
     serializer = PatientSerializer(instance=patient, data=request.data, partial=True)
@@ -302,6 +351,7 @@ def PatientUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def MedicationList(request):
     medications = Medication.objects.all()
     serializer = MedicationSerializer(medications, many=True)
@@ -310,6 +360,7 @@ def MedicationList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def MedicationDetail(request, pk):
     medications = Medication.objects.get(id=pk)
     serializer = MedicationSerializer(medications, many=False)
@@ -318,6 +369,7 @@ def MedicationDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def MedicationCreate(request):
     serializer = MedicationSerializer(data=request.data)
 
@@ -328,6 +380,7 @@ def MedicationCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def MedicationDelete(request, pk):
     medication = Medication.objects.get(id=pk)
     medication.delete()
@@ -336,6 +389,7 @@ def MedicationDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def MedicationUpdate(request, pk):
     medication = Medication.objects.get(id=pk)
     serializer = MedicationSerializer(instance=medication, data=request.data, partial=True)
@@ -347,6 +401,7 @@ def MedicationUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def ActivityList(request):
     activities = Medication.objects.all()
     serializer = ActivitySerializer(activities, many=True)
@@ -355,6 +410,7 @@ def ActivityList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def ActivityDetail(request, pk):
     activities = Activity.objects.get(id=pk)
     serializer = ActivitySerializer(activities, many=False)
@@ -363,6 +419,7 @@ def ActivityDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def ActivityCreate(request):
     serializer = ActivitySerializer(data=request.data)
 
@@ -373,6 +430,7 @@ def ActivityCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def ActivityDelete(request, pk):
     activity = Activity.objects.get(id=pk)
     activity.delete()
@@ -381,6 +439,7 @@ def ActivityDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def ActivityUpdate(request, pk):
     activity = Activity.objects.get(id=pk)
     serializer = ActivitySerializer(instance=activity, data=request.data, partial=True)
@@ -392,6 +451,7 @@ def ActivityUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def ChallengeList(request):
     challenges = Medication.objects.all()
     serializer = ChallengeSerializer(challenges, many=True)
@@ -400,6 +460,7 @@ def ChallengeList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def ChallengeDetail(request, pk):
     challenges = Challenge.objects.get(id=pk)
     serializer = ChallengeSerializer(challenges, many=False)
@@ -408,6 +469,7 @@ def ChallengeDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def ChallengeCreate(request):
     serializer = ChallengeSerializer(data=request.data)
 
@@ -418,6 +480,7 @@ def ChallengeCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def ChallengeDelete(request, pk):
     challenge = Challenge.objects.get(id=pk)
     challenge.delete()
@@ -426,6 +489,7 @@ def ChallengeDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def ChallengeUpdate(request, pk):
     challenge = Challenge.objects.get(id=pk)
     serializer = ChallengeSerializer(instance=challenge, data=request.data, partial=True)
@@ -437,6 +501,7 @@ def ChallengeUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def MessageList(request):
     messages = Medication.objects.all()
     serializer = MessageSerializer(messages, many=True)
@@ -445,6 +510,7 @@ def MessageList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def MessageDetail(request, pk):
     messages = Message.objects.get(id=pk)
     serializer = MessageSerializer(messages, many=False)
@@ -453,6 +519,7 @@ def MessageDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def MessageCreate(request):
     serializer = MessageSerializer(data=request.data)
 
@@ -463,6 +530,7 @@ def MessageCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def MessageDelete(request, pk):
     message = Message.objects.get(id=pk)
     message.delete()
@@ -471,6 +539,7 @@ def MessageDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def MessageUpdate(request, pk):
     message = Message.objects.get(id=pk)
     serializer = MessageSerializer(instance=message, data=request.data, partial=True)
@@ -482,6 +551,7 @@ def MessageUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def GroupsList(request):
     groups = Groups.objects.all()
     serializer = GroupsSerializer(groups, many=True)
@@ -490,6 +560,7 @@ def GroupsList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def GroupDetail(request, pk):
     group = Groups.objects.get(id=pk)
     serializer = GroupsSerializer(group, many=False)
@@ -498,6 +569,7 @@ def GroupDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def GroupCreate(request):
     serializer = GroupsSerializer(data=request.data)
 
@@ -508,6 +580,7 @@ def GroupCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def GroupDelete(request, pk):
     group = Groups.objects.get(id=pk)
     group.delete()
@@ -516,6 +589,7 @@ def GroupDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def GroupUpdate(request, pk):
     group = Groups.objects.get(id=pk)
     serializer = GroupsSerializer(instance=group, data=request.data, partial=True)
@@ -527,6 +601,7 @@ def GroupUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def CheckInList(request):
     checkIns = CheckIn.objects.all()
     serializer = CheckInSerializer(checkIns, many=True)
@@ -535,6 +610,7 @@ def CheckInList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def CheckInDetail(request, pk):
     checkIns = CheckIn.objects.get(id=pk)
     serializer = CheckInSerializer(checkIns, many=False)
@@ -543,6 +619,7 @@ def CheckInDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def CheckInCreate(request):
     serializer = CheckInSerializer(data=request.data)
 
@@ -553,6 +630,7 @@ def CheckInCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def CheckInDelete(request, pk):
     checkIn = CheckIn.objects.get(id=pk)
     checkIn.delete()
@@ -561,6 +639,7 @@ def CheckInDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def CheckInUpdate(request, pk):
     checkIn = CheckIn.objects.get(id=pk)
     serializer = CheckInSerializer(instance=checkIn, data=request.data, partial=True)
@@ -572,6 +651,7 @@ def CheckInUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def BiomarkersList(request):
     biomarkers = Biomarkers.objects.all()
     serializer = BiomarkersSerializer(biomarkers, many=True)
@@ -579,15 +659,29 @@ def BiomarkersList(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def BiomarkersDetail(request, pk):
-    biomarkers = Biomarkers.objects.get(id=pk)
-    serializer = BiomarkersSerializer(biomarkers, many=False)
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from firebase_admin import firestore
 
-    return Response(serializer.data)
+@api_view(['GET'])
+@jwt_login_required
+def BiomarkersDetail(request, pk):
+    try:
+        # Reference to the Firestore document
+        doc_ref = firestore.client().collection('biomarkers').document(str(pk))
+        doc = doc_ref.get()
+        if doc.exists:
+            # Convert the Firestore document to dictionary
+            biomarker_data = doc.to_dict()
+            return Response(biomarker_data)
+        else:
+            return Response({'message': 'Biomarker not found'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 
 @api_view(['POST'])
+@jwt_login_required
 def BiomarkersCreate(request):
     serializer = BiomarkersSerializer(data=request.data)
 
@@ -598,6 +692,7 @@ def BiomarkersCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def BiomarkersDelete(request, pk):
     biomarker = Biomarkers.objects.get(id=pk)
     biomarker.delete()
@@ -606,6 +701,7 @@ def BiomarkersDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def BiomarkerUpdate(request, pk):
     biomarker = Biomarkers.objects.get(id=pk)
     serializer = BiomarkersSerializer(instance=biomarker, data=request.data, partial=True)
@@ -617,6 +713,7 @@ def BiomarkerUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def GoalList(request):
     goals = Goal.objects.all()
     serializer = GoalSerializer(goals, many=True)
@@ -625,6 +722,7 @@ def GoalList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def GoalDetail(request, pk):
     goal = Goal.objects.get(id=pk)
     serializer = GoalSerializer(goal, many=False)
@@ -633,6 +731,7 @@ def GoalDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def GoalCreate(request):
     serializer = GoalSerializer(data=request.data)
 
@@ -643,6 +742,7 @@ def GoalCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def GoalDelete(request, pk):
     goal = Goal.objects.get(id=pk)
     goal.delete()
@@ -651,6 +751,7 @@ def GoalDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def GoalUpdate(request, pk):
     goal = Goal.objects.get(id=pk)
     serializer = GoalSerializer(instance=goal, data=request.data, partial=True)
@@ -662,6 +763,7 @@ def GoalUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def BadgeList(request):
     badges = Badge.objects.all()
     serializer = BadgeSerializer(badges, many=True)
@@ -670,6 +772,7 @@ def BadgeList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def BadgeDetail(request, pk):
     badge = Badge.objects.get(id=pk)
     serializer = BadgeSerializer(badge, many=False)
@@ -678,6 +781,7 @@ def BadgeDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def BadgeCreate(request):
     serializer = BadgeSerializer(data=request.data)
 
@@ -688,6 +792,7 @@ def BadgeCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def BadgeDelete(request, pk):
     badge = Badge.objects.get(id=pk)
     badge.delete()
@@ -696,6 +801,7 @@ def BadgeDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def BadgeUpdate(request, pk):
     badge = Badge.objects.get(id=pk)
     serializer = BadgeSerializer(instance=badge, data=request.data, partial=True)
@@ -707,6 +813,7 @@ def BadgeUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def CBTList(request):
     cbt = CBT.objects.all()
     serializer = CBTSerializer(cbt, many=True)
@@ -715,6 +822,7 @@ def CBTList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def CBTDetail(request, pk):
     cbt = CBT.objects.get(id=pk)
     serializer = CBTSerializer(cbt, many=False)
@@ -723,6 +831,7 @@ def CBTDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def CBTCreate(request):
     serializer = CBTSerializer(data=request.data)
 
@@ -733,6 +842,7 @@ def CBTCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def CBTDelete(request, pk):
     cbt = CBT.objects.get(id=pk)
     cbt.delete()
@@ -741,6 +851,7 @@ def CBTDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def CBTUpdate(request, pk):
     cbt = CBT.objects.get(id=pk)
     serializer = CBTSerializer(instance=cbt, data=request.data, partial=True)
@@ -752,6 +863,7 @@ def CBTUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def GameList(request):
     game = Game.objects.all()
     serializer = GameSerializer(game, many=True)
@@ -760,6 +872,7 @@ def GameList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def GameDetail(request, pk):
     game = Game.objects.get(id=pk)
     serializer = GameSerializer(game, many=False)
@@ -768,6 +881,7 @@ def GameDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def GameCreate(request):
     serializer = GameSerializer(data=request.data)
 
@@ -778,6 +892,7 @@ def GameCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def GameDelete(request, pk):
     game = Game.objects.get(id=pk)
     game.delete()
@@ -786,6 +901,7 @@ def GameDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def GameUpdate(request, pk):
     game = Game.objects.get(id=pk)
     serializer = GameSerializer(instance=game, data=request.data, partial=True)
@@ -797,6 +913,7 @@ def GameUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def EvaluationList(request):
     evaluations = Evaluation.objects.all()
     serializer = EvaluationSerializer(evaluations, many=True)
@@ -805,6 +922,7 @@ def EvaluationList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def EvaluationDetail(request, pk):
     evaluation = Evaluation.objects.get(id=pk)
     serializer = EvaluationSerializer(evaluation, many=False)
@@ -813,6 +931,7 @@ def EvaluationDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def EvaluationCreate(request):
     serializer = EvaluationSerializer(data=request.data)
 
@@ -823,6 +942,7 @@ def EvaluationCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def EvaluationDelete(request, pk):
     evaluation = Evaluation.objects.get(id=pk)
     evaluation.delete()
@@ -831,6 +951,7 @@ def EvaluationDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def EvaluationUpdate(request, pk):
     evaluation = Evaluation.objects.get(id=pk)
     serializer = EvaluationSerializer(instance=evaluation, data=request.data, partial=True)
@@ -842,6 +963,7 @@ def EvaluationUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def QuestionList(request):
     questions = Question.objects.all()
     serializer = QuestionSerializer(questions, many=True)
@@ -850,6 +972,7 @@ def QuestionList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def QuestionDetail(request, pk):
     question = Question.objects.get(id=pk)
     serializer = EvaluationSerializer(question, many=False)
@@ -858,6 +981,7 @@ def QuestionDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def QuestionCreate(request):
     serializer = QuestionSerializer(data=request.data)
 
@@ -868,6 +992,7 @@ def QuestionCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def QuestionDelete(request, pk):
     question = Question.objects.get(id=pk)
     question.delete()
@@ -876,6 +1001,7 @@ def QuestionDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def QuestionUpdate(request, pk):
     question = Question.objects.get(id=pk)
     serializer = QuestionSerializer(instance=question, data=request.data, partial=True)
@@ -887,6 +1013,7 @@ def QuestionUpdate(request, pk):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def HistoricalDiagnosisList(request):
     historicalDiagnosis = HistoricalDiagnosis.objects.all()
     serializer = HistoricalDiagnosisSerializer(historicalDiagnosis, many=True)
@@ -895,6 +1022,7 @@ def HistoricalDiagnosisList(request):
 
 
 @api_view(['GET'])
+@jwt_login_required
 def HistoricalDiagnosisDetail(request, pk):
     historicalDiagnosis = HistoricalDiagnosis.objects.get(id=pk)
     serializer = HistoricalDiagnosisSerializer(historicalDiagnosis, many=False)
@@ -903,6 +1031,7 @@ def HistoricalDiagnosisDetail(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def HistoricalDiagnosisCreate(request):
     serializer = HistoricalDiagnosisSerializer(data=request.data)
 
@@ -913,6 +1042,7 @@ def HistoricalDiagnosisCreate(request):
 
 
 @api_view(['DELETE'])
+@jwt_login_required
 def HistoricalDiagnosisDelete(request, pk):
     historicalDiagnosis = HistoricalDiagnosis.objects.get(id=pk)
     historicalDiagnosis.delete()
@@ -921,6 +1051,7 @@ def HistoricalDiagnosisDelete(request, pk):
 
 
 @api_view(['POST'])
+@jwt_login_required
 def HistoricalDiagnosisUpdate(request, pk):
     historicalDiagnosis = HistoricalDiagnosis.objects.get(id=pk)
     serializer = HistoricalDiagnosisSerializer(instance=historicalDiagnosis, data=request.data, partial=True)
