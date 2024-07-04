@@ -251,6 +251,12 @@
                             {% endfor %}
                         </ul>
                     {% endif %}
+
+                    {% if data_for_chartjs  %}
+
+                    {% include "frontend/techcare_data/chart_biomarkers.html" %}
+                    
+                    {% endif %}
                     
                         
                     </div>

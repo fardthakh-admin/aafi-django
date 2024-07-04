@@ -169,7 +169,7 @@ urlpatterns = [
     # path('update//<str:document_name>', update_, name='update_'),
 
 
-    path('chart/biomarkers', views.chartbiomarkers, name="chartbiomarkers"),
+    # path('chart/biomarkers', views.chartbiomarkers, name="chartbiomarkers"),
 
 
 
