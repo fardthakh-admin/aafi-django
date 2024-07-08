@@ -247,9 +247,16 @@ class HistoricalDiagnosis(models.Model):
     diagnosisName = models.CharField(max_length=150, null=True, blank=True)
     number = models.IntegerField(null=True, blank=True)
     diagnosisDate = models.DateField(null=True, blank=True)
-
     patient = models.ForeignKey(Patient, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.diagnosisName
+    
+class Unit(models.Model):
+   # document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    biomarker = models.CharField(max_length=100, default=None)
+    unit = models.CharField(max_length=100, default=None)
+    
+    def __str__(self):
+         return self.__all__    
 

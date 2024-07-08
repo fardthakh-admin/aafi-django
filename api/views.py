@@ -10,6 +10,8 @@ import jwt, datetime
 from firebase_admin import firestore
 from functools import wraps
 from django.contrib.auth import get_user_model
+from rest_framework import status
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def jwt_login_required(view_func):
@@ -415,6 +417,46 @@ def ActivityDetail(request, pk):
     return Response(serializer.data)
 
 
+
+@api_view(['GET'])
+@jwt_login_required
+def ActivityList(request):
+    activities = Medication.objects.all()
+    serializer = ActivitySerializer(activities, many=True)
+
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@jwt_login_required
+def ActivityDetail(request, pk):
+    activities = Activity.objects.get(id=pk)
+    serializer = ActivitySerializer(activities, many=False)
+
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@jwt_login_required
+def ActivityCreate(request):
+    serializer = ActivitySerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+@jwt_login_required
+def ActivityDelete(request, pk):
+    activity = Activity.objects.get(id=pk)
+    activity.delete()
+
+    return Response('Item successfully deleted!')
+
+
+@api_view(['POST'])
 @api_view(['POST'])
 @jwt_login_required
 def ActivityCreate(request):
@@ -648,7 +690,7 @@ def CheckInUpdate(request, pk):
 
 
 @api_view(['GET'])
-# @jwt_login_required
+@jwt_login_required
 def BiomarkersList(request):
     try:
         db = firestore.client()
@@ -1068,3 +1110,64 @@ def HistoricalDiagnosisUpdate(request, pk):
         serializer.save()
 
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@jwt_login_required
+def UnitList(request):
+    u = Unit.objects.all()
+    Unitt = UnitSerializer(u, many=True)
+
+    return Response(Unitt.data)
+
+@api_view(['POST'])
+@jwt_login_required
+def UnitCreate(request):
+    serializer = UnitSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['POST'])
+@jwt_login_required
+def UnitUpdate(request, pk):
+    Unittt = Unit.objects.get(id=pk)
+    serializer = UnitSerializer(instance=Unittt, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@jwt_login_required
+def UnitDelete(request, pk=None):
+    if pk is None:
+        return Response({'error': 'Primary key is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        unit = Unit.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        return Response({'error': 'Unit not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    unit.delete()
+    return Response({'message': 'Item successfully deleted!'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@jwt_login_required
+def UnitDetail(request, pk=None):
+    if pk is None:
+        return Response({'error': 'Primary key is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        unit = Unit.objects.get(id=pk)
+    except ObjectDoesNotExist:
+        return Response({'error': 'Unit not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = UnitSerializer(unit, many=False)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+

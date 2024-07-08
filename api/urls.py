@@ -116,4 +116,17 @@ urlpatterns = [
     path('historicalDiagnosis-delete/<str:pk>/', views.HistoricalDiagnosisDelete, name="historicalDiagnosis-delete"),
     path('historicalDiagnosis-update/<str:pk>/', views.HistoricalDiagnosisUpdate, name="historicalDiagnosis-update"),
 
+
+    path('unit-list/', views.UnitList, name="unit-list"),
+    path('unit-create/', views.UnitCreate, name="unit-create"),
+    path('unit-update/<str:pk>/', views.UnitUpdate, name="unit-update"),
+    path('unit-delete/<str:pk>/', views.UnitDelete, name="unit-delete"),
+    path('unit-detail/<str:pk>/', views.UnitDetail, name="unit-detail"),
+
+
+    
+
+
+
+
 ]

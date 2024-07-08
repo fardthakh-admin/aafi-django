@@ -131,4 +131,13 @@ class QuestionSerializer(serializers.ModelSerializer):
 class HistoricalDiagnosisSerializer(serializers.ModelSerializer):
     class Meta:
         model = HistoricalDiagnosis
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Unit
         fields = '__all__'
+        extra_kwargs = {
+            'biomarker': {'required': True},
+            'unit': {'required': True},
+        }
