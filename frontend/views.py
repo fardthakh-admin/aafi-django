@@ -2150,7 +2150,7 @@ def update_activities(request, document_name):
                 'track': request.POST.get('track'),
                 'audiotrackId': request.POST.get('audiotrackId'),
                 'audiotrackTitle': request.POST.get('audiotrackTitle'),
-                'lable': request.POST.get('lable'),
+                'label': request.POST.get('label'),
                
             }
         db = firestore.client()
