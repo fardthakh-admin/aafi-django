@@ -123,6 +123,9 @@ urlpatterns = [
     path('unit-delete/<str:pk>/', views.UnitDelete, name="unit-delete"),
     path('unit-detail/<str:pk>/', views.UnitDetail, name="unit-detail"),
 
+    path('biomarker-chart/', views.BiomarkersChart, name="bimarker-chart"),
+
+
 
     
 

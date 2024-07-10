@@ -12,7 +12,10 @@ from functools import wraps
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
-
+import firebase_admin
+from datetime import datetime
+from dateutil import parser
+from dateutil import parser as date_parser
 
 def jwt_login_required(view_func):
     @wraps(view_func)
@@ -728,8 +731,57 @@ def BiomarkersDetail(request, pk):
             return Response({'message': 'Biomarker not found'}, status=404)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+    
 
+# Ensure Firebase has been initialized
+if not firebase_admin._apps:
+    firebase_admin.initialize_app()
 
+@api_view(['POST'])
+@jwt_login_required
+def BiomarkersChart(request):
+    try:
+        user_id = request.data.get('user_id')
+        time_from_str = request.data.get('time_from')
+        time_to_str = request.data.get('time_to')
+
+        if not user_id or not time_from_str or not time_to_str:
+            return Response({'error': 'user_id, time_from, and time_to are required fields.'}, status=400)
+
+        # Convert timestamp strings to datetime objects
+        time_from = parse_timestamp(time_from_str)
+        time_to = parse_timestamp(time_to_str)
+
+        if not time_from or not time_to:
+            return Response({'error': 'Invalid timestamp format.'}, status=400)
+
+        # Construct the user path with prefix
+        user_id_path = f"/users/{user_id}"
+
+        # Query Firestore with the user_id_path (includes /users/ prefix)
+        collection_ref = firestore.client().collection('biomarkers')
+        query = collection_ref.where('user', '==', user_id_path).where('time', '>=', time_from).where('time', '<=', time_to)
+        docs = query.stream()
+
+        # Collect data from the query results
+        biomarker_data = [doc.to_dict() for doc in docs]
+
+        if biomarker_data:
+            return Response(biomarker_data)
+        else:
+            return Response({'message': 'No biomarkers found for the specified user and time range.'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+def parse_timestamp(timestamp_str):
+    try:
+        # Parse the datetime from the timestamp string
+        datetime_obj = parser.parse(timestamp_str)
+        return datetime_obj
+    except ValueError as e:
+        print("Error parsing timestamp:", e)
+        return None
+    
 @api_view(['POST'])
 @jwt_login_required
 def BiomarkersCreate(request):
