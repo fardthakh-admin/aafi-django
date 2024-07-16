@@ -1296,7 +1296,7 @@ def psychomarkersdocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/psychomarkersdocument.html', {'document_data': document_data})
 
 def scenarios_view(request):
-    db = firestore.client()
+   
     db = firestore.Client()
     collection = db.collection("scenarios")
     documents = collection.stream()
@@ -1925,6 +1925,20 @@ def bites_delete(request, document_name):
 
     messages.success(request, 'Bites deleted successfully!')
     return redirect('bites_view')
+
+def selfawarenessScenarios_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("selfawarenessScenarios")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'selfawarenessScenarios_delete deleted successfully!')
+    return redirect('selfawarenessScenarios_view')
 
 def categories_delete(request, document_name):
     db = firestore.Client()

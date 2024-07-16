@@ -110,6 +110,11 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+             <!-- Search Form -->
+             <form method="get" action="{% url 'patients' %}" class="mb-3">
+              <input type="text" name="q" placeholder="Search by name, email, etc." class="form-control" value="{{ query }}">
+              <button type="submit" class="btn btn-primary mt-2">Search</button>
+          </form>
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>SelfawarenessScenarios Data</h2>
                 <div class="btn-group" role="group">
@@ -142,7 +147,11 @@
                           {% comment %} <th>Story</th> {% endcomment %}
                           <th>StoryTitle</th>
                           {% comment %} <th>WildCard</th> {% endcomment %}
+                          <th>Delete</th>
+
                           <th>Update</th>
+
+                          <!-- {% comment %} <th>WildCard</th> {% endcomment %} -->
                       </tr>
                   </thead>
                   <tbody>
@@ -166,15 +175,14 @@
                         <td class="document">{{ entry.data.scenarioID}}</td>
                         {% comment %} <td class="document" style="font-size:1px">{{ entry.data.story}}</td> {% endcomment %}
                         <td class="document">{{ entry.data.storyTitle}}</td>
-                        <td class="document">
+                        <!-- <td class="document">
                           {% include "frontend/techcare_data/update_selfawarenessScenarios.html" %}
 
-                        </td>
+                        </td> -->
                         {% comment %} <td class="document">{{ entry.data.wildcard}}</td> {% endcomment %}
                         {% comment %} <td class="document">{{ entry.data.}}</td> {% endcomment %}
    
-                        {% comment %} <td class="edit-delete-buttons">      
-
+                        <td class="edit-delete-buttons">
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'scenarios_delete' document_name=entry.name %}">
                             {% csrf_token %}
                             <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
@@ -186,11 +194,11 @@
                                   }
                               }
                       </script>
-                        </td> {% endcomment %}
-                        {% comment %} <td>
-                          {% include "frontend/techcare_data/update_scenarios.html" %}
+                        </td>
+                         <td>
+                          {% include "frontend/techcare_data/update_selfawarenessScenarios.html" %}
 
-                        </td> {% endcomment %}
+                        </td> 
                     </tr>
                 {% endfor %}
                   </tbody>

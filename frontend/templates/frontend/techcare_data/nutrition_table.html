@@ -136,6 +136,7 @@
                           <th>ProteinContent </th>
                           <th>TotalCalories </th>
                           <th>Unit </th>
+                          <th>Delete</th>
                           <th>Update</th>
                       </tr>
                   </thead>
@@ -154,7 +155,7 @@
                         <td class="document-" >{{ entry.data.proteinContent }}</td>
                         <td class="document-" >{{ entry.data.totalCalories }}</td>
                         <td class="document-" >{{ entry.data.weight }}</td>
-                        {% comment %} <td class="edit-delete-buttons">      
+                       <td class="edit-delete-buttons">      
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
@@ -166,7 +167,7 @@
                                   }
                               }
                         </script>                        
-                      </td> {% endcomment %}
+                      </td> 
                        <td>
                         {% include "frontend/techcare_data/update_nutrition.html" %}
 

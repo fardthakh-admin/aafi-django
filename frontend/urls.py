@@ -127,6 +127,9 @@ urlpatterns = [
     path('tags/delete/<str:document_name>/', views.tags_delete, name='tags_delete'),
     path('trivia/delete/<str:document_name>/', views.trivia_delete, name='trivia_delete'),
     path('users/delete/<str:document_name>/', views.users_delete, name='users_delete'),
+
+    
+    path('selfawarenessScenarios/delete/<str:document_name>/', views.selfawarenessScenarios_delete, name='selfawarenessScenarios_delete'),
     # path('/delete/<str:document_name>/', views._delete, name='_delete'),
 
     path('update/activities/<str:document_name>', update_activities, name='update_activities'),

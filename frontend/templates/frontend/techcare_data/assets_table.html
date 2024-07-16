@@ -131,7 +131,10 @@
                           <th>label</th>
                           <th>Name</th>
                           <th>Path</th>
+                          <th>Delete</th>
                           <th>Update</th>
+                          
+
                       </tr>
                   </thead>
                   <tbody>
@@ -146,7 +149,7 @@
                         <td class="document-">{{ entry.data.label }}</td>
                         <td class="document-">{{ entry.data.name }}</td>
                         <td class="document-" style="font-size:10px">{{ entry.data.path }}</td>
-                        {% comment %} <td class="edit-delete-buttons">      
+                       <td class="edit-delete-buttons">      
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
@@ -158,7 +161,7 @@
                                   }
                               }
                         </script>                        
-                      </td> {% endcomment %}
+                      </td> 
                       <td>
                         {% include "frontend/techcare_data/update_assets.html" %}
 
