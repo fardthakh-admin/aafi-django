@@ -170,11 +170,11 @@ urlpatterns = [
     path('update/wildCard/<str:document_name>', update_wildCard, name='update_wildCard'),
     path('update/selfladder/<str:document_name>', update_selfladder, name='update_selfladder'),
     # path('update//<str:document_name>', update_, name='update_'),
-
+    
 
     # path('chart/biomarkers', views.chartbiomarkers, name="chartbiomarkers"),
 
-
+  
 
 
 ]
