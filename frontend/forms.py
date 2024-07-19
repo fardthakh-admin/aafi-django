@@ -100,7 +100,10 @@ class ActivitiesForm(forms.ModelForm):
         fields = ['description', 'title', 'duration']
 
 
-
+class SelfAwarenessScenariosForm(forms.ModelForm):
+     class Meta:
+        model=selfAwarenessScenarios
+        fields = "__all__"
 
 class BadgesForm(forms.ModelForm):
      class Meta:

@@ -62,6 +62,8 @@ urlpatterns = [
     path('create_majorAssessment/', create_majorAssessment,  name='create_majorAssessment'),
     path('create_psychomarkers/', create_psychomarkers,  name='create_psychomarkers'),
     path('create_scenarios/', create_scenarios,  name='create_scenarios'),
+    path('create_selfawarenessScenarios/', create_selfAwarenessScenarios,  name='create_selfAwarenessScenarios'),
+
     path('create_tags/', create_tags,  name='create_tags'),
     path('create_trivia/', create_trivia,  name='create_trivia'),
     path('create_users/', create_users, name='create_users'),

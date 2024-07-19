@@ -111,14 +111,14 @@
           </div>
           <div class="col-md-9">
              <!-- Search Form -->
-             <form method="get" action="{% url 'patients' %}" class="mb-3">
-              <input type="text" name="q" placeholder="Search by name, email, etc." class="form-control" value="{{ query }}">
+             <form method="get" action="{% url 'selfawarenessScenarios_view' %}" class="mb-3">
+              <input type="text" name="q" placeholder="Search by StoryTitle" class="form-control" value="{{ query }}">
               <button type="submit" class="btn btn-primary mt-2">Search</button>
           </form>
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>SelfawarenessScenarios Data</h2>
                 <div class="btn-group" role="group">
-                    {% comment %} {% include "frontend/techcare_data/create_scenarios.html" %} {% endcomment %}
+                    {% include "frontend/techcare_data/create_selfAwarnessScenarios.html" %} 
                     <form method="post">
                       {% csrf_token %}
                       {% for entry in document_data %}

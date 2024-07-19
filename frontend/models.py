@@ -196,6 +196,7 @@ class psychomarkers(models.Model):
     def __str__(self):
           return self.__all__
 
+
 class scenarios(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     PositiveCorrectionAlternative = models.CharField(max_length=100, default=None)
@@ -203,6 +204,21 @@ class scenarios(models.Model):
     correction = models.TextField()
     positiveActionReply = models.CharField(max_length=100, default=None)
     title = models.CharField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.__all__
+
+class selfAwarenessScenarios(models.Model):
+  
+    correction1from0to2 = models.TextField()
+    correction2from3to5 = models.TextField()
+    interactiveStatement = models.TextField()
+    recommendation1 = models.TextField()
+    recommendation2 = models.TextField()
+    scenarioID = models.CharField(max_length=100, default=None)
+    story = models.TextField()
+    storyTitle = models.CharField(max_length=100, default=None)
+
 
     def __str__(self):
         return self.__all__

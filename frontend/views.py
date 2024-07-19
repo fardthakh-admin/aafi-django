@@ -402,6 +402,7 @@ def bites_view(request):
     tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
 
+
     form = BitesForm() 
 
     return render(request, 'frontend/techcare_data/bites_table.html', {
@@ -416,6 +417,16 @@ def selfawarenessScenarios_view(request):
     collection = db.collection("selfawarenessScenarios")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('storyTitle', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("activities")
     documents = collection.stream()
@@ -441,10 +452,12 @@ def selfawarenessScenarios_view(request):
     documents = collection.stream()
     wildCard_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    form = SelfAwarenessScenariosForm()
+
     paginator = Paginator(document_data, 20)  # Show 20 bites per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'page_obj': page_obj   }
+    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'page_obj': page_obj ,'form':form, 'query':query  }
 
 
     return render(request, 'frontend/techcare_data/selfawarenessScenarios_table.html', context)
@@ -457,6 +470,16 @@ def bites_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     # Fetching tags data
     collection = db.collection("tags")
     documents = collection.stream()
@@ -485,44 +508,12 @@ def bites_view(request):
         'categories_data': categories_data,
         'users_data': users_data,
         'page_obj': page_obj,  # Pass the paginated bites data to the template
+        'query': query  # Pass the search query to the template
     })
 
-db = firestore.Client()
-collection = db.collection("assets")
-documents = collection.stream()
-
-for doc in documents:
-    data = doc.to_dict()
-    name = doc.id
-    label = data.get('label', '')
-    label_ngrams = generate_ngrams(label, 3)  # Adjust the value of n as needed
-    doc.reference.update({ 'label_ngrams': label_ngrams})
 
 
-def assets_view(request):
-    db = firestore.client()
-    query = request.GET.get('q')
 
-    # Fetch assets data filtered by search query if provided
-    collection = db.collection("assets")
-    if query:
-        # Perform a case-insensitive search on 'label' field
-        documents = collection.where("label", "==", query).stream()
-    else:
-        documents = collection.stream()
-
-    # Paginate the search results
-    paginator = Paginator(documents, 20)  # Adjust the number of items per page as needed
-    page_number = request.GET.get('assets_page')
-    page_obj = paginator.get_page(page_number)
-
-    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in page_obj]
-
-    return render(request, 'frontend/techcare_data/assets_table.html', {
-        'document_data': document_data,
-        'query': query,  # Pass the query back to the template for displaying in the search input
-        'page_obj': page_obj  # Pass the paginated object to the template
-    })
 
 def bitesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -670,6 +661,18 @@ def assets_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            name = doc['data'].get('name', '').lower()
+            label = doc['data'].get('label', '').lower()
+            
+            if query.lower() in name or query.lower() in label:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  # 20 items per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -678,7 +681,6 @@ def assets_view(request):
 
 
 def nutrition_view(request):
-    db = firestore.client()
     db = firestore.Client()
     
     # Fetching nutrition data
@@ -686,6 +688,20 @@ def nutrition_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'unit', 'name_en', or 'name_ar' fields
+        query_lower = query.lower()
+        filtered_documents = []
+        for doc in document_data:
+            data = doc['data']
+            unit = str(data.get('unit', '')).lower()
+            name_en = str(data.get('name_en', '')).lower()
+            name_ar = str(data.get('name_ar', '')).lower()
+            if query_lower in unit or query_lower in name_en or query_lower in name_ar:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     # Implementing pagination for nutrition data
     paginator = Paginator(document_data, 20)  # Show 20 nutrition entries per page
     page_number = request.GET.get('page')
@@ -694,7 +710,8 @@ def nutrition_view(request):
     form = NutritionForm()
     return render(request, 'frontend/techcare_data/nutrition_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query
     })
 
 def readBites_view(request):
@@ -705,6 +722,16 @@ def readBites_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('bite', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     # Fetching users data
     collection = db.collection("users")
     documents = collection.stream()
@@ -763,22 +790,47 @@ def selfAwarnessBites_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'unit', 'name_en', or 'name_ar' fields
+        query_lower = query.lower()
+        filtered_documents = []
+        for doc in document_data:
+            data = doc['data']
+            selfAwarnessBite = data.get('selfawarenessBiteText', '').lower()
+            tags = data.get('tags', '').lower()
+          
+            if query_lower in selfAwarnessBite or query_lower in tags :
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj})
+    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj,'query':query    })
 
 def selfawareness_collection_view(request):
     db = firestore.client()
     collection = db.collection("selfawareness_collection")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('selfawareness_bite_text', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/selfawareness_collection_table.html', {'page_obj': page_obj})
+    return render(request, 'frontend/techcare_data/selfawareness_collection_table.html', {'page_obj': page_obj,'query':query})
 
 def suggestedActivities_view(request):
     db = firestore.client()
@@ -786,24 +838,45 @@ def suggestedActivities_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('activity', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    collection = db.collection("activities")
-    documents = collection.stream()
-    activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    acitvities_collection = db.collection("activities")
+    activites_documents = acitvities_collection.stream()
+    activities_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in activites_documents]
 
     paginator = Paginator(document_data, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedActivities_table.html', {'page_obj': page_obj, 'users_data': users_data, 'activities_data': activities_data})
+    return render(request, 'frontend/techcare_data/suggestedActivities_table.html', {'page_obj': page_obj, 'users_data': users_data, 'activities_data': activities_data, 'query':query})
 
 def suggestedBites_view(request):
     db = firestore.client()
     collection = db.collection("suggestedBites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('bite', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("users")
     documents = collection.stream()
@@ -815,13 +888,23 @@ def suggestedBites_view(request):
     documents = collection.stream()
     selfAwarnessBites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/suggestedBites_table.html', {'document_data': document_data, 'users_data': users_data, 'bites_data': bites_data, 'selfAwarnessBites_data': selfAwarnessBites_data})
+    return render(request, 'frontend/techcare_data/suggestedBites_table.html', {'document_data': document_data, 'users_data': users_data, 'bites_data': bites_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'query':query })
 
 def suggestedInAppLinks_view(request):
     db = firestore.client()
     collection = db.collection("suggestedInAppLinks")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('inAppLink', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("users")
     documents = collection.stream()
@@ -834,13 +917,23 @@ def suggestedInAppLinks_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {'page_obj': page_obj, 'users_data': users_data, 'inAppLinks_data': inAppLinks_data})
+    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {'page_obj': page_obj, 'users_data': users_data, 'inAppLinks_data': inAppLinks_data, 'query':query})
 
 def suggestedJournals_view(request):
     db = firestore.client()
     collection = db.collection("suggestedJournals")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('journal', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("users")
     documents = collection.stream()
@@ -852,13 +945,23 @@ def suggestedJournals_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedJournals_table.html', {'page_obj': page_obj, 'users_data': users_data, 'journalPrompt_data': journalPrompt_data})
+    return render(request, 'frontend/techcare_data/suggestedJournals_table.html', {'page_obj': page_obj, 'users_data': users_data, 'journalPrompt_data': journalPrompt_data, 'query':query})
 
 def suggestedSelfAwarnessBites_view(request):
     db = firestore.client()
     collection = db.collection("suggestedSelfAwarnessBites")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('selfAwarnessBite', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("users")
     documents = collection.stream()
@@ -870,12 +973,22 @@ def suggestedSelfAwarnessBites_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedSelfAwarnessBites_table.html', {'page_obj': page_obj, 'users_data': users_data, 'selfAwarnessBites_data': selfAwarnessBites_data})
+    return render(request, 'frontend/techcare_data/suggestedSelfAwarnessBites_table.html', {'page_obj': page_obj, 'users_data': users_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'query':query})
 def suggestedWildCards_view(request):
     db = firestore.client()
     collection = db.collection("suggestedWildCards")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('wildCard', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("users")
     documents = collection.stream()
@@ -888,13 +1001,23 @@ def suggestedWildCards_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedWildCards_table.html', {'page_obj': page_obj, 'users_data': users_data, 'wildCard_data': wildCard_data})
+    return render(request, 'frontend/techcare_data/suggestedWildCards_table.html', {'page_obj': page_obj, 'users_data': users_data, 'wildCard_data': wildCard_data, 'query':query})
 
 def selfladder_view(request):
     db = firestore.client()
     collection = db.collection("selfLadder")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('type', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
     collection = db.collection("users")
     documents = collection.stream()
@@ -905,18 +1028,30 @@ def selfladder_view(request):
     page_obj = paginator.get_page(page_number)
     
    
-    return render(request, 'frontend/techcare_data/selfladder_table.html', {'page_obj': page_obj, 'users_data': users_data})
+    return render(request, 'frontend/techcare_data/selfladder_table.html', {'page_obj': page_obj, 'users_data': users_data, 'query':query})
 
 def testTrivia_view(request):
     db = firestore.client()
     collection = db.collection("testTrivia")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('question', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
+
     paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
  
-    return render(request, 'frontend/techcare_data/testTrivia_table.html', {'page_obj': page_obj})
+    return render(request, 'frontend/techcare_data/testTrivia_table.html', {'page_obj': page_obj, 'query':query})
 
 def wildCard_view(request):
     db = firestore.client()
@@ -924,10 +1059,21 @@ def wildCard_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('content', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'frontend/techcare_data/wildCard_table.html', {'page_obj': page_obj})
+    return render(request, 'frontend/techcare_data/wildCard_table.html', {'page_obj': page_obj,'query':query})
 
 
 def activitiesdocument_detail(request, document_name):
@@ -947,13 +1093,23 @@ def badges_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  # Show 20 badges per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
     form = BadgesForm()  # Assuming BadgesForm is defined in forms.py
     
-    return render(request, 'frontend/techcare_data/badges_table.html', {'form': form, 'page_obj': page_obj})
+    return render(request, 'frontend/techcare_data/badges_table.html', {'form': form, 'page_obj': page_obj,'query':query})
 
 def badgesdocument_detail(request, document_name):
     db = firestore.Client()
@@ -974,6 +1130,15 @@ def biomarkers_view(request):
     biomarkers_documents = biomarkers_collection.stream()
     biomarkers_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in biomarkers_documents]
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in biomarkers_data:
+            title = str(doc['data'].get('bloodGlucose', ''))
+            if query in title:
+                filtered_documents.append(doc)
+        biomarkers_data = filtered_documents
 
     # Paginate biomarkers data
     biomarkers_paginator = Paginator(biomarkers_data, 20)  # Show 10 biomarkers per page
@@ -1115,40 +1280,42 @@ def categoriesdocument_detail(request, document_name):
 
 def feelings_view(request):
     db = firestore.Client()
-    query = request.GET.get('q')
-    print(f"Search Query: {query}")
+    
+    # Retrieve all documents from the "feelings" collection
+    collection = db.collection("feelings")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Retrieve all documents from the "user" collection
+    collection2 = db.collection("user")
+    documents2 = collection2.stream()
+    feelings = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents2]
 
-    # Fetching feelings data with optional search filter
-    feelings_collection = db.collection("feelings")
-    if query is not None:
-        joy_value = query.lower() == 'true'  # Convert the query to boolean
-        feelings_documents = feelings_collection.where("joy", "==", joy_value).stream()
-        feelings_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in feelings_documents]
-        print(f"Feelings documents found with search (joy={joy_value}): {feelings_data}")
-    else:
-        feelings_documents = feelings_collection.stream()
-        feelings_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in feelings_documents]
-        print(f"Feelings documents found without search: {feelings_data}")
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'joy' field being True or False
+        filtered_documents = []
+        query_lower = query.lower()
+        for doc in document_data:
+            joy = doc['data'].get('joy', None)
+            if joy is not None:
+                joy_str = 'true' if joy else 'false'
+                if query_lower in joy_str:
+                    filtered_documents.append(doc)
+        document_data = filtered_documents
 
-    # Fetching user data
-    users_collection = db.collection("user")
-    users_documents = users_collection.stream()
-    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in users_documents]
-
-    # Pagination for feelings data
-    paginator = Paginator(feelings_data, 20)  # Show 20 feelings per page
+    # Pagination for feelings
+    paginator = Paginator(document_data, 20)  # Show 20 feelings per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    form = FeelingsForm()  # Assuming FeelingsForm is defined in forms.py
-
+    
+    form = FeelingsForm()
     return render(request, 'frontend/techcare_data/feelings_table.html', {
         'form': form,
-        'feelings': users_data, 
-        'page_obj': page_obj,  # Pass the paginated feelings data to the template
-        'query': query  # Pass the query back to the template for displaying in the search input
+        'feelings': feelings,
+        'page_obj': page_obj,
+        'query': query
     })
-
 
 def feelingsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1162,44 +1329,35 @@ def feelingsdocument_detail(request, document_name):
 
     return render(request, 'frontend/techcare_data/feelingsdocument.html', {'document_data': document_data})
 
-collection = db.collection("inAppLinks")
-documents = collection.stream()
-
-for doc in documents:
-    data = doc.to_dict()
-    title = data.get('title', '')
-    if title:  # Only process if title is not empty
-        links_title_ngrams = generate_ngrams(title, 3)  # Adjust the value of n as needed
-        doc.reference.update({'ngrams': links_title_ngrams})
 
 
 def inAppLinks_view(request):
+    
     db = firestore.Client()
-    query = request.GET.get('q')
-    print(f"Search Query: {query}")
+    collection = db.collection("inAppLinks")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    # Fetching inAppLinks data with optional search filter
-    inAppLinks_collection = db.collection("inAppLinks")
+    query = request.GET.get('q')  # Get search query from request
     if query:
-        query_ngrams = generate_ngrams(query, 3)  # Adjust the value of n as needed
-        print(f"Query n-grams: {query_ngrams}")
-        inAppLinks_documents = inAppLinks_collection.where("ngrams", "array_contains_any", query_ngrams).stream()
-    else:
-        inAppLinks_documents = inAppLinks_collection.stream()
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
 
-    inAppLinks_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in inAppLinks_documents]
-    print(f"InAppLinks documents found: {inAppLinks_data}")
-
-    form = InAppLinksForm() 
-    # Pagination for inAppLinks data
-    paginator = Paginator(inAppLinks_data, 20)  # Show 20 inAppLinks per page
+    # Pagination for inAppLinks
+    paginator = Paginator(document_data, 20)  # Show 20 inAppLinks per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
+    
+    form = InAppLinksForm()
     return render(request, 'frontend/techcare_data/inAppLinks_table.html', {
-        'form': form,
-        'page_obj': page_obj,  # Pass the paginated inAppLinks data to the template
-        'query': query  # Pass the query back to the template for displaying in the search input
+        'form': form, 
+        'page_obj': page_obj,
+        'query': query
     })
 
 def inAppLinksdocument_detail(request, document_name):
@@ -1215,40 +1373,40 @@ def inAppLinksdocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/inAppLinksdocument.html', {'document_data': document_data})
 
 def inquiry_view(request):
+    
     db = firestore.Client()
-    query = request.GET.get('q')
-    print(f"Search Query: {query}")
-
-    # Fetching inquiry data with optional search filter
-    inquiry_collection = db.collection("inquiry")
+    
+    # Fetching inquiry data
+    collection = db.collection("inquiry")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    query = request.GET.get('q')  # Get search query from request
     if query:
-        query_ngrams = generate_ngrams(query, 3)  # Adjust the value of n as needed
-        print(f"Query n-grams: {query_ngrams}")
-        inquiry_documents = inquiry_collection.where("question_ngrams", "array_contains_any", query_ngrams).stream()
-        inquiry_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in inquiry_documents]
-        print(f"Inquiry documents found with search: {inquiry_data}")
-    else:
-        inquiry_documents = inquiry_collection.stream()
-        inquiry_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in inquiry_documents]
-        print(f"Inquiry documents found without search: {inquiry_data}")
-
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('question', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
     # Fetching users data
-    users_collection = db.collection("users")
-    users_documents = users_collection.stream()
-    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in users_documents]
-
-    form = InquiryForm()  # Assuming InquiryForm is defined in forms.py
-
-    # Pagination for inquiry data
-    paginator = Paginator(inquiry_data, 20)  # Show 20 inquiries per page
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    # Implementing pagination for inquiry data
+    paginator = Paginator(document_data, 20)  # Show 20 inquiries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
+    
+    form = InquiryForm()
     return render(request, 'frontend/techcare_data/inquiry_table.html', {
-        'form': form,
-        'page_obj': page_obj,  # Pass the paginated inquiry data to the template
+        'form': form, 
+        'page_obj': page_obj,
         'users_data': users_data,
-        'query': query  # Pass the query back to the template for displaying in the search input
+        'query':query
+
     })
 
 def inquirydocument_detail(request, document_name):
@@ -1264,13 +1422,23 @@ def inquirydocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/inquirydocument.html', {'document_data': document_data})
 
 def items_view(request):
-    db = firestore.client()
+ 
     db = firestore.Client()
     
     # Fetching items data
     collection = db.collection("items")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('name', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
     
     # Implementing pagination for items data
     paginator = Paginator(document_data, 20)  # Show 20 items per page
@@ -1280,7 +1448,8 @@ def items_view(request):
     form = ItemsForm()
     return render(request, 'frontend/techcare_data/items_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query':query
     })
 
 def itemsdocument_detail(request, document_name):
@@ -1297,15 +1466,7 @@ def itemsdocument_detail(request, document_name):
 
 
 
-# journal_collection = db.collection("journal")
-# journal_documents = journal_collection.stream()
 
-# for doc in journal_documents:
-#         data = doc.to_dict()
-#         title = data.get('title', '')
-#         if title:  # Only process if title is not empty
-#             title_ngrams = generate_ngrams(title, 3)  # Adjust the value of n as needed
-#             doc.reference.update({'ngrams': title_ngrams})
 
 def journal_view(request):
     db = firestore.Client()
@@ -1377,7 +1538,8 @@ def journalPrompt_view(request):
     form = JournalForm()
     return render(request, 'frontend/techcare_data/journalPrompt_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query
     })
     
 def journalPromptdocument_detail(request, document_name):
@@ -1410,6 +1572,7 @@ def majorAssessment_view(request):
             if query.lower() in title:
                 filtered_documents.append(doc)
         document_data = filtered_documents
+
     # Implementing pagination for majorAssessment data
     paginator = Paginator(document_data, 20)  # Show 20 majorAssessment entries per page
     page_number = request.GET.get('page')
@@ -1418,7 +1581,8 @@ def majorAssessment_view(request):
     form = MajorAssessmentForm()
     return render(request, 'frontend/techcare_data/majorAssessment_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query
     })
 
 def majorAssessmentdocument_detail(request, document_name):
@@ -1446,18 +1610,14 @@ def psychomarkers_view(request):
 
     query = request.GET.get('q')  # Get search query from request
     if query:
-        try:
-            query_number = float(query)  # Convert query to float (or int if appropriate)
-        except ValueError:
-            query_number = None
-
-        if query_number is not None:
-            # Perform search based on numeric field (e.g., 'weight')
-            filtered_documents = [doc for doc in document_data if doc['data'].get('depression', 0) == query_number]
-        else:
-            filtered_documents = []
-
+        # Perform search based on 'depression' field
+        filtered_documents = []
+        for doc in document_data:
+            depression = str(doc['data'].get('depression', '')).lower()
+            if query.lower() in depression:
+                filtered_documents.append(doc)
         document_data = filtered_documents
+
     # Implementing pagination for psychomarkers data
     paginator = Paginator(document_data, 20)  # Show 20 psychomarkers entries per page
     page_number = request.GET.get('page')
@@ -1497,6 +1657,16 @@ def scenarios_view(request):
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = ScenariosForm()
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     collection = db.collection("majorAssessment")
     documents = collection.stream()
     majorAssessment_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
@@ -1521,7 +1691,7 @@ def scenarios_view(request):
     documents = collection.stream()
     bites_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-    return render(request, 'frontend/techcare_data/scenarios_table.html', {'page_obj': page_obj , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data,'suggestedBites_data':suggestedBites_data,'suggestedJournals_data':suggestedJournals_data, 'bites_data':bites_data})
+    return render(request, 'frontend/techcare_data/scenarios_table.html', {'page_obj': page_obj , 'form': form, 'majorAssessment_data': majorAssessment_data, 'activities_data': activities_data,'suggestedBites_data':suggestedBites_data,'suggestedJournals_data':suggestedJournals_data, 'bites_data':bites_data, 'query': query})
 
 def scenariosdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1539,18 +1709,28 @@ def scenariosdocument_detail(request, document_name):
 
 
 def shortBite_view(request):
-    db = firestore.client()
+   
     db = firestore.Client()
     collection = db.collection("shortBite")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = ShortBiteForm()
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/shortBite_table.html', {'page_obj': page_obj, 'form': form})
+    return render(request, 'frontend/techcare_data/shortBite_table.html', {'page_obj': page_obj, 'form': form ,'query':query})
     
 def shortBitedocument_detail(request, document_name):
     db = firestore.Client()
@@ -1565,17 +1745,27 @@ def shortBitedocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/shortBitedocument.html', {'document_data': document_data})
 
 def tags_view(request):
-    db = firestore.client()
+   
     db = firestore.Client()
     collection = db.collection("tags")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = TagsForm()
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'frontend/techcare_data/tags_table.html', {'page_obj': page_obj, 'form': form})
+    return render(request, 'frontend/techcare_data/tags_table.html', {'page_obj': page_obj, 'form': form,'query':query})
 
 def tagsdocument_detail(request, document_name):
     db = firestore.Client()
@@ -1591,16 +1781,28 @@ def tagsdocument_detail(request, document_name):
 
 
 def trivia_view(request):
-    db = firestore.client()
+  
     db = firestore.Client()
     collection = db.collection("trivia")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = TriviaForm()
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('question', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
+
     paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'frontend/techcare_data/trivia_table.html', {'page_obj': page_obj, 'form': form})
+    return render(request, 'frontend/techcare_data/trivia_table.html', {'page_obj': page_obj, 'form': form,'query':query})
 
 def triviadocument_detail(request, document_name):
     db = firestore.Client()
@@ -1616,16 +1818,27 @@ def triviadocument_detail(request, document_name):
 
 
 def users_view(request):
-    db = firestore.client()
+    
     db = firestore.Client()
     collection = db.collection("users")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     form = UsersForm()
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('email', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)  # Show 20 scenarios entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'frontend/techcare_data/users_table.html', {'page_obj': page_obj, 'form': form})
+    return render(request, 'frontend/techcare_data/users_table.html', {'page_obj': page_obj, 'form': form, 'query':query})
 
 
 def usersdocument_detail(request, document_name):
@@ -1917,6 +2130,27 @@ def create_scenarios(request):
             messages.error(request, 'Error creating Scenarios. Please check your input.')
             return redirect('scenarios_view')
 
+def create_selfAwarenessScenarios(request):
+    if request.method == 'POST':
+        form = SelfAwarenessScenariosForm(request.POST)
+        if form.is_valid():
+            data = {
+                'correction1from0to2': form.cleaned_data['correction1from0to2'],
+                'correction2from3to5': form.cleaned_data['correction2from3to5'],
+                'interactiveStatement': form.cleaned_data['interactiveStatement'],
+                'recommendation1': form.cleaned_data['recommendation1'],
+                'recommendation2': form.cleaned_data['recommendation2'],
+                'scenarioID': form.cleaned_data['scenarioID'],
+                'story': form.cleaned_data['story'],
+                'storyTitle': form.cleaned_data['storyTitle'],
+
+            }
+            db.collection("selfawarenessScenarios").document().set(data)
+            messages.success(request, 'Successfully created selfawarenessScenario.') 
+            return redirect('selfawarenessScenarios_view')
+        else:
+            messages.error(request, 'Error creating Scenarios. Please check your input.')
+            return redirect('selfawarenessScenarios_view')
     
 def create_shortBite(request):
     if request.method == 'POST':
