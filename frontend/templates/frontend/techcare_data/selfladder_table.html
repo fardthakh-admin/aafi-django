@@ -118,7 +118,7 @@
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>selfLadder Data</h2>
                 <div class="btn-group" role="group">
-                  {% comment %} {% include "frontend/techcare_data/create_assessmentQuestion.html" %} {% endcomment %}
+                  {% include "frontend/techcare_data/create_selfLadder.html" %} 
                     <form method="post">
                       {% csrf_token %}
                       {% for entry in document_data %}
@@ -135,6 +135,9 @@
                           <th>Type</th>
                           <th>Users</th>
                           <th>Time</th>
+                          <th>Delete</th>
+                          <th>Update</th>
+
                     
                       </tr>
                   </thead>
@@ -150,8 +153,8 @@
                         <td class="document-" style="font-size:10px">{{ entry.data.userID }}</td>
                         <td class="document-">{{ entry.data.time }}</td>
             
-                        {% comment %} <td class="edit-delete-buttons">      
-                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
+                         <td class="edit-delete-buttons">      
+                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'selfLadder_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
                           </form>
@@ -162,8 +165,8 @@
                                   }
                               }
                         </script>                        
-                      </td> {% endcomment %}
-                     <td>
+                      </td> 
+                      <td>
                         {% include "frontend/techcare_data/update_selfLadder.html" %}
 
                       </td> 

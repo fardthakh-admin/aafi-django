@@ -660,7 +660,7 @@ def assets_view(request):
     collection = db.collection("assets")
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-
+    form= AssetsForm()
     query = request.GET.get('q')  # Get search query from request
     if query:
         # Perform search based on 'title' field (modify as per your Firestore structure)
@@ -675,9 +675,19 @@ def assets_view(request):
 
     paginator = Paginator(document_data, 20)  # 20 items per page
     page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(page_number)    
 
-    return render(request, 'frontend/techcare_data/assets_table.html', {'page_obj': page_obj})
+    major_collection = db.collection("majorAssessment")
+    major_documents = major_collection.stream()
+    major_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in major_documents]
+
+    major_paginator = Paginator(major_data, 20)  # Show 10 major assessments per page
+    major_page_number = request.GET.get('major_page')
+    major_page_obj = major_paginator.get_page(major_page_number)
+
+    
+
+    return render(request, 'frontend/techcare_data/assets_table.html', {'page_obj': page_obj, 'query':query,'form':form, 'majorAssessment':major_page_obj})
 
 
 def nutrition_view(request):
@@ -803,12 +813,12 @@ def selfAwarnessBites_view(request):
             if query_lower in selfAwarnessBite or query_lower in tags :
                 filtered_documents.append(doc)
         document_data = filtered_documents
-
+    form=selfAwarnessBitesForm()
     paginator = Paginator(document_data, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj,'query':query    })
+    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj,'query':query ,'form':form   })
 
 def selfawareness_collection_view(request):
     db = firestore.client()
@@ -1018,7 +1028,7 @@ def selfladder_view(request):
             if query.lower() in title:
                 filtered_documents.append(doc)
         document_data = filtered_documents
-
+    form=SelfLadderForm()
     collection = db.collection("users")
     documents = collection.stream()
     users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
@@ -1028,7 +1038,7 @@ def selfladder_view(request):
     page_obj = paginator.get_page(page_number)
     
    
-    return render(request, 'frontend/techcare_data/selfladder_table.html', {'page_obj': page_obj, 'users_data': users_data, 'query':query})
+    return render(request, 'frontend/techcare_data/selfladder_table.html', {'page_obj': page_obj, 'users_data': users_data, 'query':query,'form':form})
 
 def testTrivia_view(request):
     db = firestore.client()
@@ -1914,7 +1924,24 @@ def create_assessmentQuestion(request):
             return redirect('assessmentQuestion_view') 
 
 
-
+def create_assets(request):
+    if request.method == 'POST':
+        form = AssetsForm(request.POST)
+        if form.is_valid():
+            data = {
+                
+                'assetsType': form.cleaned_data['assetsType'],
+                'label': form.cleaned_data['label'],  
+                'name': form.cleaned_data['name'],  
+                'path': form.cleaned_data['path'],  
+            }
+            db = firestore.client()
+            db.collection("assets").document().set(data)
+            messages.success(request, 'Successfully created assets.')  
+            return redirect('assets_view') 
+        else:
+            messages.error(request, 'Error creating assets. Please check your input.')
+            return redirect('assets_view') 
 
 
 def create_badges(request):
@@ -2151,6 +2178,45 @@ def create_selfAwarenessScenarios(request):
         else:
             messages.error(request, 'Error creating Scenarios. Please check your input.')
             return redirect('selfawarenessScenarios_view')
+        
+
+def create_selfLadder(request):
+    if request.method == 'POST':
+        form = SelfLadderForm(request.POST)
+        if form.is_valid():
+            data = {
+                'user': request.POST.get('user'),   
+                'type': form.cleaned_data['type'],
+                'time': form.cleaned_data['time'],
+                
+
+            }
+            db.collection("selfLadder").document().set(data)
+            messages.success(request, 'Successfully created selfLadder.') 
+            return redirect('selfladder_view')
+        else:
+            messages.error(request, 'Error creating Scenarios. Please check your input.')
+            return redirect('selfladder_view')
+        
+
+def create_selfAwarnessBites(request):
+    if request.method == 'POST':
+        form = selfAwarnessBitesForm(request.POST)
+        if form.is_valid():
+            data = {
+                
+                'scenarioID': form.cleaned_data['scenarioID'],
+                'tags': form.cleaned_data['tags'],
+                'selfawarenessBiteTitle': form.cleaned_data['selfawarenessBiteTitle'],
+                'selfawarenessBiteText': form.cleaned_data['selfawarenessBiteText'],
+                
+            }
+            db.collection("selfAwarnessBites").document().set(data)
+            messages.success(request, 'Successfully created selfAwarnessBites.') 
+            return redirect('selfAwarnessBites_view')
+        else:
+            messages.error(request, 'Error creating selfAwarnessBites. Please check your input.')
+            return redirect('selfAwarnessBites_view')        
     
 def create_shortBite(request):
     if request.method == 'POST':
@@ -2311,6 +2377,21 @@ def assessmentQuestion_delete(request, document_name):
     messages.success(request, 'AssessmentQuestion deleted successfully!')
     return redirect('assessmentQuestion_view')
 
+
+def assets_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("assets")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'assets deleted successfully!')
+    return redirect('assets_view')
+
 def badges_delete(request, document_name):
     db = firestore.Client()
     collection = db.collection("badges")
@@ -2367,6 +2448,49 @@ def selfawarenessScenarios_delete(request, document_name):
 
     messages.success(request, 'selfawarenessScenarios_delete deleted successfully!')
     return redirect('selfawarenessScenarios_view')
+
+def selfLadder_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("selfLadder")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'selfLadder deleted successfully!')
+    return redirect('selfladder_view')
+
+
+def selfawarenessBites_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("selfAwarnessBites")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'selfawarenessBites deleted successfully!')
+    return redirect('selfAwarnessBites_view')
+
+def selfawarenessCollection_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("selfawareness_collection")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'selfawarenessCollection deleted successfully!')
+    return redirect('selfawareness_collection_view')
 
 def categories_delete(request, document_name):
     db = firestore.Client()

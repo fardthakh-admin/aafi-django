@@ -183,7 +183,7 @@
                         {% comment %} <td class="document">{{ entry.data.}}</td> {% endcomment %}
    
                         <td class="edit-delete-buttons">
-                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'scenarios_delete' document_name=entry.name %}">
+                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'selfawarenessScenarios_delete' document_name=entry.name %}">
                             {% csrf_token %}
                             <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
                         </form>

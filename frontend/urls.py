@@ -48,6 +48,8 @@ urlpatterns = [
     path('document/patients/<str:document_name>/', views.patients_detail, name='patientsdocument'),
     path('create_document/', create_document, name='create_document'),
     path('create_activities/',create_activities, name='create_activities'),
+    path('create_assets/', create_assets, name='create_assets'),
+
     path('create_assessmentQuestion/', create_assessmentQuestion, name='create_assessmentQuestion'),
     path('create_badges/', create_badges,  name='create_badges'),
     path('create_biomarkers/', create_biomarkers,  name='create_biomarkers'),
@@ -63,6 +65,11 @@ urlpatterns = [
     path('create_psychomarkers/', create_psychomarkers,  name='create_psychomarkers'),
     path('create_scenarios/', create_scenarios,  name='create_scenarios'),
     path('create_selfawarenessScenarios/', create_selfAwarenessScenarios,  name='create_selfAwarenessScenarios'),
+    path('create_selfLadder/', create_selfLadder,  name='create_selfLadder'),
+    path('create_selfAwarnessBites/', create_selfAwarnessBites,  name='create_selfAwarnessBites'),
+
+    
+
 
     path('create_tags/', create_tags,  name='create_tags'),
     path('create_trivia/', create_trivia,  name='create_trivia'),
@@ -112,6 +119,8 @@ urlpatterns = [
 
     path('activities/delete/<str:document_name>/', views.activities_delete, name='activities_delete'),
     path('assessmentQuestion/delete/<str:document_name>/', views.assessmentQuestion_delete, name='assessmentQuestion_delete'),
+    path('assets/delete/<str:document_name>/', views.assets_delete, name='assets_delete'),
+
     path('badges/delete/<str:document_name>/', views.badges_delete, name='badges_delete'),
     path('biomarkers/delete/<str:document_name>/', views.biomarkers_delete, name='biomarkers_delete'),
     path('bites/delete/<str:document_name>/', views.bites_delete, name='bites_delete'),
@@ -130,6 +139,9 @@ urlpatterns = [
     path('trivia/delete/<str:document_name>/', views.trivia_delete, name='trivia_delete'),
     path('users/delete/<str:document_name>/', views.users_delete, name='users_delete'),
 
+    path('selfawarenessBites/delete/<str:document_name>/', views.selfawarenessBites_delete, name='selfawarenessBites_delete'),
+    path('selfawarenessCollection/delete/<str:document_name>/', views.selfawarenessCollection_delete, name='selfawarenessCollection_delete'),
+    path('selfLadder/delete/<str:document_name>/', views.selfLadder_delete, name='selfLadder_delete'),
     
     path('selfawarenessScenarios/delete/<str:document_name>/', views.selfawarenessScenarios_delete, name='selfawarenessScenarios_delete'),
     # path('/delete/<str:document_name>/', views._delete, name='_delete'),

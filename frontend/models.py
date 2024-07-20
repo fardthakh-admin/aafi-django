@@ -93,6 +93,12 @@ class assessmentQuestion(models.Model):
     points= models.IntegerField(default=0)  
     question = models.CharField(max_length=100)
 
+class assets(models.Model):
+    
+    assetsType = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    path = models.CharField(max_length=200)
 
 class badges(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)
@@ -222,6 +228,29 @@ class selfAwarenessScenarios(models.Model):
 
     def __str__(self):
         return self.__all__
+    
+
+class selfLadder(models.Model):
+  
+    type = models.CharField(max_length=100, default=None)
+    time = models.DateTimeField()
+    userID = models.ForeignKey(users, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.__all__
+    
+
+class selfAwarnessBites(models.Model):
+  
+    scenarioID = models.CharField(max_length=100, default=None)
+    tags = models.CharField(max_length=100, default=None)
+    selfawarenessBiteTitle = models.CharField(max_length=100, default=None)
+    selfawarenessBiteText = models.TextField(max_length=100, default=None)
+
+   
+    
+    def __str__(self):
+        return self.__all__    
 
 class trivia(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
