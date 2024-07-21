@@ -151,7 +151,9 @@
                         <td class="document-" style="font-size:10px;" > {{ entry.data.selfawareness_bite_text }}</td>
                         <td class="document-">{{ entry.data.tags }}</td>
             
-                        <td class="edit-delete-buttons">      
+                        <td class="edit-delete-buttons">     
+                          <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'selfawarenessCollection_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>

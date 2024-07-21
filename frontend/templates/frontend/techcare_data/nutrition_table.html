@@ -160,7 +160,9 @@
                         <td class="document-" >{{ entry.data.proteinContent }}</td>
                         <td class="document-" >{{ entry.data.totalCalories }}</td>
                         <td class="document-" >{{ entry.data.weight }}</td>
-                       <td class="edit-delete-buttons">      
+                       <td class="edit-delete-buttons">     
+                        <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>

@@ -151,6 +151,7 @@
                         <td class="document">{{ entry.data.user }}</td>
                         <td class="document">{{ entry.data.time }}</td>
                         <td class="edit-delete-buttons">      
+                          <br><br><br>
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'psychomarkers_delete' document_name=entry.name %}">
                             {% csrf_token %}

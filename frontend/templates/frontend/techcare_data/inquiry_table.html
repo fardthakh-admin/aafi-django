@@ -151,6 +151,7 @@
                         <td class="document">{{ entry.data.question}}</td>
                         <td class="document">{{ entry.data.user}}</td>
                         <td class="edit-delete-buttons">      
+                          <br><br><br>
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'inquiry_delete' document_name=entry.name %}">
                             {% csrf_token %}

@@ -149,6 +149,7 @@
                         <td class="document-title">{{ entry.data.love}}</td>
                         <td class="document">{{ entry.data.joy }}</td>
                         <td class="edit-delete-buttons">      
+                          <br><br><br>
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'feelings_delete' document_name=entry.name %}">
                             {% csrf_token %}

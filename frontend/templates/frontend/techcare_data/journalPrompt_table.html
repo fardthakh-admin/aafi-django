@@ -148,6 +148,7 @@
                       </td>
                         <td class="document-title">{{ entry.data.title }}</td>
                         <td class="edit-delete-buttons">      
+                          <br><br><br>
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'journalPrompt_delete' document_name=entry.name %}">
                             {% csrf_token %}

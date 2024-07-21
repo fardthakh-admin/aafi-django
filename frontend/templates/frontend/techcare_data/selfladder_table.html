@@ -154,6 +154,8 @@
                         <td class="document-">{{ entry.data.time }}</td>
             
                          <td class="edit-delete-buttons">      
+                          <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'selfLadder_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>

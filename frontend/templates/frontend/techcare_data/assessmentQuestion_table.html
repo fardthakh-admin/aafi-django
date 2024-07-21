@@ -126,6 +126,8 @@
                             <td class="document-title">{{ entry.data.order }}</td>
                             <td class="document">{{ entry.data.question }}</td>
                             <td class="edit-delete-buttons">
+                                <br><br><br>
+
                                 <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                                     {% csrf_token %}
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>

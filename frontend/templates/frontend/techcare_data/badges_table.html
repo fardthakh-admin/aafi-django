@@ -148,7 +148,9 @@
                           <a href="{% url 'badgesdocument' entry.name %}">{{ entry.name }}</a>
                       </td>
                         <td class="document-title">{{ entry.data.title }}</td>
-                        <td class="edit-delete-buttons">      
+                        <td class="edit-delete-buttons">    
+                          <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'badges_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>

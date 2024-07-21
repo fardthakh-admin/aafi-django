@@ -150,6 +150,8 @@
                       <td class="document-name">{{ entry.data.name }}</td>
                       <td class="document-path" style="font-size:10px">{{ entry.data.path }}</td>
                       <td class="edit-delete-buttons">
+                        <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'assets_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>

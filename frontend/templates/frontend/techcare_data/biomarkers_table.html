@@ -129,6 +129,8 @@
                             <td class="document-title">{{ entry.data.sleepQuality }}</td>
                             <td class="document">{{ entry.data.weeklyActivity }}</td>
                             <td class="edit-delete-buttons">
+                                <br><br><br>
+
                                 <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'biomarkers_delete' document_name=entry.name %}">
                                     {% csrf_token %}
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>
