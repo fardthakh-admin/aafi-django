@@ -118,7 +118,7 @@
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>WildCard Data</h2>
                 <div class="btn-group" role="group">
-                  {% comment %} {% include "frontend/techcare_data/create_assessmentQuestion.html" %} {% endcomment %}
+                  {% include "frontend/techcare_data/create_wildCard.html" %}
                     <form method="post">
                       {% csrf_token %}
                       {% for entry in document_data %}
@@ -133,6 +133,9 @@
                           <th>#</th>
                           <th>Patient ID</th>
                           <th>Content</th>
+                          <th>Delete</th>
+                          <th>Update</th>
+
 
                     
                       </tr>
@@ -148,8 +151,8 @@
       
                         <td class="document-">{{ entry.data.content }}</td>
             
-                        {% comment %} <td class="edit-delete-buttons">      
-                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
+                      <td class="edit-delete-buttons">      
+                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'wildCard_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
                           </form>
@@ -160,7 +163,7 @@
                                   }
                               }
                         </script>                        
-                      </td> {% endcomment %}
+                      </td> 
                        <td>
                         {% include "frontend/techcare_data/update_wildCard.html" %}
 

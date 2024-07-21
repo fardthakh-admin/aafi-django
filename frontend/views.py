@@ -1079,11 +1079,11 @@ def wildCard_view(request):
             if query.lower() in title:
                 filtered_documents.append(doc)
         document_data = filtered_documents
-
+    form=wildCardForm()
     paginator = Paginator(document_data, 20)  # Show 20 readStories entries per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    return render(request, 'frontend/techcare_data/wildCard_table.html', {'page_obj': page_obj,'query':query})
+    return render(request, 'frontend/techcare_data/wildCard_table.html', {'page_obj': page_obj,'query':query, "form":form})
 
 
 def activitiesdocument_detail(request, document_name):
@@ -2217,6 +2217,24 @@ def create_selfAwarnessBites(request):
         else:
             messages.error(request, 'Error creating selfAwarnessBites. Please check your input.')
             return redirect('selfAwarnessBites_view')        
+        
+def create_wildCard(request):
+    if request.method == 'POST':
+        form = wildCardForm(request.POST)
+        if form.is_valid():
+            data = {
+                
+                'content': form.cleaned_data['content'],
+                
+                
+            }
+            db.collection("wildCard").document().set(data)
+            messages.success(request, 'Successfully created wildCard.') 
+            return redirect('wildCard_view')
+        else:
+            messages.error(request, 'Error creating wildCard. Please check your input.')
+            return redirect('wildCard_view')        
+                
     
 def create_shortBite(request):
     if request.method == 'POST':
@@ -2463,6 +2481,20 @@ def selfLadder_delete(request, document_name):
     messages.success(request, 'selfLadder deleted successfully!')
     return redirect('selfladder_view')
 
+
+def wildCard_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("wildCard")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'wildCard deleted successfully!')
+    return redirect('wildCard_view')
 
 def selfawarenessBites_delete(request, document_name):
     db = firestore.Client()

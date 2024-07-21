@@ -67,6 +67,8 @@ urlpatterns = [
     path('create_selfawarenessScenarios/', create_selfAwarenessScenarios,  name='create_selfAwarenessScenarios'),
     path('create_selfLadder/', create_selfLadder,  name='create_selfLadder'),
     path('create_selfAwarnessBites/', create_selfAwarnessBites,  name='create_selfAwarnessBites'),
+    path('create_wildCard/', create_wildCard,  name='create_wildCard'),
+
 
     
 
@@ -142,8 +144,9 @@ urlpatterns = [
     path('selfawarenessBites/delete/<str:document_name>/', views.selfawarenessBites_delete, name='selfawarenessBites_delete'),
     path('selfawarenessCollection/delete/<str:document_name>/', views.selfawarenessCollection_delete, name='selfawarenessCollection_delete'),
     path('selfLadder/delete/<str:document_name>/', views.selfLadder_delete, name='selfLadder_delete'),
-    
     path('selfawarenessScenarios/delete/<str:document_name>/', views.selfawarenessScenarios_delete, name='selfawarenessScenarios_delete'),
+    path('selfLadder/delete/<str:document_name>/', views.selfLadder_delete, name='selfLadder_delete'),
+    path('wildCard/delete/<str:document_name>/', views.wildCard_delete, name='wildCard_delete'),
     # path('/delete/<str:document_name>/', views._delete, name='_delete'),
 
     path('update/activities/<str:document_name>', update_activities, name='update_activities'),

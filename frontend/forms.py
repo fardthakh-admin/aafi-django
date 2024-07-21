@@ -120,6 +120,12 @@ class selfAwarnessBitesForm(forms.ModelForm):
         model=selfAwarnessBites
         fields = "__all__"        
 
+class wildCardForm(forms.ModelForm):
+     class Meta:
+        model=wildCard
+        fields = "__all__"        
+
+
 class BadgesForm(forms.ModelForm):
      class Meta:
         model=badges

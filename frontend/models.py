@@ -251,6 +251,13 @@ class selfAwarnessBites(models.Model):
     
     def __str__(self):
         return self.__all__    
+    
+class wildCard(models.Model):
+  
+    content = models.TextField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.__all__      
 
 class trivia(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
