@@ -99,7 +99,7 @@ urlpatterns = [
     path('trivia_view/', views.trivia_view, name='trivia_view'),
     path('users_view/', views.users_view, name='users_view'),
 
-    path('selfawarenessScenarios_view/', views.selfawarenessScenarios_view, name='selfawarenessScenarios_view'),
+    path('selfawarenessScenarios_view/', views.selfawarenessScenarios_view, name='selfawarenessScenarios_view'), 
     path('assets_view/', views.assets_view, name='assets_view'),
     path('nutrition_view/', views.nutrition_view, name='nutrition_view'),
     path('readBites_view/', views.readBites_view, name='readBites_view'),

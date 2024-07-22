@@ -411,6 +411,8 @@ def bites_view(request):
         'document_data': document_data,
     })
 
+def extract_reference(ref):
+    return ref.split('/')[-1] if isinstance(ref, str) else None
 
 def selfawarenessScenarios_view(request):
     db = firestore.client()
@@ -427,6 +429,10 @@ def selfawarenessScenarios_view(request):
             if query.lower() in title:
                 filtered_documents.append(doc)
         document_data = filtered_documents
+
+    
+    
+
 
     collection = db.collection("activities")
     documents = collection.stream()
@@ -452,12 +458,13 @@ def selfawarenessScenarios_view(request):
     documents = collection.stream()
     wildCard_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+
     form = SelfAwarenessScenariosForm()
 
     paginator = Paginator(document_data, 20)  # Show 20 bites per page
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'page_obj': page_obj ,'form':form, 'query':query  }
+    context = {'activity_data': activity_data, 'selfAwarnessBites_data': selfAwarnessBites_data, 'inAppLinks_data': inAppLinks_data, 'journalPrompt_data': journalPrompt_data, 'bites_data': bites_data, 'wildCard_data': wildCard_data, 'page_obj': page_obj ,'form':form, 'query':query,   }
 
 
     return render(request, 'frontend/techcare_data/selfawarenessScenarios_table.html', context)
@@ -3123,25 +3130,64 @@ def update_users(request, document_name):
     
 def update_selfawarenessScenarios(request, document_name):
     if request.method == 'POST':
-        form = UsersForm(request.POST)
+        form = SelfAwarenessScenariosForm(request.POST)
         entry_id = document_name
+        db = firestore.client()
+
+        def get_document_reference(path):
+            if path:
+        # Ensure the path does not start with a '/'
+                if path.startswith('/'):
+                  path = path[1:]
+                path_elements = path.split('/')
+        # Check if the path has exactly 2 elements
+                if len(path_elements) == 2:
+            # Return a DocumentReference object instead of a string
+                    return db.collection(path_elements[0]).document(path_elements[1])
+                else:
+                 raise ValueError(f"Invalid path: {path}")
+            return None
+        
+        journal_path = request.POST.get('journal')
+        activity_path= request.POST.get('activity')
+        inAppLinks_path= request.POST.get('inAppLink')
+        wildCard_path= request.POST.get('wildcard')
+        biteID_path= request.POST.get('biteID')
+        normalBites_path= request.POST.get('normalBite')
+
+      
+
+
+        try:
+            journal_ref = get_document_reference(journal_path)
+            activity_ref = get_document_reference(activity_path)
+            inAppLinks_ref = get_document_reference(inAppLinks_path)
+            normalBites_ref = get_document_reference(normalBites_path)
+            biteID_ref = get_document_reference(biteID_path)
+            wildCard_ref = get_document_reference(wildCard_path)
+           
+           
+           
+        except ValueError as e:
+            messages.error(request, f'Invalid document path: {e}')
+            return redirect('selfawarenessScenarios_view')
         data = {
-                'activity': request.POST.get('activity'),
-                'biteID': request.POST.get('biteID'),
+                'activity': activity_ref,
+                'biteID': biteID_ref,
                 'correction1from0to2': request.POST.get('correction1from0to2'),
                 'correction2from3to5': request.POST.get('correction2from3to5'),
-                'inAppLink': request.POST.get('inAppLink'),
+                'inAppLink': inAppLinks_ref,
                 'interactiveStatement': request.POST.get('interactiveStatement'),
-                'journal': request.POST.get('journal'),
-                'normalBite': request.POST.get('normalBite'),
+                'journal': journal_ref,
+                'normalBite':normalBites_ref,
                 'recommendation1': request.POST.get('recommendation1'),
                 'recommendation2': request.POST.get('recommendation2'),
                 'scenarioID': request.POST.get('scenarioID'),
                 'story': request.POST.get('story'),
                 'storyTitle': request.POST.get('storyTitle'),
-                'wildcard': request.POST.get('wildcard'),
+                'wildcard': wildCard_ref,
             }
-        db = firestore.client()
+        
         db.collection("selfawarenessScenarios").document(entry_id).update(data)
         messages.success(request, 'selfawarenessScenarios updated successfully.')
         return redirect('selfawarenessScenarios_view')

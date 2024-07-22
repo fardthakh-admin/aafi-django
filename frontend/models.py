@@ -224,6 +224,7 @@ class selfAwarenessScenarios(models.Model):
     scenarioID = models.CharField(max_length=100, default=None)
     story = models.TextField()
     storyTitle = models.CharField(max_length=100, default=None)
+    journal= models.ForeignKey(journalPrompt, on_delete=models.CASCADE)
 
 
     def __str__(self):
