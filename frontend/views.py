@@ -1895,14 +1895,34 @@ def create_tags(request):
 def create_activities(request):
     if request.method == 'POST':
         form = ActivitiesForm(request.POST)
+
+        db = firestore.client()
+        def get_document_reference(path):
+            if path:
+        # Ensure the path does not start with a '/'
+                if path.startswith('/'):
+                  path = path[1:]
+                path_elements = path.split('/')
+        # Check if the path has exactly 2 elements
+                if len(path_elements) == 2:
+            # Return a DocumentReference object instead of a string
+                    return db.collection(path_elements[0]).document(path_elements[1])
+                else:
+                 raise ValueError(f"Invalid path: {path}")
+            return None
+        
+
+        tags_path=request.POST.get('tags')
+
+        tags_ref=get_document_reference(tags_path)
         if form.is_valid():
             data = {
-                'tags': request.POST.get('tags'),
+                'tags': tags_ref,
                 'description': form.cleaned_data['description'],
                 'title': form.cleaned_data['title'],
                 'duration': form.cleaned_data['duration'],
             }
-            db = firestore.client()
+            
             db.collection("activities").document().set(data)
             messages.success(request, 'Success Creating Activity.')
             return redirect('activities_view')
@@ -2746,11 +2766,31 @@ def update_activities(request, document_name):
     if request.method == 'POST':
         form = ActivitiesForm(request.POST)
         entry_id = document_name
+
+        db = firestore.client()
+        def get_document_reference(path):
+            if path:
+        # Ensure the path does not start with a '/'
+                if path.startswith('/'):
+                  path = path[1:]
+                path_elements = path.split('/')
+        # Check if the path has exactly 2 elements
+                if len(path_elements) == 2:
+            # Return a DocumentReference object instead of a string
+                    return db.collection(path_elements[0]).document(path_elements[1])
+                else:
+                 raise ValueError(f"Invalid path: {path}")
+            return None
+        
+        duration=int(request.POST.get('duration'))
+        tags_path=request.POST.get('tags')
+
+        tags_ref=get_document_reference(tags_path)
         data = {
-                'tags': request.POST.get('tags'),
+                'tags': tags_ref,
                 'description': request.POST.get('description'),
                 'title': request.POST.get('title'),
-                'duration': request.POST.get('duration'),
+                'duration': duration,
                 'type': request.POST.get('type'),
                 'track': request.POST.get('track'),
                 'audiotrackId': request.POST.get('audiotrackId'),
@@ -2758,7 +2798,7 @@ def update_activities(request, document_name):
                 'label': request.POST.get('label'),
                
             }
-        db = firestore.client()
+       
         db.collection("activities").document(entry_id).update(data)
         messages.success(request, 'Activity updated successfully.')
         return redirect('activities_view')

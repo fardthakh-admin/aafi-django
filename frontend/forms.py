@@ -97,7 +97,7 @@ class TagsForm(forms.ModelForm):
 class ActivitiesForm(forms.ModelForm):
      class Meta:
         model=activities
-        fields = ['description', 'title', 'duration']
+        fields =  "__all__"
 
 
 class AssetsForm(forms.ModelForm):

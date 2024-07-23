@@ -77,13 +77,17 @@ class collection(models.Model):
 class activities(models.Model):
     #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
-    description = models.CharField(max_length=100, default=timezone.now)
+    description = models.CharField(max_length=100)
     duration = models.IntegerField(default=0)   
     title = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
+    track= models.CharField(max_length=200)
+    audiotrackId=models.CharField(max_length=100)
+    audiotrackTitle=models.CharField(max_length=100)
+    label=models.CharField(max_length=100)
 
 
-def __str__(self):
+    def __str__(self):
          return self.__all__
 
 class assessmentQuestion(models.Model):

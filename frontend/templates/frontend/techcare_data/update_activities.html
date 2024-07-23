@@ -51,7 +51,7 @@
                                         <select name="tags" id="id_tags" class="form-control">
                                             <option value="">Select Tag</option>
                                             {% for tag in tags_data %}
-                                                {% if tag.name == entry.data.tags|slice:"6:" %}
+                                                {% if tag.name == entry.data.tags.id %}
                                                     <option value="/tags/{{ tag.name }}" selected>{{ tag.data.title }}</option>
                                                 {% else %}
                                                     <option value="/tags/{{ tag.name }}">{{ tag.data.title }}</option>
@@ -62,7 +62,7 @@
                                     <div class="form-group">
                                         <label for="{{ form.description.id_for_label }}">Description</label> 
                                         <input type="text" name="description" class="form-control" value="{{ entry.data.description }}">
-
+                                    </div>
                                     <div class="form-group">
                                         <label for="{{ form.title.id_for_label }}">Title</label>
                                         <input type="text" name="title" class="form-control" value="{{ entry.data.title }}">
