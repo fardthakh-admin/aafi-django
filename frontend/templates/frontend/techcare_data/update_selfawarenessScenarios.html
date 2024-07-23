@@ -52,9 +52,9 @@
                                             <option value="">Select Activity</option>
                                             {% for activity in activity_data %}
                                                 {% if activity.name == entry.data.activity.id %}
-                                                    <option value="/activity/{{ activity.name }}" selected>{{ activity.data.title }}</option>
+                                                    <option value="/activities/{{ activity.name }}" selected>{{ activity.data.title }}</option>
                                                 {% else %}
-                                                    <option value="/activity/{{ activity.name }}">{{ activity.data.title }}</option>
+                                                    <option value="/activities/{{ activity.name }}">{{ activity.data.title }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
@@ -79,9 +79,9 @@
                                             <option value="">Select InAppLink</option>
                                             {% for inAppLink in inAppLinks_data %}
                                                 {% if inAppLink.name == entry.data.inAppLink.id %}
-                                                    <option value="/inAppLink/{{ inAppLink.name }}" selected>{{ inAppLink.data.title }}</option>
+                                                    <option value="/inAppLinks/{{ inAppLink.name }}" selected>{{ inAppLink.data.title }}</option>
                                                 {% else %}
-                                                    <option value="/inAppLink/{{ inAppLink.name }}">{{ inAppLink.data.title }}</option>
+                                                    <option value="/inAppLinks/{{ inAppLink.name }}">{{ inAppLink.data.title }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
