@@ -54,7 +54,7 @@
                                             <select name="selfAwarnessBite" id="id_tags" class="form-control">
                                                 <option value="">Select selfAwarnessBites</option>
                                                 {% for selfAwarnessBites in selfAwarnessBites_data %}
-                                                {% if selfAwarnessBites.name == entry.data.selfAwarnessBite|slice:"19:" %}
+                                                {% if selfAwarnessBites.name == entry.data.selfAwarnessBite.id %}
                                                   <option value="/selfAwarnessBites/{{ selfAwarnessBites.name }}" selected>{{ selfAwarnessBites.data.selfawarenessBiteTitle }}</option>
                                               {% else %}
                                                   <option value="/selfAwarnessBites/{{ selfAwarnessBites.name }}">{{ selfAwarnessBites.data.selfawarenessBiteTitle }}</option>
@@ -68,7 +68,7 @@
                                             <select name="user" id="user_id" class="form-control">
                                               <option value="">Select User</option>
                                               {% for user in users_data %}
-                                              {% if user.name == entry.data.user|slice:"7:" %}
+                                              {% if user.name == entry.data.user.id %}
                                                   <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
                                               {% else %}
                                                   <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>

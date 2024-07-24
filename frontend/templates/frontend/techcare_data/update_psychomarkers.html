@@ -56,7 +56,7 @@
                                         <select name="user" id="user_id" class="form-control">
                                           <option value="">Select User</option>
                                           {% for user in users_data %}
-                                          {% if user.name == entry.data.user|slice:"7:" %}
+                                          {% if user.name == entry.data.user.id %}
                                               <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
                                           {% else %}
                                               <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>

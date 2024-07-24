@@ -64,11 +64,22 @@ def logout_page(request):
     logout(request)
     return redirect('login')
 
-def generate_ngrams(s, n):
-    s = str(s)  # Convert input to string to handle both strings and integers
-    s = s.replace(" ", "")  # Remove spaces if needed
-    ngrams = [s[i:i+n] for i in range(len(s)-n+1)]
-    return ngrams
+
+db = firestore.client()
+
+def get_document_reference(path):
+            if path:
+        # Ensure the path does not start with a '/'
+                if path.startswith('/'):
+                  path = path[1:]
+                path_elements = path.split('/')
+        # Check if the path has exactly 2 elements
+                if len(path_elements) == 2:
+            # Return a DocumentReference object instead of a string
+                    return db.collection(path_elements[0]).document(path_elements[1])
+                else:
+                 raise ValueError(f"Invalid path: {path}")
+            return None
 
 
 def login_page(request):
@@ -411,8 +422,6 @@ def bites_view(request):
         'document_data': document_data,
     })
 
-def extract_reference(ref):
-    return ref.split('/')[-1] if isinstance(ref, str) else None
 
 def selfawarenessScenarios_view(request):
     db = firestore.client()
@@ -1897,19 +1906,7 @@ def create_activities(request):
         form = ActivitiesForm(request.POST)
 
         db = firestore.client()
-        def get_document_reference(path):
-            if path:
-        # Ensure the path does not start with a '/'
-                if path.startswith('/'):
-                  path = path[1:]
-                path_elements = path.split('/')
-        # Check if the path has exactly 2 elements
-                if len(path_elements) == 2:
-            # Return a DocumentReference object instead of a string
-                    return db.collection(path_elements[0]).document(path_elements[1])
-                else:
-                 raise ValueError(f"Invalid path: {path}")
-            return None
+        
         
 
         tags_path=request.POST.get('tags')
@@ -1950,26 +1947,52 @@ def create_assessmentQuestion(request):
             messages.error(request, 'Error creating Assessment Question. Please check your input.')
             return redirect('assessmentQuestion_view') 
 
-
+import csv
+import io
 def create_assets(request):
     if request.method == 'POST':
-        form = AssetsForm(request.POST)
+        form = AssetsForm(request.POST, request.FILES)
         if form.is_valid():
+            # Save form data to Firestore
             data = {
-                
                 'assetsType': form.cleaned_data['assetsType'],
-                'label': form.cleaned_data['label'],  
-                'name': form.cleaned_data['name'],  
-                'path': form.cleaned_data['path'],  
+                'label': form.cleaned_data['label'],
+                'name': form.cleaned_data['name'],
+                'path': form.cleaned_data['path'],
             }
             db = firestore.client()
             db.collection("assets").document().set(data)
-            messages.success(request, 'Successfully created assets.')  
-            return redirect('assets_view') 
-        else:
-            messages.error(request, 'Error creating assets. Please check your input.')
-            return redirect('assets_view') 
+            messages.success(request, 'Successfully created asset.')
 
+            # Process the uploaded CSV file
+            csv_file = request.FILES.get('csv_file')
+            if csv_file:
+                data_set = csv_file.read().decode('UTF-8')
+                io_string = io.StringIO(data_set)
+                reader = csv.reader(io_string, delimiter=',', quotechar='|')
+                
+                for row in reader:
+                    # Skip the header row if present
+                    if reader.line_num == 1:
+                        continue
+                    
+                    assets_data = {
+                        'assetsType': row[0],
+                        'name': row[1],
+                        'label': row[2],
+                        'path': row[3],
+                    }
+                    db.collection("assets").document().set(assets_data)
+                messages.success(request, 'CSV file processed successfully.')
+
+            return redirect('assets_view')
+        else:
+            messages.error(request, 'Error creating asset. Please check your input.')
+            return redirect('assets_view')
+    else:
+        form = AssetsForm()
+
+    return render(request, 'frontend/techcare_data/assets_form.html', {'form': form})
 
 def create_badges(request):
        if request.method == 'POST':
@@ -2768,19 +2791,7 @@ def update_activities(request, document_name):
         entry_id = document_name
 
         db = firestore.client()
-        def get_document_reference(path):
-            if path:
-        # Ensure the path does not start with a '/'
-                if path.startswith('/'):
-                  path = path[1:]
-                path_elements = path.split('/')
-        # Check if the path has exactly 2 elements
-                if len(path_elements) == 2:
-            # Return a DocumentReference object instead of a string
-                    return db.collection(path_elements[0]).document(path_elements[1])
-                else:
-                 raise ValueError(f"Invalid path: {path}")
-            return None
+        
         
         duration=int(request.POST.get('duration'))
         tags_path=request.POST.get('tags')
@@ -2844,6 +2855,11 @@ def update_biomarkers(request, document_name):
     if request.method == 'POST':
         form = BiomarkersForm(request.POST)
         entry_id = document_name
+        db = firestore.client()
+
+        user_path=request.POST.get('user')
+        user_ref=get_document_reference(user_path)
+
         data = {
                 'bloodGlucose': request.POST.get('bloodGlucose'),
                 'bloodGlucoseType': request.POST.get('bloodGlucoseType'),
@@ -2852,7 +2868,7 @@ def update_biomarkers(request, document_name):
                 'weeklyActivity': request.POST.get('weeklyActivity'),
                 'sleepQuality': request.POST.get('sleepQuality'),
                 'time': request.POST.get('time'),
-                'user': request.POST.get('user'),
+                'user': user_ref,
                 'weight': request.POST.get('weight'),
                 'FBS': request.POST.get('FBS'),
                 'HBA1c': request.POST.get('HBA1c'),
@@ -2869,6 +2885,21 @@ def update_bites(request, document_name):
     if request.method == 'POST':
         form = BitesForm(request.POST)
         entry_id = document_name
+        db = firestore.client()
+    
+        
+        thumbs_up_users_path= request.POST.get('thumbs_up_users')
+        thumbs_down_users_path= request.POST.get('thumbs_down_users')
+        categories_path= request.POST.get('categories')
+        tags_path=request.POST.get('tags')
+         
+     
+        thumbs_up_users_ref=get_document_reference(thumbs_up_users_path)
+        thumbs_down_users_ref=get_document_reference(thumbs_down_users_path)
+        categories_ref=get_document_reference(categories_path)
+        tags_ref=get_document_reference(tags_path)
+
+
         data = {
                 'image': request.POST.get('image'),
                 'order': request.POST.get('order'),
@@ -2876,15 +2907,14 @@ def update_bites(request, document_name):
                 'CBT_points': request.POST.get('CBT_points'),
                 'next': request.POST.get('next'),
                 'scenarioID': request.POST.get('scenarioID'),
-                'thumbs_up_users': request.POST.get('thumbs_up_users'),
-                'thumbs_down_users': request.POST.get('thumbs_down_users'),
-                'categories': request.POST.get('categories'),
+                'thumbs_up_users': thumbs_up_users_ref,
+                'thumbs_down_users':thumbs_down_users_ref,
+                'categories': categories_ref,
                 'content': request.POST.get('content'),
                 'difficulty': request.POST.get('difficulty'),
-                'tags': request.POST.get('tags'),
+                'tags':tags_ref,
                 'title': request.POST.get('title'),
             }
-        db = firestore.client()
         db.collection("bites").document(entry_id).update(data)
         messages.success(request, 'bites updated successfully.')
         return redirect('bites_view')
@@ -2958,14 +2988,20 @@ def update_inquiry(request, document_name):
     if request.method == 'POST':
         form = InquiryForm(request.POST)
         entry_id = document_name
+        db = firestore.client()
+
+        
+        
+        user_path=request.POST.get('user')
+        user_ref=get_document_reference(user_path)
+
         data = {
                 'answer': request.POST.get('answer'),
                 'question': request.POST.get('question'),
                 'time': request.POST.get('time'),
                 'topic': request.POST.get('topic'),
-                'user': request.POST.get('user'),
+                'user': user_ref,
             }
-        db = firestore.client()
         db.collection("inquiry").document(entry_id).update(data)
         messages.success(request, 'inquiry updated successfully.')
         return redirect('inquiry_view')
@@ -3043,9 +3079,16 @@ def update_psychomarkers(request, document_name):
     if request.method == 'POST':
         form = PsychomarkersForm(request.POST)
         entry_id = document_name
+        db = firestore.client()
+       
+        
+        user_path=request.POST.get('user')
+
+        user_ref=get_document_reference(user_path)
+        
         data = {
                 'time': request.POST.get('time'),
-                'user': request.POST.get('user'),
+                'user':user_ref,
                 'depression': request.POST.get('depression'),
             }
         db = firestore.client()
@@ -3060,18 +3103,35 @@ def update_scenarios(request, document_name):
     if request.method == 'POST':
         form = ScenariosForm(request.POST)
         entry_id = document_name
+
+        db = firestore.client()
+       
+        
+        majorAssessment_path=request.POST.get('majorAssessment')
+        suggestedActivity_path=request.POST.get('suggestedActivity')
+        suggestedBite_path=request.POST.get('suggestedBite')
+        suggestedJournal=request.POST.get('suggestedJournal')
+        SuggestBitesFromBank_path=request.POST.get('SuggestBitesFromBank')
+
+        majorAssessment_ref=get_document_reference(majorAssessment_path)
+        suggestedActivity_ref=get_document_reference(suggestedActivity_path)
+        suggestedBite_ref=get_document_reference(suggestedBite_path)
+        suggestedJournal_ref=get_document_reference(suggestedJournal)
+        SuggestBitesFromBank_ref=get_document_reference(SuggestBitesFromBank_path)
+
+
         data = {
                 'PositiveCorrectionAlternative': request.POST.get('PositiveCorrectionAlternative'),
                 'actionreply': request.POST.get('actionreply'),
                 'correction': request.POST.get('correction'),
                 'positiveActionReply': request.POST.get('positiveActionReply'),
                 'title': request.POST.get('title'),
-                'majorAssessment': request.POST.get('majorAssessment'),
-                'suggestedActivity': request.POST.get('suggestedActivity'),
+                'majorAssessment': majorAssessment_ref,
+                'suggestedActivity': suggestedActivity_ref,
                 'type': request.POST.get('type'),
 
-                'suggestedBite': request.POST.get('suggestedBite'),
-                'suggestedJournal': request.POST.get('suggestedJournal'),
+                'suggestedBite': suggestedBite_ref,
+                'suggestedJournal': suggestedJournal_ref,
                 'max': request.POST.get('max'),
                 'feeling': request.POST.get('feeling'),
                 'status': request.POST.get('status'),
@@ -3079,7 +3139,7 @@ def update_scenarios(request, document_name):
                 'story': request.POST.get('story'),
                 'InteractiveStatement': request.POST.get('InteractiveStatement'),
                 'Recommendation': request.POST.get('Recommendation'),
-                'SuggestBitesFromBank': request.POST.get('SuggestBitesFromBank'),
+                'SuggestBitesFromBank': SuggestBitesFromBank_ref,
 
             }
         db = firestore.client()
@@ -3174,19 +3234,7 @@ def update_selfawarenessScenarios(request, document_name):
         entry_id = document_name
         db = firestore.client()
 
-        def get_document_reference(path):
-            if path:
-        # Ensure the path does not start with a '/'
-                if path.startswith('/'):
-                  path = path[1:]
-                path_elements = path.split('/')
-        # Check if the path has exactly 2 elements
-                if len(path_elements) == 2:
-            # Return a DocumentReference object instead of a string
-                    return db.collection(path_elements[0]).document(path_elements[1])
-                else:
-                 raise ValueError(f"Invalid path: {path}")
-            return None
+      
         
         journal_path = request.POST.get('journal')
         activity_path= request.POST.get('activity')
@@ -3276,9 +3324,17 @@ def update_nutrition(request, document_name):
 def update_readBites(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+        db = firestore.client()
+
+
+        user_path=request.POST.get('user')
+        bite_path = request.POST.get('bite')
+        
+        user_ref=get_document_reference(user_path)
+        bite_ref=get_document_reference(bite_path)
         data = {
-                'bite': request.POST.get('bite'),
-                'user': request.POST.get('user'),
+                'bite': bite_ref,
+                'user': user_ref,
                 'time': request.POST.get('time'),
             }
         db = firestore.client()
@@ -3292,9 +3348,21 @@ def update_readBites(request, document_name):
 def update_readStories(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+
+        db = firestore.client()
+
+        
+        
+
+        user_path=request.POST.get('user')
+        senario_path = request.POST.get('senario')
+        
+        user_ref=get_document_reference(user_path)
+        senario_ref=get_document_reference(senario_path)
+
         data = {
-                'senario': request.POST.get('senario'),
-                'user': request.POST.get('user'),
+                'senario': senario_ref,
+                'user': user_ref,
                 'time': request.POST.get('time'),
             }
         db = firestore.client()
@@ -3340,15 +3408,23 @@ def update_selfawareness_collection(request, document_name):
 def update_suggestedActivities(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+        db = firestore.client()
+
+        
+
+        activity_path=request.POST.get('activity')
+        user_path=request.POST.get('user')
+        activity_ref=get_document_reference(activity_path)  
+        user_ref=get_document_reference(user_path)
+
         data = {
-                'activity': request.POST.get('activity'),
+                'activity': activity_ref,
                 'state': request.POST.get('state'),
                 'type': request.POST.get('type'),
-                'user': request.POST.get('user'),
+                'user': user_ref,
                 'time': request.POST.get('time'),
 
             }
-        db = firestore.client()
         db.collection("suggestedActivities").document(entry_id).update(data)
         messages.success(request, 'suggestedActivities updated successfully.')
         return redirect('suggestedActivities_view')
@@ -3359,11 +3435,25 @@ def update_suggestedActivities(request, document_name):
 def update_suggestedBites(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+        db = firestore.client()
+
+    
+        
+        bite_path=request.POST.get('bite')
+        user_path=request.POST.get('user')
+        selfAwarnessBite_path=request.POST.get('selfAwarnessBite')
+
+        bite_ref=get_document_reference(bite_path)
+        user_ref=get_document_reference(user_path)
+        selfAwarnessBite_ref=get_document_reference(selfAwarnessBite_path)
+        
+
+
         data = {
-                'bite': request.POST.get('bite'),
+                'bite': bite_ref,
                 'state': request.POST.get('state'),
-                'user': request.POST.get('user'),
-                'selfAwarnessBite': request.POST.get('selfAwarnessBite'),
+                'user': user_ref,
+                'selfAwarnessBite': selfAwarnessBite_ref,
                 'time': request.POST.get('time'),
 
             }
@@ -3378,9 +3468,19 @@ def update_suggestedBites(request, document_name):
 def update_suggestedInAppLinks(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+        db = firestore.client()
+
+       
+        
+        user_path=request.POST.get('user')
+        inAppLinks_path = request.POST.get('inAppLink')
+        
+        user_ref=get_document_reference(user_path)
+        inAppLink_ref=get_document_reference(inAppLinks_path)
+
         data = {
-                'inAppLink': request.POST.get('inAppLink'),
-                'user': request.POST.get('user'),
+                'inAppLink': inAppLink_ref,
+                'user': user_ref,
                 'time': request.POST.get('time'),
 
             }
@@ -3395,9 +3495,20 @@ def update_suggestedInAppLinks(request, document_name):
 def update_suggestedJournals(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+
+        db = firestore.client()
+
+        
+
+        user_path=request.POST.get('user')
+        journal_path = request.POST.get('journal')
+        
+        user_ref=get_document_reference(user_path)
+        journal_ref=get_document_reference(journal_path)
+
         data = {
-                'journal': request.POST.get('journal'),
-                'user': request.POST.get('user'),
+                'journal': journal_ref,
+                'user': user_ref,
                 'time': request.POST.get('time'),
 
             }
@@ -3412,10 +3523,22 @@ def update_suggestedJournals(request, document_name):
 def update_suggestedSelfAwarnessBites(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+
+        db = firestore.client()
+
+
+        
+
+        user_path=request.POST.get('user')
+        selfAwarnessBite_path = request.POST.get('selfAwarnessBite')
+        
+        user_ref=get_document_reference(user_path)
+        selfAwarnessBite_ref=get_document_reference(selfAwarnessBite_path)
+
         data = {
-                'selfAwarnessBite': request.POST.get('selfAwarnessBite'),
+                'selfAwarnessBite': selfAwarnessBite_ref,
                 'state': request.POST.get('state'),
-                'user': request.POST.get('user'),
+                'user': user_ref,
                 'time': request.POST.get('time'),
 
             }
@@ -3430,9 +3553,19 @@ def update_suggestedSelfAwarnessBites(request, document_name):
 def update_suggestedWildCards(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+        db = firestore.client()
+
+        
+
+        user_path=request.POST.get('user')
+        wildCard_path = request.POST.get('wildCard')
+        
+        user_ref=get_document_reference(user_path)
+        wildCard_ref=get_document_reference(wildCard_path)
+
         data = {
-                'wildCard': request.POST.get('wildCard'),
-                'user': request.POST.get('user'),
+                'wildCard':wildCard_ref ,
+                'user': user_ref,
                 'time': request.POST.get('time'),
 
             }
@@ -3480,12 +3613,18 @@ def update_wildCard(request, document_name):
 def update_selfladder(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
+        db = firestore.client()
+        
+        userId_path=request.POST.get('userID')
+        userId_ref=get_document_reference(userId_path)
+
+
+
         data = {
-                'userID': request.POST.get('userID'),
+                'userID': userId_ref,
                 'type': request.POST.get('type'),
                 'time': request.POST.get('time'),
             }
-        db = firestore.client()
         db.collection("selfLadder").document(entry_id).update(data)
         messages.success(request, 'selfladder updated successfully.')
         return redirect('selfladder_view')

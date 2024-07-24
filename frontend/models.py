@@ -41,11 +41,14 @@ class users(models.Model):
 
 class bites(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    categories = models.CharField(max_length=100)
+    # categories = models.ForeignKey(categories, on_delete=models.CASCADE)
     content = models.TextField()
     difficulty = models.IntegerField()
     tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=100)
+    display_name=models.ForeignKey(users, on_delete=models.CASCADE)
+    image= models.CharField(max_length=100)
+    order=models.IntegerField()
 
     def __str__(self):
           return self.__all__
@@ -214,7 +217,7 @@ class scenarios(models.Model):
     correction = models.TextField()
     positiveActionReply = models.CharField(max_length=100, default=None)
     title = models.CharField(max_length=100, default=None)
-
+    
     def __str__(self):
         return self.__all__
 
