@@ -30,12 +30,27 @@
 
 </head>
 
+
 <body>
     <div class="container mt-4">
         <div class="row">
 
             <div class="col-md-9">
-                <button type="button" style="background:green;color:white" class="btn success" id="createButton" data-toggle="modal" data-target="#createModal">Create</button>
+                <div class="d-flex align-items-center mb-3">
+                    <form action="{% url 'export_nutrition_data' %}" method="get" class="me-3">
+                        <button type="submit" class="btn btn-success">Export to Excel</button>
+                    </form>
+                
+                    <form action="{% url 'import_nutrition_data' %}" method="post" enctype="multipart/form-data" class="me-3 d-flex align-items-center">
+                        {% csrf_token %}
+                        <input type="file" name="import_file" accept=".xlsx, .xls" class="form-control me-2" />
+                        <button type="submit" class="btn btn-primary">Import</button>
+                    </form>
+                
+                    <button type="button" class="btn btn-success" id="createButton" data-bs-toggle="modal" data-bs-target="#createModal">Create</button>
+                </div>
+                
+                
 
                 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">

@@ -246,7 +246,7 @@ class nutrition(models.Model):
     portion = models.CharField(max_length=100, default=None)
     proteinContent = models.CharField(max_length=100, default=None)
     totalCalories = models.IntegerField(max_length=100, default=None)
-    weight = models.IntegerField(max_length=100, default=None)
+    weight = models.CharField(max_length=100, default=None) 
     
     def __str__(self):
          return self.__all__
