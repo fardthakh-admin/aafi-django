@@ -90,6 +90,11 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'last_name', 'username', 'email', 'is_active']
     list_filter = ['first_name', 'last_name', 'is_active', 'username', 'email']
 
+    def save_model(self, request, obj, form, change):
+        if not change:  # This means a new user is being created
+            obj.set_password(obj.password)  # This hashes the password
+        super().save_model(request, obj, form, change)
+
 class DocotrAdmin(admin.ModelAdmin):
     list_display = ('id', 'first_name', 'last_name', 'username', 'email', 'is_active')
     # list_display_links=['name', 'price', 'active', 'category']
@@ -112,3 +117,4 @@ admin.site.register(Badge)
 admin.site.register(Game)
 admin.site.register(Question)
 admin.site.register(Patient, PatioenAdmin)
+

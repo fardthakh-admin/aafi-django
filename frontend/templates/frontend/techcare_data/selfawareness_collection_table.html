@@ -110,8 +110,13 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+               <!-- Search Form -->
+               <form method="get" action="{% url 'selfawareness_collection_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by tags" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
             <div class="button-row d-flex justify-content-between mb-4">
-                <h2>Assets Data</h2>
+                <h2>selfawareness_collection Data</h2>
                 <div class="btn-group" role="group">
                   {% comment %} {% include "frontend/techcare_data/create_assessmentQuestion.html" %} {% endcomment %}
                     <form method="post">
@@ -129,6 +134,9 @@
                           <th>Patient ID</th>
                           <th>Selfawareness_bite_text</th>
                           <th>Tags</th>
+                          <th>Delete</th>
+                          <th>Update</th>
+
                     
                       </tr>
                   </thead>
@@ -143,8 +151,10 @@
                         <td class="document-" style="font-size:10px;" > {{ entry.data.selfawareness_bite_text }}</td>
                         <td class="document-">{{ entry.data.tags }}</td>
             
-                        {% comment %} <td class="edit-delete-buttons">      
-                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
+                        <td class="edit-delete-buttons">     
+                          <br><br><br>
+
+                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'selfawarenessCollection_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
                           </form>
@@ -155,7 +165,7 @@
                                   }
                               }
                         </script>                        
-                      </td> {% endcomment %}
+                      </td> 
                       <td>
                         {% include "frontend/techcare_data/update_selfawareness_collection.html" %}
 

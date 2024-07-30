@@ -6,14 +6,15 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework import generics
 from .serializers import *
 from .models import *
-import jwt, datetime
+import jwt
+from datetime import datetime, timedelta
 from firebase_admin import firestore
 from functools import wraps
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from django.core.exceptions import ObjectDoesNotExist
 import firebase_admin
-from datetime import datetime
+
 from dateutil import parser
 from dateutil import parser as date_parser
 
@@ -174,30 +175,31 @@ class UserLogin(APIView):
         username = request.data['username']
         password = request.data['password']
 
-        user = User.objects.get(username = username)
-
-        if user is None:
-            raise AuthenticationFailed('User not found!')
         
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise AuthenticationFailed('User not found!')
+
         if not user.check_password(password):
             raise AuthenticationFailed('Incorrect password!')
-        
+
         payload = {
             'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes = 60),
-            'iat': datetime.datetime.utcnow()
+            'exp': datetime.utcnow() + timedelta(minutes=60),
+            'iat': datetime.utcnow()
         }
 
-        token = jwt.encode(payload, 'secret', algorithm = 'HS256')
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
 
         response = Response()
-
-        response.set_cookie(key = 'jwt', value = token, httponly = True) # httponly means we dont want the frontend to access the token
+        response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
             'jwt': token
         }
 
         return response
+
     
 User = get_user_model()
 
@@ -700,21 +702,19 @@ def BiomarkersList(request):
         biomarkers = db.collection('biomarkers')
         bio_docs = biomarkers.stream()
 
-        # Convert each document to a dictionary and handle DocumentReference fields
         bios = []
         for doc in bio_docs:
             doc_dict = doc.to_dict()
-            # Iterate over the items in the document dictionary
+           
             for key, value in doc_dict.items():
-                # Check if the value is an instance of DocumentReference
+                
                 if isinstance(value, firestore.DocumentReference):
-                    # Convert the DocumentReference to a string (e.g., the document's path or ID)
-                    doc_dict[key] = value.id  # or value.path for the full path
+           
+                    doc_dict[key] = value.id 
             bios.append(doc_dict)
 
         return Response(bios)
     except Exception as e:
-        # Log the exception or handle it as appropriate
         return Response({"error": "An error occurred while fetching biomarkers."}, status=500)
 
 
@@ -744,6 +744,7 @@ def BiomarkersChart(request):
         user_id = request.data.get('user_id')
         time_from_str = request.data.get('time_from')
         time_to_str = request.data.get('time_to')
+        biomarker = request.data.get('biomarker')  # New parameter
 
         if not user_id or not time_from_str or not time_to_str:
             return Response({'error': 'user_id, time_from, and time_to are required fields.'}, status=400)
@@ -767,11 +768,17 @@ def BiomarkersChart(request):
         biomarker_data = [doc.to_dict() for doc in docs]
 
         if biomarker_data:
-            return Response(biomarker_data)
+            if biomarker:
+                # Filter data to include only the specified biomarker and time
+                filtered_data = [{'time': data.get('time'), biomarker: data.get(biomarker)} for data in biomarker_data if biomarker in data]
+                return Response(filtered_data)
+            else:
+                return Response(biomarker_data)
         else:
             return Response({'message': 'No biomarkers found for the specified user and time range.'}, status=404)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
 
 def parse_timestamp(timestamp_str):
     try:

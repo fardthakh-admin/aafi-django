@@ -110,6 +110,11 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+               <!-- Search Form -->
+               <form method="get" action="{% url 'majorAssessment_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by title" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>majorAssessment Data</h2>
                 <div class="btn-group" role="group">
@@ -129,7 +134,7 @@
                       <tr>
                           <th>#</th>
                           <th>Patient ID</th>
-                          <th>Tile</th>
+                          <th>Title</th>
                           <th>description</th>
                           <th>Delete</th>
                           <th>Update</th>
@@ -145,6 +150,7 @@
                         <td class="document-title">{{ entry.data.title}}</td>
                         <td class="document">{{ entry.data.description }}</td>
                         <td class="edit-delete-buttons">      
+                          <br><br><br>
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'majorAssessment_delete' document_name=entry.name %}">
                             {% csrf_token %}

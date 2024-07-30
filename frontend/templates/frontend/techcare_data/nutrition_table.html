@@ -110,8 +110,13 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+               <!-- Search Form -->
+               <form method="get" action="{% url 'nutrition_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by unit, name_en, and name_ar" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
             <div class="button-row d-flex justify-content-between mb-4">
-                <h2>Assets Data</h2>
+                <h2>Nutrition Data</h2>
                 <div class="btn-group" role="group">
                   {% include "frontend/techcare_data/create_nutrition.html" %}
                    
@@ -136,6 +141,7 @@
                           <th>ProteinContent </th>
                           <th>TotalCalories </th>
                           <th>Unit </th>
+                          <th>Delete</th>
                           <th>Update</th>
                       </tr>
                   </thead>
@@ -154,7 +160,9 @@
                         <td class="document-" >{{ entry.data.proteinContent }}</td>
                         <td class="document-" >{{ entry.data.totalCalories }}</td>
                         <td class="document-" >{{ entry.data.weight }}</td>
-                        {% comment %} <td class="edit-delete-buttons">      
+                       <td class="edit-delete-buttons">     
+                        <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
@@ -166,7 +174,7 @@
                                   }
                               }
                         </script>                        
-                      </td> {% endcomment %}
+                      </td> 
                        <td>
                         {% include "frontend/techcare_data/update_nutrition.html" %}
 

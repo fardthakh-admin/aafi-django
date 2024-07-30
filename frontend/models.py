@@ -41,11 +41,14 @@ class users(models.Model):
 
 class bites(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    categories = models.CharField(max_length=100)
+    # categories = models.ForeignKey(categories, on_delete=models.CASCADE)
     content = models.TextField()
     difficulty = models.IntegerField()
     tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=100)
+    display_name=models.ForeignKey(users, on_delete=models.CASCADE)
+    image= models.CharField(max_length=100)
+    order=models.IntegerField()
 
     def __str__(self):
           return self.__all__
@@ -77,13 +80,17 @@ class collection(models.Model):
 class activities(models.Model):
     #document = models.ForeignKey(Document, on_delete=models.CASCADE)
     tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
-    description = models.CharField(max_length=100, default=timezone.now)
+    description = models.CharField(max_length=100)
     duration = models.IntegerField(default=0)   
     title = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
+    track= models.CharField(max_length=200)
+    audiotrackId=models.CharField(max_length=100)
+    audiotrackTitle=models.CharField(max_length=100)
+    label=models.CharField(max_length=100)
 
 
-def __str__(self):
+    def __str__(self):
          return self.__all__
 
 class assessmentQuestion(models.Model):
@@ -93,6 +100,12 @@ class assessmentQuestion(models.Model):
     points= models.IntegerField(default=0)  
     question = models.CharField(max_length=100)
 
+class assets(models.Model):
+    
+    assetsType = models.CharField(max_length=100)
+    label = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    path = models.CharField(max_length=200)
 
 class badges(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)
@@ -196,6 +209,7 @@ class psychomarkers(models.Model):
     def __str__(self):
           return self.__all__
 
+
 class scenarios(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)
     PositiveCorrectionAlternative = models.CharField(max_length=100, default=None)
@@ -203,9 +217,55 @@ class scenarios(models.Model):
     correction = models.TextField()
     positiveActionReply = models.CharField(max_length=100, default=None)
     title = models.CharField(max_length=100, default=None)
+    
+    def __str__(self):
+        return self.__all__
+
+class selfAwarenessScenarios(models.Model):
+  
+    correction1from0to2 = models.TextField()
+    correction2from3to5 = models.TextField()
+    interactiveStatement = models.TextField()
+    recommendation1 = models.TextField()
+    recommendation2 = models.TextField()
+    scenarioID = models.CharField(max_length=100, default=None)
+    story = models.TextField()
+    storyTitle = models.CharField(max_length=100, default=None)
+    journal= models.ForeignKey(journalPrompt, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return self.__all__
+    
+
+class selfLadder(models.Model):
+  
+    type = models.CharField(max_length=100, default=None)
+    time = models.DateTimeField()
+    userID = models.ForeignKey(users, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.__all__
+    
+
+class selfAwarnessBites(models.Model):
+  
+    scenarioID = models.CharField(max_length=100, default=None)
+    tags = models.CharField(max_length=100, default=None)
+    selfawarenessBiteTitle = models.CharField(max_length=100, default=None)
+    selfawarenessBiteText = models.TextField(max_length=100, default=None)
+
+   
+    
+    def __str__(self):
+        return self.__all__    
+    
+class wildCard(models.Model):
+  
+    content = models.TextField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.__all__      
 
 class trivia(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)

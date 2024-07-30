@@ -88,6 +88,11 @@
                 {% include 'sidebar.html' %}
             </div>
             <div class="col-md-9">
+                <!-- Search Form -->
+            <form method="get" action="{% url 'activities_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by title" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
                 <div class="button-row d-flex justify-content-between mb-4">
                     <h2>Activities Data</h2>
                     <div class="btn-group" role="group">
@@ -109,6 +114,8 @@
                             <th>Location</th>
                             <th>Delete</th>
                             <th>Update</th>
+                            
+
                         </tr>
                     </thead>
                     <tbody>
@@ -120,7 +127,9 @@
                             </td>
                             <td class="document-title">{{ entry.data.title }}</td>
                             <td class="document">{{ entry.data.type }}</td>
+                            
                             <td class="edit-delete-buttons">
+                                <br><br><br>
                                 <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'activities_delete' document_name=entry.name %}">
                                     {% csrf_token %}
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>

@@ -88,6 +88,11 @@
                 {% include 'sidebar.html' %}
             </div>
             <div class="col-md-9">
+                   <!-- Search Form -->
+            <form method="get" action="{% url 'assessmentQuestion_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by question" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
                 <div class="button-row d-flex justify-content-between mb-4">
                     <h2>Assessment Question Data</h2>
                     <div class="btn-group" role="group">
@@ -121,6 +126,8 @@
                             <td class="document-title">{{ entry.data.order }}</td>
                             <td class="document">{{ entry.data.question }}</td>
                             <td class="edit-delete-buttons">
+                                <br><br><br>
+
                                 <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                                     {% csrf_token %}
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>

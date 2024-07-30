@@ -107,7 +107,7 @@
                                         <select name="majorAssessment" id="id_tags" class="form-control">
                                             <option value="">Select majorAssessment</option>
                                             {% for majorAssessment in majorAssessment_data %}
-                                            {% if majorAssessment.name == entry.data.majorAssessment|slice:"17:" %}
+                                            {% if majorAssessment.name == entry.data.majorAssessment.id %}
                                               <option value="/majorAssessment/{{ majorAssessment.name }}" selected>{{ majorAssessment.data.title }}</option>
                                           {% else %}
                                               <option value="/majorAssessment/{{ majorAssessment.name }}">{{ majorAssessment.data.title }}</option>
@@ -121,7 +121,7 @@
                                         <select name="suggestedActivity" id="id_tags" class="form-control">
                                             <option value="">Select activities</option>
                                             {% for activities in activities_data %}
-                                            {% if activities.name == entry.data.suggestedActivity|slice:"12:" %}
+                                            {% if activities.name == entry.data.suggestedActivity.id %}
                                               <option value="/activities/{{ activities.name }}" selected>{{ activities.data.title }}</option>
                                           {% else %}
                                               <option value="/activities/{{ activities.name }}">{{ activities.data.title }}</option>
@@ -135,7 +135,7 @@
                                         <select name="suggestedBite" id="id_tags" class="form-control">
                                             <option value="">Select suggestedBites</option>
                                             {% for suggestedBites in suggestedBites_data %}
-                                            {% if suggestedBites.name == entry.data.suggestedBite|slice:"16:" %}
+                                            {% if suggestedBites.name == entry.data.suggestedBite.id%}
                                               <option value="/suggestedBites/{{ suggestedBites.name }}" selected>{{ suggestedBites.data.state }}</option>
                                           {% else %}
                                               <option value="/suggestedBites/{{ suggestedBites.name }}">{{ suggestedBites.data.state }}</option>
@@ -149,7 +149,7 @@
                                         <select name="suggestedJournal" id="id_tags" class="form-control">
                                             <option value="">Select suggestedJournals</option>
                                             {% for suggestedJournals in suggestedJournals_data %}
-                                            {% if suggestedJournals.name == entry.data.suggestedJournal|slice:"19:" %}
+                                            {% if suggestedJournals.name == entry.data.suggestedJournal.id %}
                                               <option value="/suggestedJournals/{{ suggestedJournals.name }}" selected>{{ suggestedJournals.data.state }}</option>
                                           {% else %}
                                               <option value="/suggestedJournals/{{ suggestedJournals.name }}">{{ suggestedJournals.data.state }}</option>
@@ -163,7 +163,7 @@
                                         <select name="SuggestBitesFromBank" id="id_tags" class="form-control">
                                             <option value="">Select Bites</option>
                                             {% for bites in bites_data %}
-                                            {% if bites.name == entry.data.SuggestBitesFromBank|slice:"7:" %}
+                                            {% if bites.name == entry.data.SuggestBitesFromBank.id %}
                                               <option value="/bites/{{ bites.name }}" selected>{{ bites.data.title }}</option>
                                           {% else %}
                                               <option value="/bites/{{ bites.name }}">{{ bites.data.title }}</option>

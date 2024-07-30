@@ -54,7 +54,7 @@
                                             <select name="journal" id="id_tags" class="form-control">
                                                 <option value="">Select journalPrompt</option>
                                                 {% for journalPrompt in journalPrompt_data %}
-                                                {% if journalPrompt.name == entry.data.journal|slice:"15:" %}
+                                                {% if journalPrompt.name == entry.data.journal.id %}
                                                   <option value="/journalPrompt/{{ journalPrompt.name }}" selected>{{ journalPrompt.data.title }}</option>
                                               {% else %}
                                                   <option value="/journalPrompt/{{ journalPrompt.name }}">{{ journalPrompt.data.title }}</option>
@@ -68,7 +68,7 @@
                                             <select name="user" id="user_id" class="form-control">
                                               <option value="">Select User</option>
                                               {% for user in users_data %}
-                                              {% if user.name == entry.data.user|slice:"7:" %}
+                                              {% if user.name == entry.data.user.id %}
                                                   <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
                                               {% else %}
                                                   <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>

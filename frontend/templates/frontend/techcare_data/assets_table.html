@@ -110,11 +110,18 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+               <!-- Search Form -->
+               <form method="get" action="{% url 'assets_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by label or name" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form>
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>Assets Data</h2>
                 <div class="btn-group" role="group">
-                  {% comment %} {% include "frontend/techcare_data/create_assessmentQuestion.html" %} {% endcomment %}
+                  
+                   {% include "frontend/techcare_data/create_assets.html" %} 
                     <form method="post">
+                      
                       {% csrf_token %}
                       {% for entry in document_data %}
                           <input type="hidden" name="document_ids" value="{{ entry.name }}">
@@ -122,84 +129,81 @@
                   </form>
                 </div>
             </div>
-              <table class="document-table">
-                  <thead>
-                      <tr>
-                          <th>#</th>
-                          <th>Patient ID</th>
-                          <th>AssetsType</th>
-                          <th>label</th>
-                          <th>Name</th>
-                          <th>Path</th>
-                          <th>Update</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                {% for entry in page_obj %}
-                    <tr>
-                        <td class="document-number">{{ forloop.counter }}</td>
-                        <td class="document-id">
-                          {{ entry.name }}
-                          {% comment %} <a href="{% url 'assessmentQuestiondocument' entry.name %}">{{ entry.name }}</a> {% endcomment %}
-                      </td>
-                        <td class="document-title">{{ entry.data.assetsType }}</td>
-                        <td class="document-">{{ entry.data.label }}</td>
-                        <td class="document-">{{ entry.data.name }}</td>
-                        <td class="document-" style="font-size:10px">{{ entry.data.path }}</td>
-                        {% comment %} <td class="edit-delete-buttons">      
-                          <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
+            <table class="document-table">
+              <thead>
+                  <tr>
+                      <th>#</th>
+                      <th>Patient ID</th>
+                      <th>AssetsType</th>
+                      <th>Label</th>
+                      <th>Name</th>
+                      <th>Path</th>
+                      <th>Delete</th>
+                      <th>Update</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for entry in page_obj %}
+                  <tr>
+                      <td class="document-number">{{ forloop.counter }}</td>
+                      <td class="document-id">{{ entry.name }}</td>
+                      <td class="document-title">{{ entry.data.assetsType }}</td>
+                      <td class="document-label">{{ entry.data.label }}</td>
+                      <td class="document-name">{{ entry.data.name }}</td>
+                      <td class="document-path" style="font-size:10px">{{ entry.data.path }}</td>
+                      <td class="edit-delete-buttons">
+                        <br><br><br>
+
+                          <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'assets_delete' document_name=entry.name %}">
                               {% csrf_token %}
-                              <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>
+                              <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>
                           </form>
                           <script>
-                                                       function confirmDelete(documentName) {
+                              function confirmDelete(documentName) {
                                   if (confirm('Are you sure you want to delete this?')) {
                                       document.getElementById('deleteForm_' + documentName).submit();
                                   }
                               }
-                        </script>                        
-                      </td> {% endcomment %}
+                          </script>
+                      </td>
                       <td>
-                        {% include "frontend/techcare_data/update_assets.html" %}
+                          {% include "frontend/techcare_data/update_assets.html" %}
+                      </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                      <td colspan="8">No documents found.</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
 
-                      </td> 
-                    </tr>
-                {% endfor %}
-                  </tbody>
-              </table>
+          <!-- Pagination links -->
+          <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                  <li class="page-item">
+                      <a class="page-link" href="?q={{ query }}&page=1" aria-label="Previous">
+                          <span aria-hidden="true">&laquo;</span>
+                      </a>
+                  </li>
+                  {% endif %}
+                  {% for page_num in page_obj.paginator.page_range %}
+                  <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
+                      <a class="page-link" href="?q={{ query }}&page={{ page_num }}">{{ page_num }}</a>
+                  </li>
+                  {% endfor %}
+                  {% if page_obj.has_next %}
+                  <li class="page-item">
+                      <a class="page-link" href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}" aria-label="Next">
+                          <span aria-hidden="true">&raquo;</span>
+                      </a>
+                  </li>
+                  {% endif %}
+              </ul>
+          </nav>
 
-              <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    {% for page_num in page_obj.paginator.page_range %}
-                    <li class="page-item {% if page_obj.number == page_num %}active{% endif %}">
-                        <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                    </li>
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-
-        </div>
       </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
- 
-</body>
-</html>
-
+</div>
 {% endblock content %}

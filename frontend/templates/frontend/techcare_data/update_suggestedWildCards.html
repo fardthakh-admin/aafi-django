@@ -54,7 +54,7 @@
                                             <select name="wildCard" id="id_tags" class="form-control">
                                                 <option value="">Select wildCards</option>
                                                 {% for wildCards in wildCard_data %}
-                                                {% if wildCards.name == entry.data.wildCard|slice:"10:" %}
+                                                {% if wildCards.name == entry.data.wildCard.id %}
                                                   <option value="/wildCard/{{ wildCards.name }}" selected>{{ wildCards.data.content }}</option>
                                               {% else %}
                                                   <option value="/wildCard/{{ wildCards.name }}">{{ wildCards.data.content }}</option>
@@ -68,7 +68,7 @@
                                             <select name="user" id="user_id" class="form-control">
                                               <option value="">Select User</option>
                                               {% for user in users_data %}
-                                              {% if user.name == entry.data.user|slice:"7:" %}
+                                              {% if user.name == entry.data.user.id %}
                                                   <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
                                               {% else %}
                                                   <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>

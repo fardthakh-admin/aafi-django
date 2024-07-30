@@ -51,10 +51,10 @@
                                         <select name="activity" id="id_activity" class="form-control">
                                             <option value="">Select Activity</option>
                                             {% for activity in activity_data %}
-                                                {% if activity.name == entry.data.activity|slice:"10:" %}
-                                                    <option value="/activity/{{ activity.name }}" selected>{{ activity.data.title }}</option>
+                                                {% if activity.name == entry.data.activity.id %}
+                                                    <option value="/activities/{{ activity.name }}" selected>{{ activity.data.title }}</option>
                                                 {% else %}
-                                                    <option value="/activity/{{ activity.name }}">{{ activity.data.title }}</option>
+                                                    <option value="/activities/{{ activity.name }}">{{ activity.data.title }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
@@ -65,7 +65,7 @@
                                         <select name="biteID" id="id_activity" class="form-control">
                                             <option value="">Select selfAwarnessBites</option>
                                             {% for selfAwarnessBites in selfAwarnessBites_data %}
-                                                {% if selfAwarnessBites.name == entry.data.biteID|slice:"19:" %}
+                                                {% if selfAwarnessBites.name == entry.data.biteID.id %}
                                                     <option value="/selfAwarnessBites/{{ selfAwarnessBites.name }}" selected>{{ selfAwarnessBites.data.selfawarenessBiteTitle }}</option>
                                                 {% else %}
                                                     <option value="/selfAwarnessBites/{{ selfAwarnessBites.name }}">{{ selfAwarnessBites.data.selfawarenessBiteTitle }}</option>
@@ -78,20 +78,20 @@
                                         <select name="inAppLink" id="id_activity" class="form-control">
                                             <option value="">Select InAppLink</option>
                                             {% for inAppLink in inAppLinks_data %}
-                                                {% if inAppLink.name == entry.data.inAppLink|slice:"11:" %}
-                                                    <option value="/inAppLink/{{ inAppLink.name }}" selected>{{ inAppLink.data.title }}</option>
+                                                {% if inAppLink.name == entry.data.inAppLink.id %}
+                                                    <option value="/inAppLinks/{{ inAppLink.name }}" selected>{{ inAppLink.data.title }}</option>
                                                 {% else %}
-                                                    <option value="/inAppLink/{{ inAppLink.name }}">{{ inAppLink.data.title }}</option>
+                                                    <option value="/inAppLinks/{{ inAppLink.name }}">{{ inAppLink.data.title }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="tags">Journal</label>
-                                        <select name="journal" id="id_activity" class="form-control">
+                                        <label for="id_journal">Journal</label>
+                                        <select name="journal" id="id_journal" class="form-control">
                                             <option value="">Select Journal</option>
                                             {% for journal in journalPrompt_data %}
-                                                {% if journal.name == entry.data.journal|slice:"15:" %}
+                                                {% if journal.name == entry.data.journal.id %}
                                                     <option value="/journalPrompt/{{ journal.name }}" selected>{{ journal.data.title }}</option>
                                                 {% else %}
                                                     <option value="/journalPrompt/{{ journal.name }}">{{ journal.data.title }}</option>
@@ -104,7 +104,7 @@
                                         <select name="normalBite" id="id_activity" class="form-control">
                                             <option value="">Select NormalBite</option>
                                             {% for bites in bites_data %}
-                                                {% if bites.name == entry.data.normalBite|slice:"7:" %}
+                                                {% if bites.name == entry.data.normalBite.id %}
                                                     <option value="/bites/{{ bites.name }}" selected>{{ bites.data.title }}</option>
                                                 {% else %}
                                                     <option value="/bites/{{ bites.name }}">{{ bites.data.title }}</option>
@@ -117,7 +117,7 @@
                                         <select name="wildcard" id="id_activity" class="form-control">
                                             <option value="">Select WildCard</option>
                                             {% for wildcard in wildCard_data %}
-                                                {% if wildcard.name == entry.data.wildcard|slice:"10:" %}
+                                                {% if wildcard.name == entry.data.wildcard.id %}
                                                     <option value="/wildCard/{{ wildcard.name }}" selected>{{ wildcard.data.content }}</option>
                                                 {% else %}
                                                     <option value="/wildCard/{{ wildcard.name }}">{{ wildcard.data.content }}</option>

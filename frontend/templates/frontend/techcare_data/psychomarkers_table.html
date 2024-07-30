@@ -110,6 +110,11 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+               <!-- Search Form -->
+               <form method="get" action="{% url 'psychomarkers_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by depression value" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>psychomarkers Data</h2>
                 <div class="btn-group" role="group">
@@ -146,6 +151,7 @@
                         <td class="document">{{ entry.data.user }}</td>
                         <td class="document">{{ entry.data.time }}</td>
                         <td class="edit-delete-buttons">      
+                          <br><br><br>
 
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'psychomarkers_delete' document_name=entry.name %}">
                             {% csrf_token %}

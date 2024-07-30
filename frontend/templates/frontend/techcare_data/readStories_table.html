@@ -110,8 +110,13 @@
               {% include 'sidebar.html' %}
           </div>
           <div class="col-md-9">
+               <!-- Search Form -->
+               <form method="get" action="{% url 'activities_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by title" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
             <div class="button-row d-flex justify-content-between mb-4">
-                <h2>Assets Data</h2>
+                <h2>readStories Data</h2>
                 <div class="btn-group" role="group">
                   {% comment %} {% include "frontend/techcare_data/create_assessmentQuestion.html" %} {% endcomment %}
                     <form method="post">
@@ -130,6 +135,8 @@
                           <th>Senario</th>
                           <th>User</th>
                           <th>Time</th>
+                          <th>Delete</th>
+
                     
                       </tr>
                   </thead>
@@ -145,7 +152,9 @@
                         <td class="document-" style="font-size:10px">{{ entry.data.user }}</td>
                         <td class="document-">{{ entry.data.time }}</td>
             
-                        {% comment %} <td class="edit-delete-buttons">      
+                        {% comment %} <td class="edit-delete-buttons">     
+                          <br><br><br>
+
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                               {% csrf_token %}
                               <button type="button"  class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')" >Delete</button>

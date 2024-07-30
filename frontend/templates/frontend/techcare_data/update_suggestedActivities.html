@@ -54,7 +54,7 @@
                                             <select name="activity" id="id_tags" class="form-control">
                                                 <option value="">Select activities</option>
                                                 {% for activities in activities_data %}
-                                                {% if activities.name == entry.data.activity|slice:"12:" %}
+                                                {% if activities.name == entry.data.activity.id %}
                                                   <option value="/activities/{{ activities.name }}" selected>{{ activities.data.title }}</option>
                                               {% else %}
                                                   <option value="/activities/{{ activities.name }}">{{ activities.data.title }}</option>
@@ -68,7 +68,7 @@
                                             <select name="user" id="user_id" class="form-control">
                                               <option value="">Select User</option>
                                               {% for user in users_data %}
-                                              {% if user.name == entry.data.user|slice:"7:" %}
+                                              {% if user.name == entry.data.user.id %}
                                                   <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
                                               {% else %}
                                                   <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>

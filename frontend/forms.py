@@ -99,9 +99,11 @@ class TagsForm(forms.ModelForm):
 
 
 class ActivitiesForm(forms.ModelForm):
-    class Meta:
-        model = activities
+     class Meta:
+        model=activities
         fields = ['description', 'title', 'duration']
+
+
 
 
 class BadgesForm(forms.ModelForm):
@@ -210,7 +212,7 @@ class BitesForm(forms.ModelForm):
 
     class Meta:
         model = bites
-        exclude = ['tags']
+        exclude = "__all__"
 
 
 class TriviaForm(forms.ModelForm):

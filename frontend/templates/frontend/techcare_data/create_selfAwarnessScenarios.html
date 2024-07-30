@@ -1,5 +1,6 @@
 {% load widget_tweaks %}
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,54 +26,54 @@
             padding: 10px;
         }
     </style>
+
+
 </head>
-<button type="button" class="btn btn-primary btn-sm" id="updateButton" data-toggle="modal" data-target="#updateModal_{{ entry.name }}">Update</button>
 
 <body>
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-9">
 
-                <div class="modal fade" id="updateModal_{{ entry.name }}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel_{{ entry.name }}" aria-hidden="true">
+            <div class="col-md-9">
+                <button type="button" style="background:green;color:white" class="btn success" id="createButton" data-toggle="modal" data-target="#createModal">Create</button>
+
+                <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="updateModalLabel">Update Document</h5>
+                                <h5 class="modal-title" id="createModalLabel">Create Document</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'update_inquiry' document_name=entry.name %}">
+                                <form method="post" action="{% url 'create_selfAwarenessScenarios' %}">
                                     {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="user">User</label>
-                                        <select name="user" id="user_id" class="form-control">
-                                          <option value="">Select User</option>
-                                          {% for user in users_data %}
-                                          {% if user.name == entry.data.user.id %}
-                                              <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
-                                          {% else %}
-                                              <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
-                                          {% endif %}
-                                          {% endfor %}
-                                      </select>
-                                    </div>
 
-
+                    
                                     <div class="form-group">
-                                        <label for="{{ form.question.id_for_label }}">Question</label> 
-                                        <input type="text" name="question" class="form-control" value="{{ entry.data.question }}">
+                                        <label for="{{ form.correction1from0to2.id_for_label }}">correction1from0to2</label> {% render_field form.correction1from0to2 class="form-control" %}
                                     </div>
-
                                     <div class="form-group">
-                                        <label for="{{ form.answer.id_for_label }}">Answer</label> 
-                                        <input type="text" name="answer" class="form-control" value="{{ entry.data.answer }}">
+                                        <label for="{{ form.correction2from3to5.id_for_label }}">correction2from3to5</label> {% render_field form.correction2from3to5 class="form-control" %}
                                     </div>
-                             
                                     <div class="form-group">
-                                        <label for="{{ form.topic.id_for_label }}">Topic</label> 
-                                        <input type="text" name="topic" class="form-control" value="{{ entry.data.topic }}">
+                                        <label for="{{ form.interactiveStatement.id_for_label }}">interactiveStatement</label> {% render_field form.interactiveStatement class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.recommendation1.id_for_label }}">recommendation1</label> {% render_field form.recommendation1 class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.recommendation2.id_for_label }}">recommendation2</label> {% render_field form.recommendation2 class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> {% render_field form.scenarioID class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.story.id_for_label }}">story</label> {% render_field form.story class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.storyTitle.id_for_label }}">storyTitle</label> {% render_field form.storyTitle class="form-control" %}
                                     </div>
 
                                     <div class="modal-footer">

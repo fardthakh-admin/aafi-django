@@ -26,51 +26,39 @@
         }
     </style>
 </head>
-<button type="button" class="btn btn-primary btn-sm" id="updateButton" data-toggle="modal" data-target="#updateModal_{{ entry.name }}">Update</button>
 
 <body>
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-9">
 
-                <div class="modal fade" id="updateModal_{{ entry.name }}" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel_{{ entry.name }}" aria-hidden="true">
+            <div class="col-md-9">
+                <button type="button" style="background:green;color:white" class="btn success" id="createButton" data-toggle="modal" data-target="#createModal">Create</button>
+
+                <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="updateModalLabel">Update Document</h5>
+                                <h5 class="modal-title" id="createModalLabel">Create Document</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'update_selfladder' document_name=entry.name %}">
+                                <form method="post" action="{% url 'create_assets' %}">
                                     {% csrf_token %}
 
+                                  
                                     <div class="form-group">
-                             
-
-                          
-                                        <div class="form-group">
-                                            <label for="user">User</label>
-                                            <select name="userID" id="user_id" class="form-control">
-                                              <option value="">Select User</option>
-                                              {% for user in users_data %}
-                                              {% if user.name == entry.data.userID.id%}
-                                                  <option value="/users/{{ user.name }}" selected>{{ user.data.display_name }}</option>
-                                              {% else %}
-                                                  <option value="/users/{{ user.name }}">{{ user.data.display_name }}</option>
-                                              {% endif %}
-                                              {% endfor %}
-                                          </select>
-                                        </div>
-
-                                    <div class="form-group">
-                                        <label for="{{ form.type.id_for_label }}">type</label> 
-                                        <input type="text" name="type" class="form-control" value="{{ entry.data.type }}">
+                                        <label for="{{ form.assetsType.id_for_label }}">assetsType</label> {% render_field form.assetsType class="form-control" %}
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.description.id_for_label }}">time</label> 
-                                        <input type="date" name="time" class="form-control" value="{{ entry.data.time }}">
+                                        <label for="{{ form.label.id_for_label }}">label</label> {% render_field form.label class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.name.id_for_label }}">name</label> {% render_field form.name class="form-control" %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="{{ form.path.id_for_label }}">path</label> {% render_field form.path class="form-control" %}
                                     </div>
 
                                     <div class="modal-footer">

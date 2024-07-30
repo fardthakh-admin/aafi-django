@@ -89,6 +89,11 @@
                 {% include 'sidebar.html' %}
             </div>
             <div class="col-md-9">
+                   <!-- Search Form -->
+            <form method="get" action="{% url 'biomarkers_view' %}" class="mb-3">
+                <input type="text" name="q" placeholder="Search by blood glucose" class="form-control" value="{{ query }}">
+                <button type="submit" class="btn btn-primary mt-2">Search</button>
+            </form> 
                 <div class="button-row d-flex justify-content-between mb-4">
                     <h2>Biomarkers Data</h2>
                     <div class="btn-group" role="group">
@@ -106,6 +111,7 @@
                         <tr>
                             <th>#</th>
                             <th>Patient ID</th>
+                            <th>Blood Glucose</th>
                             <th>Sleep Quality</th>
                             <th>Weekly Activity</th>
                             <th>Delete</th>
@@ -119,9 +125,12 @@
                             <td class="document-id">
                                 <a href="{% url 'biomarkersdocument' entry.name %}">{{ entry.name }}</a>
                             </td>
+                            <td class="document-title">{{ entry.data.bloodGlucose }}</td>
                             <td class="document-title">{{ entry.data.sleepQuality }}</td>
                             <td class="document">{{ entry.data.weeklyActivity }}</td>
                             <td class="edit-delete-buttons">
+                                <br><br><br>
+
                                 <form method="POST" id="deleteForm_{{ entry.name }}" action="{% url 'biomarkers_delete' document_name=entry.name %}">
                                     {% csrf_token %}
                                     <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{{ entry.name }}')">Delete</button>
