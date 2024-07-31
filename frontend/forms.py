@@ -232,6 +232,12 @@ class NutritionForm(forms.ModelForm):
         model = nutrition
         fields = "__all__"
 
+class AssetsForm(forms.ModelForm):
+    class Meta:
+        model = assets
+        exclude = ['label_ngrams', 'name_ngrams', 'ngrams']
+
+
 
 # class ImportExportForm(forms.Form):
 #     import_file = forms.FileField()

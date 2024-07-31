@@ -92,7 +92,7 @@ urlpatterns = [
     path('create_trivia/', create_trivia,  name='create_trivia'),
     path('create_users/', create_users, name='create_users'),
     path('create_nutrition/', create_nutrition, name='create_nutrition'),
-
+    path('create_assets/', create_assets, name='create_assets'),
 
     path('collections/', get_all_collections, name='collections'),
     path('handle_form_submission/', handle_form_submission,
@@ -186,6 +186,11 @@ urlpatterns = [
          views.trivia_delete, name='trivia_delete'),
     path('users/delete/<str:document_name>/',
          views.users_delete, name='users_delete'),
+    path('assets/delete/<str:document_name>/',
+         views.assets_delete, name='assets_delete'),
+
+
+         
     # path('/delete/<str:document_name>/', views._delete, name='_delete'),
 
     path('update/activities/<str:document_name>',
@@ -270,9 +275,42 @@ urlpatterns = [
     path('import/nutrition/', import_nutrition_data, name='import_nutrition_data'),
 
 
+    path('export/activities/', export_activities_data,name='export_activities_data'),
+    path('import/activities/', import_activities_data, name='import_activities_data'),
 
+    path('export/assessmentQuestion/', export_assessmentQuestion_data,name='export_assessmentQuestion_data'),
+    path('import/assessmentQuestion/', import_assessmentQuestion_data, name='import_assessmentQuestion_data'),
+
+    path('export/assets/', export_assets_data,name='export_assets_data'),
+    path('import/assets/', import_assets_data, name='import_assets_data'),
+
+    path('export/badges/', export_badges_data,name='export_badges_data'),
+    path('import/badges/', import_badges_data, name='import_badges_data'),
+
+    path('export/biomarkers/', export_biomarkers_data,name='export_biomarkers_data'),
+    path('import/biomarkers/', import_biomarkers_data, name='import_biomarkers_data'),
+    
+    path('export/bites/', export_bites_data,name='export_bites_data'),
+    path('import/bites/', import_bites_data, name='import_bites_data'),
+    
+    path('export/categories/', export_categories_data,name='export_categories_data'),
+    path('import/categories/', import_categories_data, name='import_categories_data'),
+
+    path('export/feelings/', export_feelings_data,name='export_feelings_data'),
+    path('import/feelings/', import_feelings_data, name='import_feelings_data'),
+
+    path('export/inAppLinks/', export_inAppLinks_data,name='export_inAppLinks_data'),
+    path('import/inAppLinks/', import_inAppLinks_data, name='import_inAppLinks_data'),
+
+    path('export/inquiry/', export_inquiry_data,name='export_inquiry_data'),
+    path('import/inquiry/', import_inquiry_data, name='import_inquiry_data'),
+
+
+    path('export/items/', export_items_data,name='export_items_data'),
+    path('import/items/', import_items_data, name='import_items_data'),
 
 ]
+
 
 for pattern in urlpatterns:
     if hasattr(pattern, 'callback') and hasattr(pattern.callback, '__name__'):

@@ -32,8 +32,42 @@
         <div class="row">
 
             <div class="col-md-9">
-                <button type="button" style="background:green;color:white" class="btn success" id="createButton" data-toggle="modal" data-target="#createModal">Create</button>
+                <div class="d-flex align-items-center mb-3">
+                    <form action="{% url 'export_assets_data' %}" method="get" class="me-3">
+                        <button type="submit" class="btn btn-success">Export to Excel</button>
+                    </form>
+                    
+                    <form id="importForm" action="{% url 'import_assets_data' %}" method="post" enctype="multipart/form-data" class="me-3 d-flex align-items-center">
+                        {% csrf_token %}
+                        <!-- Hidden file input -->
+                        <input type="file" id="importFile" name="import_file" accept=".xlsx, .xls" class="form-control me-2" style="display: none;" />
+                        <!-- Button to trigger file input -->
+                        <button type="button" id="importButton" class="btn btn-primary">Import</button>
+                    </form>
+                    
+                    <button type="button" class="btn btn-success" id="createButton" data-bs-toggle="modal" data-bs-target="#createModal">Create</button>
 
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const importButton = document.getElementById('importButton');
+                            const importFileInput = document.getElementById('importFile');
+                            const importForm = document.getElementById('importForm');
+                    
+                            // When the "Import" button is clicked, trigger the file input click
+                            importButton.addEventListener('click', function () {
+                                importFileInput.click();
+                            });
+                    
+                            // When a file is selected, submit the form
+                            importFileInput.addEventListener('change', function () {
+                                if (importFileInput.files.length > 0) {
+                                    importForm.submit();
+                                }
+                            });
+                        });
+                    </script>
+                    
+                </div>
                 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
