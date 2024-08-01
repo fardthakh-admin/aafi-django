@@ -729,6 +729,18 @@ def nutrition_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            name_en = doc['data'].get('name_en', '').lower()
+            name_ar = doc['data'].get('name_ar', '').lower()
+            if query.lower() in name_en or query.lower() in name_ar:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     # Implementing pagination for nutrition data
     # Show 20 nutrition entries per page
     paginator = Paginator(document_data, 20)
@@ -738,7 +750,9 @@ def nutrition_view(request):
     form = NutritionForm()
     return render(request, 'frontend/techcare_data/nutrition_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query,
+
     })
 
 
@@ -815,11 +829,23 @@ def selfAwarnessBites_view(request):
     document_data = [{'name': doc.id, 'data': doc.to_dict()}
                      for doc in documents]
 
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            selfawarenessBiteTitle = doc['data'].get('selfawarenessBiteTitle', '').lower()
+            tags = doc['data'].get('tags', '').lower()
+            if query.lower() in selfawarenessBiteTitle or query.lower() in tags:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
+
     paginator = Paginator(document_data, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj,'query':query ,'form':form   })
+    return render(request, 'frontend/techcare_data/selfAwarnessBites_table.html', {'page_obj': page_obj,'query':query    })
 
 
 def selfawareness_collection_view(request):
@@ -1554,6 +1580,17 @@ def majorAssessment_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     # Implementing pagination for majorAssessment data
     # Show 20 majorAssessment entries per page
     paginator = Paginator(document_data, 20)
@@ -1563,7 +1600,8 @@ def majorAssessment_view(request):
     form = MajorAssessmentForm()
     return render(request, 'frontend/techcare_data/majorAssessment_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query
     })
 
 
@@ -1827,6 +1865,21 @@ def create_tags(request):
             messages.error(
                 request, 'Error creating Tags. Please check your input.')
             return redirect('tags_view')
+        
+
+def create_selfAwarnessBites(request):
+    if request.method == 'POST':
+        form = selfAwarnessBitesForm(request.POST)
+        if form.is_valid():
+            form.save()  # Save the form directly
+            messages.success(request, 'Success Creating selfAwarnessBites.')
+            return redirect('selfAwarnessBites_view')
+        else:
+            messages.error(request, 'Error creating selfAwarenessBites. Please check your input.')
+    else:
+        form = selfAwarnessBitesForm()
+    
+    return redirect('selfAwarnessBites_view')
 
 
 def create_activities(request):
@@ -2259,7 +2312,7 @@ def create_items(request):
             messages.error(
                 request, 'Error creating Items. Please check your input.')
             return redirect('items_view')
-    return render(request, 'frontend/techcare_data/activitiesdocument.html', {'document_data': document_data})
+    return render(request, 'frontend/techcare_data/activitiesdocument.html')
 
 
 def activities_delete(request, document_name):
@@ -2275,6 +2328,21 @@ def activities_delete(request, document_name):
 
     messages.success(request, 'Activity deleted successfully!')
     return redirect('activities_view')
+
+
+def selfAwarnessBites_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("selfAwarnessBites")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'selfAwarnessBites deleted successfully!')
+    return redirect('selfAwarnessBites_view')
 
 
 def assessmentQuestion_delete(request, document_name):
@@ -4825,6 +4893,544 @@ def import_journalPrompt_data(request):
         return redirect('journalPrompt_view')  # Redirect to the appropriate view
 
     return render(request, 'frontend/techcare_data/journalPrompt_view.html')
+
+
+
+
+def export_majorAssessment_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("majorAssessment")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "MajorAssessment Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="majorAssessment.xlsx"'
+    return response
+
+
+def import_majorAssessment_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("majorAssessment")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "description": row.get('description'),
+                        "title": row.get('title'),      
+                        "numberOfQuestions": row.get('numberOfQuestions'),      
+                        "order": row.get('order'),                     
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('majorAssessment_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/majorAssessment_view.html')
+
+
+def export_psychomarkers_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("psychomarkers")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Psychomarkers Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="psychomarkers.xlsx"'
+    return response
+
+
+def import_psychomarkers_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("psychomarkers")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "depression": row.get('depression'),
+                        "time": row.get('time'),
+                        "user": row.get('user'),
+                        "anxiety": row.get('anxiety'),
+                                     
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('psychomarkers_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/psychomarkers_view.html')
+
+
+
+
+
+
+
+def export_readBites_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("readBites")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "ReadBites Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="readBites.xlsx"'
+    return response
+
+
+def import_readBites_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("readBites")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "bite": row.get('bite'),
+                        "time": row.get('time'),
+                        "user": row.get('user'),                 
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('readBites_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/readBites_view.html')
+
+
+
+
+def export_readStories_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("readStories")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "ReadStories Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="readStories.xlsx"'
+    return response
+
+
+def import_readStories_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("readStories")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "senario": row.get('senario'),
+                        "time": row.get('time'),
+                        "user": row.get('user'),                 
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('readStories_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/readStories_view.html')
+
+
+
+
+def export_scenarios_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("scenarios")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Scenarios Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="scenarios.xlsx"'
+    return response
+
+
+def import_scenarios_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("scenarios")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "InteractiveStatement": row.get('InteractiveStatement'),
+                        "PositiveCorrectionAlternative": row.get('PositiveCorrectionAlternative'),
+                        "Recommendation": row.get('Recommendation'), 
+                        "SuggestBitesFromBank": row.get('SuggestBitesFromBank'),                 
+                        "actionreply": row.get('actionreply'),  
+                        "correction": row.get('correction'),  
+                        "feeling": row.get('feeling'),  
+                        "majorAssessment": row.get('majorAssessment'),  
+                        "max": row.get('max'),  
+                        "order": row.get('order'),  
+                        "positiveActionReply": row.get('positiveActionReply'),  
+                        "status": row.get('status'),  
+                        "story": row.get('storystory'),  
+                        "suggestedActivity": row.get('suggestedActivity'),  
+                        "suggestedBite": row.get('suggestedBite'),  
+                        "suggestedJournal": row.get('suggestedJournal'),  
+                        "title": row.get('title'),  
+                        "type": row.get('type'),  
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('scenarios_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/scenarios_view.html')
+
+
+
+def export_selfAwarnessBites_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("selfAwarnessBites")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "SelfAwarnessBites Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="selfAwarnessBites.xlsx"'
+    return response
+
+
+def import_selfAwarnessBites_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("selfAwarnessBites")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "scenarioID": row.get('scenarioID'),
+                        "selfawarenessBiteText": row.get('selfawarenessBiteText'),
+                        "selfawarenessBiteTitle": row.get('selfawarenessBiteTitle'),           
+                        "tags": row.get('tags'),                      
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('selfAwarnessBites_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/selfAwarnessBites_view.html')
+
+
+
 
 
 

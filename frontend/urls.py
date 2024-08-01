@@ -93,6 +93,8 @@ urlpatterns = [
     path('create_users/', create_users, name='create_users'),
     path('create_nutrition/', create_nutrition, name='create_nutrition'),
     path('create_assets/', create_assets, name='create_assets'),
+    path('create_selfAwarnessBites/', create_selfAwarnessBites, name='create_selfAwarnessBites'),
+
 
     path('collections/', get_all_collections, name='collections'),
     path('handle_form_submission/', handle_form_submission,
@@ -150,6 +152,10 @@ urlpatterns = [
 
     path('activities/delete/<str:document_name>/',
          views.activities_delete, name='activities_delete'),
+         
+     path('selfAwarnessBites/delete/<str:document_name>/',
+         views.selfAwarnessBites_delete, name='selfawarenessBites_delete'),
+
     path('assessmentQuestion/delete/<str:document_name>/',
          views.assessmentQuestion_delete, name='assessmentQuestion_delete'),
     path('badges/delete/<str:document_name>/',
@@ -314,7 +320,24 @@ urlpatterns = [
 
     path('export/journalPrompt/', export_journalPrompt_data,name='export_journalPrompt_data'),
     path('import/journalPrompt/', import_journalPrompt_data, name='import_journalPrompt_data'),
+    
+    path('export/majorAssessment/', export_majorAssessment_data,name='export_majorAssessment_data'),
+    path('import/majorAssessment/', import_majorAssessment_data, name='import_majorAssessment_data'),
 
+    path('export/psychomarkers/', export_psychomarkers_data,name='export_psychomarkers_data'),
+    path('import/psychomarkers/', import_psychomarkers_data, name='import_psychomarkers_data'),
+
+    path('export/readBites/', export_readBites_data,name='export_readBites_data'),
+    path('import/readBites/', import_readBites_data, name='import_readBites_data'),
+
+    path('export/readStories/', export_readStories_data,name='export_readStories_data'),
+    path('import/readStories/', import_readStories_data, name='import_readStories_data'),
+
+    path('export/scenarios/', export_scenarios_data,name='export_scenarios_data'),
+    path('import/scenarios/', import_scenarios_data, name='import_scenarios_data'),
+
+    path('export/selfAwarnessBites/', export_selfAwarnessBites_data,name='export_selfAwarnessBites_data'),
+    path('import/selfAwarnessBites/', import_selfAwarnessBites_data, name='import_selfAwarnessBites_data'),
 
 ]
 

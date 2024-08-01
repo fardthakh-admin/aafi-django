@@ -249,16 +249,13 @@ class selfLadder(models.Model):
     
 
 class selfAwarnessBites(models.Model):
-  
     scenarioID = models.CharField(max_length=100, default=None)
     tags = models.CharField(max_length=100, default=None)
     selfawarenessBiteTitle = models.CharField(max_length=100, default=None)
     selfawarenessBiteText = models.TextField(max_length=100, default=None)
-
-   
-    
     def __str__(self):
-        return self.__all__    
+        return self.selfawarenessBiteTitle
+     
     
 class wildCard(models.Model):
   

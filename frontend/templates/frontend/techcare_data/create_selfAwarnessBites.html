@@ -1,6 +1,5 @@
 {% load widget_tweaks %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,58 +25,87 @@
             padding: 10px;
         }
     </style>
-
-
 </head>
 
 <body>
     <div class="container mt-4">
         <div class="row">
-
             <div class="col-md-9">
-                <button type="button" style="background:green;color:white" class="btn success" id="createButton" data-toggle="modal" data-target="#createModal">Create</button>
+                <div class="d-flex align-items-center mb-3">
+                    <form action="{% url 'export_selfAwarnessBites_data' %}" method="get" class="me-3">
+                        <button type="submit" class="btn btn-success">Export to Excel</button>
+                    </form>
+                    
+                    <form id="importForm" action="{% url 'import_selfAwarnessBites_data' %}" method="post" enctype="multipart/form-data" class="me-3 d-flex align-items-center">
+                        {% csrf_token %}
+                        <!-- Hidden file input -->
+                        <input type="file" id="importFile" name="import_file" accept=".xlsx, .xls" class="form-control me-2" style="display: none;" />
+                        <!-- Button to trigger file input -->
+                        <button type="button" id="importButton" class="btn btn-primary">Import</button>
+                    </form>
+                    
+                    <button type="button" class="btn btn-success" id="createButton" data-bs-toggle="modal" data-bs-target="#createModal">Create</button>
 
-                <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg" role="document">
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const importButton = document.getElementById('importButton');
+                            const importFileInput = document.getElementById('importFile');
+                            const importForm = document.getElementById('importForm');
+                    
+                            // When the "Import" button is clicked, trigger the file input click
+                            importButton.addEventListener('click', function () {
+                                importFileInput.click();
+                            });
+                    
+                            // When a file is selected, submit the form
+                            importFileInput.addEventListener('change', function () {
+                                if (importFileInput.files.length > 0) {
+                                    importForm.submit();
+                                }
+                            });
+                        });
+                    </script>
+                    
+                </div>
+                <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title" id="createModalLabel">Create Document</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form method="post" action="{% url 'create_selfAwarnessBites' %}">
                                     {% csrf_token %}
-
-                    
                                     <div class="form-group">
-                                        <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> {% render_field form.scenarioID class="form-control" %}
+                                        <label for="{{ form.scenarioID.id_for_label }}">Scenario ID</label>
+                                        {% render_field form.scenarioID class="form-control" %}
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.tags.id_for_label }}">tags</label> {% render_field form.tags class="form-control" %}
+                                        <label for="{{ form.tags.id_for_label }}">Tags</label>
+                                        {% render_field form.tags class="form-control" %}
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.selfawarenessBiteTitle.id_for_label }}">selfawarenessBiteTitle</label> {% render_field form.selfawarenessBiteTitle class="form-control" %}
+                                        <label for="{{ form.selfawarenessBiteTitle.id_for_label }}">Self Awareness Bite Title</label>
+                                        {% render_field form.selfawarenessBiteTitle class="form-control" %}
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.selfawarenessBiteText.id_for_label }}">selfawarenessBiteText</label> {% render_field form.selfawarenessBiteText class="form-control" %}
+                                        <label for="{{ form.selfawarenessBiteText.id_for_label }}">Self Awareness Bite Text</label>
+                                        {% render_field form.selfawarenessBiteText class="form-control" %}
                                     </div>
-                                  
-
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Save</button>
                                     </div>
                                 </form>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-8XhDFvW7l4z2+bIWtZssB8ZT7HEp8xKq9D27X5aFLq2izjFY4AoC5N8K1XTkIN8S" crossorigin="anonymous"></script>
 </body>
 
 </html>

@@ -232,6 +232,11 @@ class NutritionForm(forms.ModelForm):
         model = nutrition
         fields = "__all__"
 
+class selfAwarnessBitesForm(forms.ModelForm):
+    class Meta:
+        model = selfAwarnessBites
+        fields = "__all__"
+
 class AssetsForm(forms.ModelForm):
     class Meta:
         model = assets
