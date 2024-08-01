@@ -309,6 +309,13 @@ urlpatterns = [
     path('export/items/', export_items_data,name='export_items_data'),
     path('import/items/', import_items_data, name='import_items_data'),
 
+    path('export/journal/', export_journal_data,name='export_journal_data'),
+    path('import/journal/', import_journal_data, name='import_journal_data'),
+
+    path('export/journalPrompt/', export_journalPrompt_data,name='export_journalPrompt_data'),
+    path('import/journalPrompt/', import_journalPrompt_data, name='import_journalPrompt_data'),
+
+
 ]
 
 

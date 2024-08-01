@@ -1461,6 +1461,17 @@ def journal_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     # Implementing pagination for journal data
     paginator = Paginator(document_data, 20)  # Show 20 journal entries per page
     page_number = request.GET.get('page')
@@ -1469,7 +1480,8 @@ def journal_view(request):
     form = JournalForm()
     return render(request, 'frontend/techcare_data/journal_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query
     })
 
 
@@ -1497,6 +1509,17 @@ def journalPrompt_view(request):
     
     # Implementing pagination for journalPrompt data
     # Show 20 journalPrompt entries per page
+
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'title' field (modify as per your Firestore structure)
+        filtered_documents = []
+        for doc in document_data:
+            title = doc['data'].get('title', '').lower()
+            if query.lower() in title:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
     paginator = Paginator(document_data, 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -1504,7 +1527,8 @@ def journalPrompt_view(request):
     form = JournalForm()
     return render(request, 'frontend/techcare_data/journalPrompt_table.html', {
         'form': form, 
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'query': query
     })
 
 
@@ -4626,6 +4650,181 @@ def import_items_data(request):
 
     return render(request, 'frontend/techcare_data/items_view.html')
 
+
+
+
+
+def export_journal_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("journal")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Journal Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="journal.xlsx"'
+    return response
+
+
+def import_journal_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("journal")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "content": row.get('content'),
+                        "feeling": row.get('feeling'), 
+                        "time": row.get('time'), 
+                        "title": row.get('title'),                     
+                        "user": row.get('user'), 
+                        "tags": row.get('tags'),
+                        "description": row.get('description'),
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('journal_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/journal_view.html')
+
+
+
+
+def export_journalPrompt_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("journalPrompt")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "JournalPrompt Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="journalPrompt.xlsx"'
+    return response
+
+
+def import_journalPrompt_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("journalPrompt")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "scenarioID": row.get('scenarioID'),
+                        "title": row.get('title'),                     
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('journalPrompt_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/journalPrompt_view.html')
 
 
 
