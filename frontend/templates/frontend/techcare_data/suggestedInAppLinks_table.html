@@ -146,10 +146,22 @@
                           {{ entry.name }}
                           {% comment %} <a href="{% url 'assessmentQuestiondocument' entry.name %}">{{ entry.name }}</a> {% endcomment %}
                       </td>
-                        <td class="document-" style="font-size:10px;" > {{ entry.data.inAppLink }}</td>
-                        <td class="document-" style="font-size:10px">{{ entry.data.user }}</td>
+                      <td class="document-">
+                        {% if entry.resolved_user %}
+                            {{ entry.resolved_user.display_name }} 
+                        {% else %}
+                            User not found
+                        {% endif %}
+                    </td>
+                    <td class="document-">
+                        {% if entry.resolved_inAppLink %}
+                            {{ entry.resolved_inAppLink.title }}
+                        {% else %}
+                            In-App Link not found
+                        {% endif %}
+                    </td>
                         <td class="document-">{{ entry.data.time }}</td>
-            
+                        
                         {% comment %} <td class="edit-delete-buttons">      
                           <form method="POST" id="deleteForm_{{ entry.name }}"  action="{% url 'assessmentQuestion_delete' document_name=entry.name %}">
                               {% csrf_token %}

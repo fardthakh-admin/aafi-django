@@ -922,6 +922,7 @@ def suggestedInAppLinks_view(request):
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
+    # Search functionality
     query = request.GET.get('q')  # Get search query from request
     if query:
         # Perform search based on 'title' field (modify as per your Firestore structure)
@@ -932,18 +933,55 @@ def suggestedInAppLinks_view(request):
                 filtered_documents.append(doc)
         document_data = filtered_documents
 
-    collection = db.collection("users")
-    documents = collection.stream()
-    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
-    collection = db.collection("inAppLinks")
-    documents = collection.stream()
-    inAppLinks_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    # Resolve references in document_data
+    resolved_document_data = []
+    for doc in document_data:
+        doc_data = doc['data']
+        # Example: resolving 'user' reference
+        user_ref = doc_data.get('user')
+        in_app_link_ref = doc_data.get('inAppLink')
+        
+        user_data = None
+        in_app_link_data = None
+        if isinstance(user_ref, firestore.DocumentReference):
+            user_doc = user_ref.get()
+            if user_doc.exists:
+                user_data = user_doc.to_dict()
+        
+        if isinstance(in_app_link_ref, firestore.DocumentReference):
+            in_app_link_doc = in_app_link_ref.get()
+            if in_app_link_doc.exists:
+                in_app_link_data = in_app_link_doc.to_dict()
+        
+        resolved_doc = {
+            'name': doc['name'],
+            'data': doc_data,
+            'resolved_user': user_data,
+            'resolved_inAppLink': in_app_link_data,
+        }
+        resolved_document_data.append(resolved_doc)
+    
+    # Fetch users data
+    users_collection = db.collection("users")
+    users_documents = users_collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in users_documents]
+    
+    # Fetch inAppLinks data
+    in_app_links_collection = db.collection("inAppLinks")
+    in_app_links_documents = in_app_links_collection.stream()
+    inAppLinks_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in in_app_links_documents]
 
-    paginator = Paginator(document_data, 20)  
+    # Pagination
+    paginator = Paginator(resolved_document_data, 20)  
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {'page_obj': page_obj, 'users_data': users_data, 'inAppLinks_data': inAppLinks_data, 'query':query})
+    return render(request, 'frontend/techcare_data/suggestedInAppLinks_table.html', {
+        'page_obj': page_obj, 
+        'users_data': users_data, 
+        'inAppLinks_data': inAppLinks_data, 
+        'query': query
+    })
 
 def suggestedJournals_view(request):
     db = firestore.client()
