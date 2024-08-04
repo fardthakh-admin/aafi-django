@@ -17,7 +17,8 @@ SECRET_KEY = "django-insecure-b24#+xxy#vf05zx8g+%@1p4p7iryx4uth0ulq(etw_vs54_&d!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','portal.techcare.health', '146.190.233.238', 'localhost','10.0.2.2']
+ALLOWED_HOSTS = ['127.0.0.1', 'portal.techcare.health',
+                 '146.190.233.238', 'localhost', '10.0.2.2']
 
 
 # Application definition
@@ -36,7 +37,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'widget_tweaks',
     'ckeditor',
-   
+    'import_export',
+
 ]
 
 MIDDLEWARE = [
@@ -53,11 +55,11 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-  'DEFAULT_AUTHENTICATION_CLASSES': (
-     'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.BasicAuthentication',
-    'rest_framework_simplejwt.authentication.JWTAuthentication', 
-  ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 
 ROOT_URLCONF = "Aafi.urls"
@@ -66,8 +68,8 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR, 'templates'), 
-            BASE_DIR / 'templates',  
+            os.path.join(BASE_DIR, 'templates'),
+            BASE_DIR / 'templates',
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -108,8 +110,8 @@ DATABASES = {
     #     'NAME': 'aafi',
     #     'USER': 'root',
     #     'PASSWORD': '',
-    #     'HOST': 'localhost', 
-    #     'PORT': '3306',      
+    #     'HOST': 'localhost',
+    #     'PORT': '3306',
     # }
 
 }
@@ -162,10 +164,12 @@ AUTH_USER_MODEL = "api.User"
 # MEDIA_ROOT = BASE_DIR / 'static/images'
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')  # Ensure this is a separate directory
+# Ensure this is a separate directory
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')  # This should be where your development static files are located
+    # This should be where your development static files are located
+    os.path.join(BASE_DIR, 'static')
 ]
 
 MEDIA_URL = '/images/'
@@ -177,10 +181,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ORIGIN_ALLOW_ALL = True # ALLOWS ALL FRONTEND PORTS TO ACCESS OUR APP
-CORS_ALLOW_CREDENTIALS = True # ALLOWS FRONTEND TO GET COOKIE
+CORS_ORIGIN_ALLOW_ALL = True  # ALLOWS ALL FRONTEND PORTS TO ACCESS OUR APP
+CORS_ALLOW_CREDENTIALS = True  # ALLOWS FRONTEND TO GET COOKIE
 
-cred = credentials.Certificate("techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json")
+cred = credentials.Certificate(
+    "techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json")
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -188,7 +193,6 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "techcare-diabetes-firebase-admin
 
 
 CSRF_TRUSTED_ORIGINS = ['https://72a8-109-107-231-24.ngrok-free.app']
-
 
 
 SIMPLE_JWT = {
@@ -203,7 +207,7 @@ SIMPLE_JWT = {
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',    
+    'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
 CORS_ALLOWED_ORIGINS = [

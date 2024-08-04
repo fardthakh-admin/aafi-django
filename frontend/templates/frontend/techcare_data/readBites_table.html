@@ -118,6 +118,42 @@
             <div class="button-row d-flex justify-content-between mb-4">
                 <h2>readBites Data</h2>
                 <div class="btn-group" role="group">
+
+                    <div class="d-flex align-items-center mb-3">
+                    <form action="{% url 'export_readBites_data' %}" method="get" class="me-3">
+                        <button type="submit" class="btn btn-success">Export to Excel</button>
+                    </form>
+                    
+                    <form id="importForm" action="{% url 'import_readBites_data' %}" method="post" enctype="multipart/form-data" class="me-3 d-flex align-items-center">
+                        {% csrf_token %}
+                        <!-- Hidden file input -->
+                        <input type="file" id="importFile" name="import_file" accept=".xlsx, .xls" class="form-control me-2" style="display: none;" />
+                        <!-- Button to trigger file input -->
+                        <button type="button" id="importButton" class="btn btn-primary">Import</button>
+                    </form>
+                    
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const importButton = document.getElementById('importButton');
+                            const importFileInput = document.getElementById('importFile');
+                            const importForm = document.getElementById('importForm');
+                    
+                            // When the "Import" button is clicked, trigger the file input click
+                            importButton.addEventListener('click', function () {
+                                importFileInput.click();
+                            });
+                    
+                            // When a file is selected, submit the form
+                            importFileInput.addEventListener('change', function () {
+                                if (importFileInput.files.length > 0) {
+                                    importForm.submit();
+                                }
+                            });
+                        });
+                    </script>
+                    
+                </div>
                   {% comment %} {% include "frontend/techcare_data/create_assessmentQuestion.html" %} {% endcomment %}
                     <form method="post">
                       {% csrf_token %}
