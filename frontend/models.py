@@ -286,7 +286,7 @@ class trivia(models.Model):
 
 class shortBite(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    order= order = models.IntegerField(default=0)
+    order = models.IntegerField(default=0)
     title = models.CharField(max_length=100, default=None)
     
 
