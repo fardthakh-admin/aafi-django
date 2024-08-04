@@ -142,7 +142,13 @@
                               <td class="document-number">{{ forloop.counter }}</td>
                               <td class="document-id"><a href="{% url 'bitesdocument' document_name=entry.name %}">{{ entry.name }}</a></td>
                               <td class="document-title">{{ entry.data.title }}</td>
-                              <td class="document-category">{{ entry.data.categories }}</td>
+                              <td class="document-">
+                                {% if entry.resolved_categories %}
+                                    {{ entry.resolved_categories.title }}
+                                {% else %}
+                                    none
+                                {% endif %}
+                            </td>
                               <td class="edit-delete-buttons">    
                                 <br><br><br>
 
