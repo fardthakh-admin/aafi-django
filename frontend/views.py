@@ -2554,6 +2554,23 @@ def selfAwarnessBites_delete(request, document_name):
     return redirect('selfAwarnessBites_view')
 
 
+def nutrition_delete(request, document_name):
+    db = firestore.Client()
+    collection = db.collection("nutrition")
+    document_ref = collection.document(document_name)
+    document = document_ref.get()
+
+    if not document.exists:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    document_ref.delete()
+
+    messages.success(request, 'nutrition deleted successfully!')
+    return redirect('nutrition_view')
+
+
+
+
 def activities_delete(request, document_name):
     db = firestore.Client()
     collection = db.collection("activities")

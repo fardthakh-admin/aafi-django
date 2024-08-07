@@ -50,26 +50,35 @@
                     </form>
                     
                     <button type="button" class="btn btn-success" id="createButton" data-bs-toggle="modal" data-bs-target="#createModal">Create</button>
-
+                    
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const importButton = document.getElementById('importButton');
                             const importFileInput = document.getElementById('importFile');
                             const importForm = document.getElementById('importForm');
                     
+                            let isSubmitting = false; // Flag to check if the form is in the process of submission
+                    
                             // When the "Import" button is clicked, trigger the file input click
                             importButton.addEventListener('click', function () {
                                 importFileInput.click();
                             });
                     
-                            // When a file is selected, submit the form
+                            // When a file is selected, prompt the user for confirmation before submitting the form
                             importFileInput.addEventListener('change', function () {
-                                if (importFileInput.files.length > 0) {
-                                    importForm.submit();
+                                if (importFileInput.files.length > 0 && !isSubmitting) {
+                                    const userConfirmed = confirm("Are you sure you want to import this file?");
+                                    if (userConfirmed) {
+                                        isSubmitting = true; // Set the flag to true to prevent multiple submissions
+                                        importForm.submit();
+                                    } else {
+                                        importFileInput.value = ''; // Clear the file input if the user cancels
+                                    }
                                 }
                             });
                         });
                     </script>
+                    
                     
                 </div>
                 
@@ -115,12 +124,12 @@
                                     
                                     <div class="form-group">
                                         <label for="{{ form.totalCalories.id_for_label }}">totalCalories</label>
-                                        <input type="number" id="{{ form.totalCalories.id_for_label }}" name="totalCalories" class="form-control" value="{{ form.totalCalories.value }}">
+                                        <input type="text" id="{{ form.totalCalories.id_for_label }}" name="totalCalories" class="form-control" value="{{ form.totalCalories.value }}">
                                     </div>
                                     
                                     <div class="form-group">
                                         <label for="{{ form.weight.id_for_label }}">unit</label>
-                                        <input type="number" id="{{ form.weight.id_for_label }}" name="weight" class="form-control" value="{{ form.weight.value }}">
+                                        <input type="text" id="{{ form.weight.id_for_label }}" name="weight" class="form-control" value="{{ form.weight.value }}">
                                     </div>
                                     
                     
