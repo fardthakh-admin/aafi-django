@@ -70,7 +70,7 @@
                             {% endfor %}
                         </ul>
                         
-                        {% if readbites_data %}
+                        {% comment %} {% if readbites_data %}
                         <h3>ReadBites Information</h3>
                         <ul class="list-group mb-4">
                             {% for readbite in readbites_data %}
@@ -185,9 +185,9 @@
                                 {% endfor %}
                             {% endfor %}
                         </ul>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
 
-                    {% if psychomarkers_data %}
+                    {% comment %} {% if psychomarkers_data %}
                         <h3>Psychomarkers Information</h3>
                         <ul class="list-group mb-4">
                             {% for psychomarkers in psychomarkers_data %}
@@ -198,9 +198,12 @@
                                 {% endfor %}
                             {% endfor %}
                         </ul>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
 
-                    {% if inquiry_data %}
+       
+
+
+                    {% comment %} {% if inquiry_data %}
                         <h3>Inquiry Information</h3>
                         <ul class="list-group mb-4">
                             {% for inquiry in inquiry_data %}
@@ -211,9 +214,9 @@
                                 {% endfor %}
                             {% endfor %}
                         </ul>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
 
-                    {% if biomarkers_data %}
+                    {% comment %} {% if biomarkers_data %}
                         <h3>Biomarkers Information</h3>
                         <ul class="list-group mb-4">
                             {% for biomarkers in biomarkers_data %}
@@ -224,9 +227,86 @@
                                 {% endfor %}
                             {% endfor %}
                         </ul>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
+
+
+
+                    {% if psychomarkers_data %}
+                    <h3>Biomarkers Information</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">depression</th>
+                                    <th scope="col">user</th>
+                                    <th scope="col">anxiety</th>
+                                    <th scope="col">time</th>
+    
+                            </thead>
+                            <tbody>
+                                {% for psychomarkers in psychomarkers_data %}
+                                    <tr>
+                                        <td>{{ psychomarkers.depression }}</td>
+                                        <td>{{ psychomarkers.user }}</td>
+                                        <td>{{ psychomarkers.anxiety }}</td>
+                                        <td>{{ psychomarkers.time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+                    {% if biomarkers_data %}
+                    <h3>Biomarkers Information</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">FBS</th>
+                                    <th scope="col">HBA1c</th>
+                                    <th scope="col">bloodGlucose</th>
+                                    <th scope="col">bloodGlucoseType</th>
+                                    <th scope="col">dailyActivity</th>
+                                    <th scope="col">dailyCarbs</th>
+                                    <th scope="col">sleepQuality</th>
+                                    <th scope="col">time</th>
+                                    <th scope="col">user</th>
+                                    <th scope="col">weeklyActivity</th>
+                                    <th scope="col">weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for biomarker in biomarkers_data %}
+                                    <tr>
+                                        <td>{{ biomarker.FBS }}</td>
+                                        <td>{{ biomarker.HBA1c }}</td>
+                                        <td>{{ biomarker.bloodGlucose }}</td>
+                                        <td>{{ biomarker.bloodGlucoseType }}</td>
+                                        <td>{{ biomarker.dailyActivity }}</td>
+                                        <td>{{ biomarker.dailyCarbs }}</td>
+                                        <td>{{ biomarker.sleepQuality }}</td>
+                                        <td>{{ biomarker.time }}</td>
+                                        <td>{{ biomarker.user }}</td>
+                                        <td>{{ biomarker.weeklyActivity }}</td>
+                                        <td>{{ biomarker.weight }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
+                <style>
+                    .table-responsive {
+                        overflow-x: auto;
+                        white-space: nowrap;
+                    }
                     
-                    {% if dailyBloodGlucoseAverage_data %}
+                </style>
+
+                    
+                    {% comment %} {% if dailyBloodGlucoseAverage_data %}
                         <h3>DailyBloodGlucoseAverage Information</h3>
                         <ul class="list-group mb-4">
                             {% for dailyBloodGlucoseAverage in dailyBloodGlucoseAverage_data %}
@@ -250,7 +330,7 @@
                                 {% endfor %}
                             {% endfor %}
                         </ul>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
 
                     {% if data_for_chartjs  %}
 

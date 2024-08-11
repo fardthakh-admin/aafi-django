@@ -33,6 +33,7 @@ from django.core.files.storage import default_storage
 from django.conf import settings
 from pathlib import Path
 from django.http import HttpResponseForbidden, HttpResponse
+import logging
 
 
 db = firestore.client()
@@ -346,6 +347,8 @@ def patients_detail(request, document_name):
             data_for_chartjs['datasets'][0]['data'].append(doc_data['bloodGlucose'])
 
         biomarkers_data.append(doc_data)  # Collect all biomarkers data
+
+
 
 
     context = {
@@ -2139,7 +2142,7 @@ def create_biomarkers(request):
                 'dailyCarbs': form.cleaned_data['dailyCarbs'],
                 'sleepQuality': form.cleaned_data['sleepQuality'],
                 'time': form.cleaned_data['time'],
-                'user_id': request.POST.get('user_id'),
+                'user': request.POST.get('user'),
                 'weeklyActivity': form.cleaned_data['weeklyActivity'],
                 'weight': form.cleaned_data['weight'],
                 'FBS': form.cleaned_data['FBS'],
