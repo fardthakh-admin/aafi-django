@@ -290,7 +290,7 @@ def patients_detail(request, document_name):
         selfLadder_data.append(doc.to_dict())
 
     psychomarkers_collection = db.collection("psychomarkers")
-    psychomarkers_query = psychomarkers_collection.where('user', '==', f'/users/{document_name}').stream()
+    psychomarkers_query = psychomarkers_collection.where('user', '==', user_document.reference).stream()
     psychomarkers_data = []
     for doc in psychomarkers_query:
         psychomarkers_data.append(doc.to_dict())
@@ -302,8 +302,9 @@ def patients_detail(request, document_name):
         inquiry_data.append(doc.to_dict())
 
     biomarkers_collection = db.collection("biomarkers")
-    biomarkers_query = biomarkers_collection.where('user', '==', f'/users/{document_name}').stream()
-    biomarkers_data = []
+    biomarkers_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
+    biomarkers_data=[]
+ 
     for doc in biomarkers_query:
         biomarkers_data.append(doc.to_dict())
 
@@ -318,10 +319,6 @@ def patients_detail(request, document_name):
     feelings_data = []
     for doc in feelings_query:
         feelings_data.append(doc.to_dict())
-
-
-
-
 
         biomarkers_data = []
 

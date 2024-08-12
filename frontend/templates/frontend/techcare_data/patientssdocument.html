@@ -238,7 +238,6 @@
                             <thead>
                                 <tr>
                                     <th scope="col">depression</th>
-                                    <th scope="col">user</th>
                                     <th scope="col">anxiety</th>
                                     <th scope="col">time</th>
     
@@ -247,7 +246,6 @@
                                 {% for psychomarkers in psychomarkers_data %}
                                     <tr>
                                         <td>{{ psychomarkers.depression }}</td>
-                                        <td>{{ psychomarkers.user }}</td>
                                         <td>{{ psychomarkers.anxiety }}</td>
                                         <td>{{ psychomarkers.time }}</td>
                                     </tr>
@@ -271,7 +269,7 @@
                                     <th scope="col">dailyCarbs</th>
                                     <th scope="col">sleepQuality</th>
                                     <th scope="col">time</th>
-                                    <th scope="col">user</th>
+                                   
                                     <th scope="col">weeklyActivity</th>
                                     <th scope="col">weight</th>
                                 </tr>
@@ -287,7 +285,7 @@
                                         <td>{{ biomarker.dailyCarbs }}</td>
                                         <td>{{ biomarker.sleepQuality }}</td>
                                         <td>{{ biomarker.time }}</td>
-                                        <td>{{ biomarker.user }}</td>
+                                       
                                         <td>{{ biomarker.weeklyActivity }}</td>
                                         <td>{{ biomarker.weight }}</td>
                                     </tr>
