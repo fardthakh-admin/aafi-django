@@ -3851,7 +3851,7 @@ def export_nutrition_data(request):
     # Define the column headers
     headers = [
         "carbContent", "name_ar", "name_en", "portion",
-        "proteinContent", "totalCalories", "weight"
+        "proteinContent", "totalCalories", "weight","fatContent"
     ]
     worksheet.append(headers)
 
@@ -3864,7 +3864,9 @@ def export_nutrition_data(request):
             entry.get("portion"),
             entry.get("proteinContent"),
             entry.get("totalCalories"),
-            entry.get("weight")
+            entry.get("weight"),
+            entry.get("fatContent"),
+
         ]
         worksheet.append(row)
 
@@ -3911,7 +3913,8 @@ def import_nutrition_data(request):
                         "portion": row.get('portion'),
                         "proteinContent": row.get('proteinContent'),
                         "totalCalories": row.get('totalCalories'),
-                        "weight": row.get('weight')
+                        "weight": row.get('weight'),
+                        "fatContent":row.get('fatContent')
                     }
                     # Add document to Firestore with auto-generated ID
                     collection_ref.add(document_data)
