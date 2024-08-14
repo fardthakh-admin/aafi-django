@@ -3464,6 +3464,7 @@ def update_nutrition(request, document_name):
                 'name_en': request.POST.get('name_en'),
                 'portion': request.POST.get('portion'),
                 'proteinContent': request.POST.get('proteinContent'),
+                'fatContent': request.POST.get('fatContent'),
                 'totalCalories': request.POST.get('totalCalories'),
                 'weight': request.POST.get('weight'),
             }
