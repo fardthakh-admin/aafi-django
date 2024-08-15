@@ -305,6 +305,15 @@ class nutrition(models.Model):
     fatContent = models.CharField(max_length=100, default=None)
     totalCalories = models.IntegerField(max_length=100, default=None)
     weight = models.CharField(max_length=100, default=None) 
+    nutItem = models.CharField(max_length=100, default=None) 
+    food_category = models.CharField(max_length=100, default=None) 
+    Class = models.CharField(max_length=100, default=None) 
+    unit = models.CharField(max_length=100, default=None) 
+
+
+
+
+    
     
     def __str__(self):
          return self.__all__
