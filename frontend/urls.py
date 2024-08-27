@@ -287,6 +287,34 @@ urlpatterns = [
     # path('nutrition/delete-selected/', nutrition_delete_selected, name='nutrition_delete_selected'),
 
     path('nutrition/deleteSelected/', nutrition_delete_selected, name='nutrition_delete_selected'),
+    path('activities/deleteSelected/', activities_delete_selected, name='activities_delete_selected'),
+    path('assessmentQuestion/deleteSelected/', assessmentQuestion_delete_selected, name='assessmentQuestion_delete_selected'),
+    path('assets/deleteSelected/', assets_delete_selected, name='assets_delete_selected'),
+    path('biomarkers/deleteSelected/', biomarkers_delete_selected, name='biomarkers_delete_selected'),
+    path('bites/deleteSelected/', bites_delete_selected, name='bites_delete_selected'),
+    path('categories/deleteSelected/', categories_delete_selected, name='categories_delete_selected'),
+    path('inAppLinks/deleteSelected/', inAppLinks_delete_selected, name='inAppLinks_delete_selected'),
+    path('inquiry/deleteSelected/', inquiry_delete_selected, name='inquiry_delete_selected'),
+
+    path('journalPrompt/deleteSelected/', journalPrompt_delete_selected, name='journalPrompt_delete_selected'),
+    path('majorAssessment/deleteSelected/', majorAssessment_delete_selected, name='majorAssessment_delete_selected'),
+    path('psychomarkers/deleteSelected/', psychomarkers_delete_selected, name='psychomarkers_delete_selected'),
+    path('scenarios/deleteSelected/', scenarios_delete_selected, name='scenarios_delete_selected'),
+    path('shortBite/deleteSelected/', shortBite_delete_selected, name='shortBite_delete_selected'),
+    path('tags/deleteSelected/', tags_delete_selected, name='tags_delete_selected'),
+    path('trivia/deleteSelected/', testTrivia_delete_selected, name='testTrivia_delete_selected'),
+    path('trivia/deleteSelected/', trivia_delete_selected, name='testTrivia_delete_selected'),
+
+    path('users/deleteSelected/', users_delete_selected, name='users_delete_selected'),
+    path('wildCards/deleteSelected/', wildCard_delete_selected, name='wildCard_delete_selected'),
+    path('selfawarenessScenarios/deleteSelected/', selfawarenessScenarios_delete_selected, name='selfawarenessScenarios_delete_selected'),
+    path('selfAwarnessBites/deleteSelected/', selfAwarnessBites_delete_selected, name='selfAwarnessBites_delete_selected'),
+    path('selfawarenessCollection/deleteSelected/', selfawarenessCollection_delete_selected, name='selfawarenessCollection_delete_selected'),
+    
+
+
+
+
 
 
 

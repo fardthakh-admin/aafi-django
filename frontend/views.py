@@ -6553,8 +6553,196 @@ def nutrition_delete_selected(request):
     return redirect(('nutrition_view'))
 
 
+def activities_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('activities').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('activities_view'))
+
+def assessmentQuestion_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('assessmentQuestion').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('assessmentQuestion_view'))
+
+def assets_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('assets').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('assets_view'))
 
 
 
+def biomarkers_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('biomarkers').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('biomarkers_view'))
+
+def bites_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('bites').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('bites_view'))
+
+def categories_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('categories').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('categories'))
+
+def inAppLinks_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('inAppLinks').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('inAppLinks'))
+
+def inquiry_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('inquiry').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('inquiry'))
+
+def journalPrompt_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('journalPrompt').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('journalPrompt'))
+
+def majorAssessment_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('majorAssessment').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('majorAssessment'))
 
 
+def psychomarkers_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('psychomarkers').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('psychomarkers'))
+
+def scenarios_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('scenarios').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('scenarios'))
+
+def selfAwarnessBites_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('selfAwarnessBites').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('selfAwarnessBites'))
+
+def selfawarenessScenarios_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('selfawarenessScenarios').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('selfawarenessScenarios'))
+
+def selfawarenessCollection_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('selfawarenessCollection').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('selfawarenessCollection'))
+
+def shortBite_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('shortBite').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('shortBite'))
+
+def tags_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('tags').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('tags'))
+
+
+def testTrivia_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('testTrivia').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('testTrivia'))
+
+
+def trivia_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('trivia').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('trivia'))
+
+def users_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('users').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('users'))
+
+def wildCard_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('wildCard').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('wildCard'))
