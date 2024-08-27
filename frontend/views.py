@@ -6543,6 +6543,16 @@ def import_suggestedWildCards_data(request):
 
 
 
+def nutrition_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('nutrition').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('nutrition_view'))
+
+
 
 
 

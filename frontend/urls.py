@@ -284,8 +284,9 @@ urlpatterns = [
     path('export/suggestedWildCards/', export_suggestedWildCards_data,name='export_suggestedWildCards_data'),
     path('import/suggestedWildCards/', import_suggestedWildCards_data, name='import_suggestedWildCards_data'),
 
+    # path('nutrition/delete-selected/', nutrition_delete_selected, name='nutrition_delete_selected'),
 
-
+    path('nutrition/deleteSelected/', nutrition_delete_selected, name='nutrition_delete_selected'),
 
 
 
