@@ -1525,7 +1525,7 @@ def inquiry_view(request):
     db = firestore.Client()
     
     # Fetching inquiry data
-    collection = db.collection("inquiry")
+    collection = db.collection("inquiry").order_by("time",direction=firestore.Query.DESCENDING)
     documents = collection.stream()
     document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
     
@@ -1534,7 +1534,7 @@ def inquiry_view(request):
         # Perform search based on 'title' field (modify as per your Firestore structure)
         filtered_documents = []
         for doc in document_data:
-            title = doc['data'].get('question', '').lower()
+            title = str(doc['data'].get('question', '')).lower()
             if query.lower() in title:
                 filtered_documents.append(doc)
         document_data = filtered_documents
@@ -1564,10 +1564,18 @@ def inquirydocument_detail(request, document_name):
     document_data = document_ref.get().to_dict()
 
     if not document_data:
-
         return render(request, 'frontend/techcare_data/document_not_found.html')
 
-    return render(request, 'frontend/techcare_data/inquirydocument.html', {'document_data': document_data})
+    # Fetching users data
+    collection = db.collection("users")
+    documents = collection.stream()
+    users_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+
+    return render(request, 'frontend/techcare_data/inquirydocument.html', {
+        'document_data': document_data,
+        'document_name': document_name,
+        'users_data': users_data
+    })
 
 def items_view(request):
  
@@ -2480,9 +2488,15 @@ def create_nutrition(request):
                 'name_ar': request.POST.get('name_ar'),
                 'name_en': request.POST.get('name_en'),
                 'portion': request.POST.get('portion'),
+                'fatContent':request.POST.get('fatContent'),
                 'proteinContent': request.POST.get('proteinContent'),
                 'totalCalories': request.POST.get('totalCalories'),
-                'weight': request.POST.get('weight'),                
+                'weight': request.POST.get('weight'),
+                'unit':request.POST.get('unit'),
+                'food_category':request.POST.get('food_category'),
+                'Class':request.POST.get('Class'),
+
+                               
             }
             db.collection("nutrition").document().set(data)
             messages.success(request, 'Successfully Users Scenarios.') 
@@ -3152,15 +3166,19 @@ def update_inquiry(request, document_name):
         data = {
                 'answer': request.POST.get('answer'),
                 'question': request.POST.get('question'),
-                'time': request.POST.get('time'),
+                'time': timezone.now(),
                 'topic': request.POST.get('topic'),
                 'user': user_ref,
             }
         db.collection("inquiry").document(entry_id).update(data)
         messages.success(request, 'inquiry updated successfully.')
-        return redirect('inquiry_view')
+        source = request.POST.get('source')
+        if source == 'document_detail':
+            return redirect('inquirydocument', document_name=document_name)
+        else:
+            return redirect('inquiry_view')
     else:
-        messages.error(request, 'Error updating inquiry . Please check your input.')
+        messages.error(request, 'Error updating inquiry. Please check your input.')
         return redirect('inquiry_view')
     
 def update_items(request, document_name):
@@ -3467,6 +3485,11 @@ def update_nutrition(request, document_name):
                 'fatContent': request.POST.get('fatContent'),
                 'totalCalories': request.POST.get('totalCalories'),
                 'weight': request.POST.get('weight'),
+                'unit': request.POST.get('unit'),
+                'Class': request.POST.get('Class'),
+                'food_category':request.POST.get('food_category'),
+
+
             }
         db = firestore.client()
         db.collection("nutrition").document(entry_id).update(data)

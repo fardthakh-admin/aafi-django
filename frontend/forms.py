@@ -159,7 +159,7 @@ class InAppLinksForm(forms.ModelForm):
 class InquiryForm(forms.ModelForm):
      class Meta:
         model=inquiry
-        exclude = ['time', 'user']
+        exclude = [ 'user']
 
 class MajorAssessmentForm(forms.ModelForm):
      class Meta:
