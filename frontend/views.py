@@ -34,6 +34,8 @@ from django.conf import settings
 from pathlib import Path
 from django.http import HttpResponseForbidden, HttpResponse
 import logging
+import pytz
+
 
 
 db = firestore.client()
@@ -221,8 +223,12 @@ def patients_list(request):
 
     return render(request, 'frontend/doctor/patients.html', {'page_obj': page_obj, 'query': query})
 
+
+from datetime import datetime, timedelta
 def patients_detail(request, document_name):
     db = firestore.Client()
+
+  
 
     # Fetch user document
     user_collection = db.collection("users")
@@ -324,8 +330,34 @@ def patients_detail(request, document_name):
 
     # Fetch biomarkers data for the user
     biomarkers_collection = db.collection("biomarkers")
-    biomarkers_query = biomarkers_collection.where('user', '==', f'/users/{document_name}').stream()
+    biomarkers_forchart_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
+    chartData=[]
 
+    for doc in biomarkers_forchart_query:
+        chartData.append(doc.to_dict())
+     # Paginate psychomarkers_data
+
+    print(biomarkers_forchart_query)
+
+    paginator_psychomarkers = Paginator(psychomarkers_data, 10)  # Show 10 psychomarkers per page
+    page_number_psychomarkers = request.GET.get('page_psychomarkers')
+    page_psychomarkers = paginator_psychomarkers.get_page(page_number_psychomarkers)
+
+    # Paginate biomarkers_data
+    paginator_biomarkers = Paginator(biomarkers_data, 10)  # Show 10 biomarkers per page
+    page_number_biomarkers = request.GET.get('page_biomarkers')
+    page_biomarkers = paginator_biomarkers.get_page(page_number_biomarkers)
+
+    now = datetime.now(pytz.utc)
+    cutoff_time = now - timedelta(days=1)
+    # Query the biomarkers collection
+  
+
+    # Query the biomarkers collection
+    biomarkers_collection = db.collection("biomarkers")
+    biomarkers_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
+
+    # Initialize data structures for chart and pagination
     data_for_chartjs = {
         'labels': [],
         'datasets': [{
@@ -335,18 +367,43 @@ def patients_detail(request, document_name):
             'fill': False
         }]
     }
+    
+    biomarkers_data = []
 
+    # Debugging: Print cutoff time
+    print("Cutoff time:", cutoff_time)
+
+    # Check if query is returning data
+    found_data = False
     for doc in biomarkers_query:
+        found_data = True
         doc_data = doc.to_dict()
+        # Debugging: print each document's data
+        print("Document data:", doc_data)
+
         if 'time' in doc_data and 'bloodGlucose' in doc_data:
-            timestamp = doc_data['time'].strftime("%Y-%m-%d %H:%M:%S")
-            data_for_chartjs['labels'].append(timestamp)
-            data_for_chartjs['datasets'][0]['data'].append(doc_data['bloodGlucose'])
+            try:
+                # Directly use Firestore Timestamp and compare it
+                timestamp = doc_data['time'].astimezone(pytz.utc)  # Convert to UTC timezone
+                # Debugging: print timestamp and check if it's within the last 24 hours
+                print("Timestamp:", timestamp)
+                print("Is timestamp within last 24 hours?", timestamp > cutoff_time)
 
-        biomarkers_data.append(doc_data)  # Collect all biomarkers data
+                # Only consider data points within the last 24 hours
+                if timestamp > cutoff_time:
+                    time_str = timestamp.isoformat()  # Convert to ISO 8601 format
+                    data_for_chartjs['labels'].append(time_str)
+                    data_for_chartjs['datasets'][0]['data'].append(doc_data['bloodGlucose'])
+                    
+            except Exception as e:
+                # Handle potential errors
+                print("Error processing timestamp:", e)
+                continue
 
+        biomarkers_data.append(doc_data)
 
-
+    if not found_data:
+        print("No documents found matching the query.")
 
     context = {
     'document_data': document_data,
@@ -360,7 +417,9 @@ def patients_detail(request, document_name):
     'suggestedWildCards_data': suggestedWildCards_data,
     'selfLadder_data': selfLadder_data,
     'psychomarkers_data': psychomarkers_data,
+    'page_psychomarkers': page_psychomarkers,
     'inquiry_data': inquiry_data,
+    'page_biomarkers': page_biomarkers,
     'biomarkers_data': biomarkers_data,
     'dailyBloodGlucoseAverage_data': dailyBloodGlucoseAverage_data,
     'data_for_chartjs': data_for_chartjs,

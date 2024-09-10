@@ -231,7 +231,7 @@
 
 
 
-                    {% if psychomarkers_data %}
+                    {% if page_psychomarkers %}
                     <h3>Psychomarkers Information</h3>
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -240,10 +240,10 @@
                                     <th scope="col">depression</th>
                                     <th scope="col">anxiety</th>
                                     <th scope="col">time</th>
-    
+                                </tr>
                             </thead>
                             <tbody>
-                                {% for psychomarkers in psychomarkers_data %}
+                                {% for psychomarkers in page_psychomarkers %}
                                     <tr>
                                         <td>{{ psychomarkers.depression }}</td>
                                         <td>{{ psychomarkers.anxiety }}</td>
@@ -253,9 +253,32 @@
                             </tbody>
                         </table>
                     </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_psychomarkers.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_psychomarkers={{ page_psychomarkers.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% for num in page_psychomarkers.paginator.page_range %}
+                                <li class="page-item {% if page_psychomarkers.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page_psychomarkers={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_psychomarkers.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_psychomarkers={{ page_psychomarkers.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                 {% endif %}
-
-                    {% if biomarkers_data %}
+                
+                {% if page_biomarkers %}
                     <h3>Biomarkers Information</h3>
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -269,13 +292,12 @@
                                     <th scope="col">dailyCarbs</th>
                                     <th scope="col">sleepQuality</th>
                                     <th scope="col">time</th>
-                                   
                                     <th scope="col">weeklyActivity</th>
                                     <th scope="col">weight</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for biomarker in biomarkers_data %}
+                                {% for biomarker in page_biomarkers %}
                                     <tr>
                                         <td>{{ biomarker.FBS }}</td>
                                         <td>{{ biomarker.HBA1c }}</td>
@@ -285,7 +307,6 @@
                                         <td>{{ biomarker.dailyCarbs }}</td>
                                         <td>{{ biomarker.sleepQuality }}</td>
                                         <td>{{ biomarker.time }}</td>
-                                       
                                         <td>{{ biomarker.weeklyActivity }}</td>
                                         <td>{{ biomarker.weight }}</td>
                                     </tr>
@@ -293,8 +314,30 @@
                             </tbody>
                         </table>
                     </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            {% if page_biomarkers.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_biomarkers={{ page_biomarkers.previous_page_number }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% for num in page_biomarkers.paginator.page_range %}
+                                <li class="page-item {% if page_biomarkers.number == num %}active{% endif %}">
+                                    <a class="page-link" href="?page_biomarkers={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if page_biomarkers.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page_biomarkers={{ page_biomarkers.next_page_number }}" aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
                 {% endif %}
-
                 <style>
                     .table-responsive {
                         overflow-x: auto;

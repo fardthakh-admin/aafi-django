@@ -1,10 +1,15 @@
-<!-- frontend/techcare_data/chart_biomarkers.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Biomarkers Chart</title>
+    <title>Biomarkers Chart with Target Range</title>
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Chart.js Annotation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
     <div style="width: 80%; margin: auto;">
@@ -16,7 +21,7 @@
         var myLineChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: {{ data_for_chartjs.labels | safe }},
+                labels: {{ data_for_chartjs.labels | safe }},  // Labels contain the time in ISO 8601 format
                 datasets: [{
                     label: 'Blood Glucose Levels',
                     data: {{ data_for_chartjs.datasets.0.data | safe }},
@@ -26,17 +31,63 @@
             },
             options: {
                 scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            parser: 'HH:mm',
+                            displayFormats: {
+                                hour: 'HH:mm'
+                            },
+                            min: '00:00',
+                            max: '12:00'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time (12 AM - 12 PM)'
+                        }
+                    },
                     y: {
                         beginAtZero: true,
+                        
                         title: {
                             display: true,
                             text: 'Blood Glucose'
                         }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Time'
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 70,  // First line at 70
+                                yMax: 70,
+                                borderColor: 'rgb(99, 255, 132)',
+                                borderWidth: 2,
+                                label: {
+                                    content: 'Target Range',
+                                    enabled: true,
+                                    position: 'start',
+                                    backgroundColor: 'rgba(0, 99, 132, 0.25)',
+                                    yAdjust: -10  // Position of the label
+                                }
+                            },
+                            line2: {
+                                type: 'line',
+                                yMin: 180,  // Second line at 180
+                                yMax: 180,
+                                borderColor: 'rgb(99, 255, 132)',
+                                borderWidth: 2
+                            },
+                            box: {
+                                type: 'box',
+                                yMin: 70,
+                                yMax: 180,
+                                backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                                borderColor: 'rgba(75, 192, 192, 0)',
+                                borderWidth: 0
+                            }
                         }
                     }
                 }
