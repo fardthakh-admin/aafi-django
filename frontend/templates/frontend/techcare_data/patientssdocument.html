@@ -96,6 +96,13 @@
                         </ul>
                     {% endif %}
 
+                    {% if bmi %}
+                    <h3>BMI</h3>
+                    <ul class="list-group mb-4">
+                        
+                    </ul>
+                {% endif %}
+
                     {% if suggestedActivities_data %}
                         <h3>SuggestedActivities Information</h3>
                         <ul class="list-group mb-4">
@@ -376,6 +383,14 @@
                     {% if data_for_chartjs  %}
 
                     {% include "frontend/techcare_data/chart_biomarkers.html" %}
+                    {% include "frontend/techcare_data/weekly_biomarkers_chart.html" %}
+                    
+                    {% include "frontend/techcare_data/chart_activity.html" %}
+                    {% include "frontend/techcare_data/chart_carbs.html" %}
+                    {% include "frontend/techcare_data/weight_chart.html" %}
+                    
+
+
                     
                     {% endif %}
                     

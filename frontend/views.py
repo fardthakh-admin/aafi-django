@@ -240,6 +240,26 @@ def patients_detail(request, document_name):
 
     document_data = user_document.to_dict()
 
+     # Extract current weight from Firestore
+    current_weight = document_data.get("weight", None)
+
+    if current_weight is None:
+        return render(request, 'frontend/techcare_data/document_not_found.html')
+
+    # Retrieve or initialize the weight history from the session
+    weight_history = request.session.get('weight_history', [])
+
+    # Append the current weight if it's not the same as the last one in the history
+    if len(weight_history) == 0 or current_weight != weight_history[-1]:
+        weight_history.append(current_weight)
+
+    # Store the updated weight history back into the session
+    request.session['weight_history'] = weight_history
+
+    # Create labels (index values for each entry in history)
+    labels = list(range(1, len(weight_history) + 1))
+
+
     # Fetch readBites data for the user
     readbites_collection = db.collection("readBites")
     readbites_query = readbites_collection.where('user', '==', f'/users/{document_name}').stream()
@@ -365,45 +385,82 @@ def patients_detail(request, document_name):
             'data': [],
             'borderColor': 'rgb(75, 192, 192)',
             'fill': False
+         }, {
+            'label': 'Daily Activity',
+            'data': [],
+            'borderColor': 'rgb(255, 99, 132)',
+            'fill': False
+        }, {
+            'label': 'Daily Carbs',
+            'data': [],
+            'borderColor': 'rgb(255, 99, 132)',
+            'fill': False
         }]
     }
-    
+
+    data_for_chartjs_weekly = {
+        'labels': [],
+        'datasets': [{
+            'label': 'Blood Glucose Levels',
+            'data': [],
+            'borderColor': 'rgb(75, 192, 192)',
+            'fill': False
+         }]
+    }
+
     biomarkers_data = []
 
     # Debugging: Print cutoff time
     print("Cutoff time:", cutoff_time)
 
+
+    cutoff_time_weekly = now - timedelta(days=1)
     # Check if query is returning data
     found_data = False
-    for doc in biomarkers_query:
+    for doc in chartData:
         found_data = True
-        doc_data = doc.to_dict()
-        # Debugging: print each document's data
-        print("Document data:", doc_data)
+       
 
-        if 'time' in doc_data and 'bloodGlucose' in doc_data:
+        if 'time' in doc and ('bloodGlucose' in doc or 'dailyActivity' in doc or 'dailyCarbs'):
             try:
-                # Directly use Firestore Timestamp and compare it
-                timestamp = doc_data['time'].astimezone(pytz.utc)  # Convert to UTC timezone
-                # Debugging: print timestamp and check if it's within the last 24 hours
-                print("Timestamp:", timestamp)
-                print("Is timestamp within last 24 hours?", timestamp > cutoff_time)
-
-                # Only consider data points within the last 24 hours
+                timestamp = doc['time'].astimezone(pytz.utc)
                 if timestamp > cutoff_time:
-                    time_str = timestamp.isoformat()  # Convert to ISO 8601 format
+                    time_str = timestamp.isoformat()
                     data_for_chartjs['labels'].append(time_str)
-                    data_for_chartjs['datasets'][0]['data'].append(doc_data['bloodGlucose'])
-                    
+                    if 'bloodGlucose' in doc:
+                        data_for_chartjs['datasets'][0]['data'].append(doc['bloodGlucose'])
+                    if 'dailyActivity' in doc:
+                        data_for_chartjs['datasets'][1]['data'].append(doc['dailyActivity'])
+                    if 'dailyCarbs' in doc:
+                        data_for_chartjs['datasets'][2]['data'].append(doc['dailyCarbs'])
+
             except Exception as e:
-                # Handle potential errors
                 print("Error processing timestamp:", e)
                 continue
 
-        biomarkers_data.append(doc_data)
+    if not found_data:
+        print("No documents found matching the query.")
+
+    print(data_for_chartjs)
+
+  
+    for doc in chartData:
+       
+        if 'time' in doc and 'bloodGlucose' in doc :
+            try:
+                timestamp = doc['time'].astimezone(pytz.utc)
+                if timestamp > cutoff_time_weekly:
+                    time_str = timestamp.isoformat()
+                    data_for_chartjs_weekly['labels'].append(time_str)
+                    if 'bloodGlucose' in doc:
+                        data_for_chartjs_weekly['datasets'][0]['data'].append(doc['bloodGlucose'])
+            except Exception as e:
+                print("Error processing timestamp:", e)
+                continue
 
     if not found_data:
         print("No documents found matching the query.")
+
 
     context = {
     'document_data': document_data,
@@ -423,8 +480,15 @@ def patients_detail(request, document_name):
     'biomarkers_data': biomarkers_data,
     'dailyBloodGlucoseAverage_data': dailyBloodGlucoseAverage_data,
     'data_for_chartjs': data_for_chartjs,
+    'data_for_chartjs_weekly': data_for_chartjs_weekly,
+    'labels': labels,
+    'weights': weight_history,
+    }
+    
+   
+   
 
-}
+
   
 
    

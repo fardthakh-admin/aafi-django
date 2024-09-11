@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Activity</title>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Chart.js Annotation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="myLineChart3"></canvas>
+    </div>
+    
+
+    <script>
+        var ctx3 = document.getElementById('myLineChart3').getContext('2d');
+        var myLineChart3 = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: {{ data_for_chartjs.labels | safe }},  // Labels contain the time in ISO 8601 format
+                datasets: [{
+                    label: 'Daily Carbs ',
+                    data: {{ data_for_chartjs.datasets.2.data | safe }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            parser: 'HH:mm',
+                            displayFormats: {
+                                hour: 'HH:mm'
+                            },
+                            min: '00:00',
+                            max: '12:00'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time (12 AM - 12 PM)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        
+                        title: {
+                            display: true,
+                            text: 'Daily Carbs'
+                        }
+                    }
+                },
+               
+            }
+        });
+
+       
+        
+    </script>
+   
+</body>
+</html>

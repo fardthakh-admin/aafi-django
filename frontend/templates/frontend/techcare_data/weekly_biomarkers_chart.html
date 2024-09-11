@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Biomarkers Chart with Target Range</title>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Chart.js Annotation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="myLineChart4"></canvas>
+    </div>
+
+
+    <script>
+        var ctx4 = document.getElementById('myLineChart4').getContext('2d');
+        var myLineChart4 = new Chart(ctx4, {
+            type: 'scatter',
+            data: {
+                labels: {{ data_for_chartjs_weekly.labels | safe }},  // Labels contain the time in ISO 8601 format
+                datasets: [{
+                    label: 'Weekly Blood Glucose Levels',
+                    data: {{ data_for_chartjs_weekly.datasets.0.data | safe }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false
+                }]
+            },
+             options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',  // Show data per day
+                            tooltipFormat: 'MMM DD, HH:mm',  // Tooltip format for day and time
+                            min: moment().subtract(7, 'days').startOf('day').toDate(),  // Start of the week
+                            max: moment().endOf('day').toDate(),  // End of today
+                            displayFormats: {
+                                day: 'dddd',  // Display full day names like Monday, Tuesday, etc.
+                            },
+                        },
+                        title: {
+                            display: true,
+                            text: 'Days of the Week'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Blood Glucose (mg/dL)'
+                        },
+                        ticks: {
+                            stepSize: 50  // Customize this based on glucose range
+                        }
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            targetRange: {
+                                type: 'box',
+                                yMin: 70,
+                                yMax: 180,
+                                backgroundColor: 'rgba(0, 255, 0, 0.1)',
+                                borderColor: 'rgba(0, 255, 0, 0.4)',
+                                label: {
+                                    content: 'Target Range (70-180 mg/dL)',
+                                    enabled: true,
+                                    position: 'start'
+                                }
+                            },
+                            percentileLines: [
+                                {
+                                    type: 'line',
+                                    yMin: 70,
+                                    yMax: 70,
+                                    borderColor: 'rgb(99, 255, 132)',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: '70 mg/dL',
+                                        enabled: true,
+                                        position: 'start'
+                                    }
+                                },
+                                {
+                                    type: 'line',
+                                    yMin: 180,
+                                    yMax: 180,
+                                    borderColor: 'rgb(99, 255, 132)',
+                                    borderWidth: 2,
+                                    label: {
+                                        content: '180 mg/dL',
+                                        enabled: true,
+                                        position: 'start'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+   
+</body>
+</html>
