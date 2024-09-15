@@ -223,13 +223,22 @@ def patients_list(request):
 
     return render(request, 'frontend/doctor/patients.html', {'page_obj': page_obj, 'query': query})
 
+def calculate_bmi(weight, height):
+    # Convert height from cm to meters
+    height_meters = height / 100.0
+
+    # Calculate BMI
+    bmi = weight / (height_meters * height_meters)
+
+    # Round BMI to one decimal place
+    return round(bmi, 1)
 
 from datetime import datetime, timedelta
 def patients_detail(request, document_name):
     db = firestore.Client()
 
   
-
+    
     # Fetch user document
     user_collection = db.collection("users")
     user_document_ref = user_collection.document(document_name)
@@ -240,6 +249,16 @@ def patients_detail(request, document_name):
 
     document_data = user_document.to_dict()
 
+
+     # Get weight and height from the document
+    weight = document_data.get('weight')
+    height = document_data.get('height')
+    
+    if weight is not None and height is not None:
+        # Calculate BMI
+        bmi = calculate_bmi(weight, height)
+    else:
+        bmi = None  # or some default value or handle error
      # Extract current weight from Firestore
     current_weight = document_data.get("weight", None)
 
@@ -483,6 +502,7 @@ def patients_detail(request, document_name):
     'data_for_chartjs_weekly': data_for_chartjs_weekly,
     'labels': labels,
     'weights': weight_history,
+    'bmi': bmi,
     }
     
    

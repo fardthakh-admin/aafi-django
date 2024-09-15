@@ -96,12 +96,6 @@
                         </ul>
                     {% endif %}
 
-                    {% if bmi %}
-                    <h3>BMI</h3>
-                    <ul class="list-group mb-4">
-                        
-                    </ul>
-                {% endif %}
 
                     {% if suggestedActivities_data %}
                         <h3>SuggestedActivities Information</h3>
@@ -235,6 +229,13 @@
                             {% endfor %}
                         </ul>
                     {% endif %} {% endcomment %}
+
+                    {% if bmi %}
+                    <h3>BMI</h3>
+                    <ul class="list-group mb-4">
+                       <p>BMI: {{bmi}}</p> 
+                    </ul>
+                {% endif %}
 
 
 
