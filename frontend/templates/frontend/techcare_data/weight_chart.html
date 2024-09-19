@@ -29,24 +29,25 @@
                 }]
             },
             options: {
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Entry Number'
-                        }
-                    },
-                    y: {
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: 'Weight (kg)'
-                        }
+            scales: {
+                x: {
+                    type: 'time',  // Use time scale if you are displaying timestamps
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    beginAtZero: false,
+                    title: {
+                        display: true,
+                        text: 'Weight (kg)'
                     }
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
    
 </body>
 </html>

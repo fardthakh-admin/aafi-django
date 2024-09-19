@@ -249,8 +249,17 @@ def patients_detail(request, document_name):
 
     document_data = user_document.to_dict()
 
+    biomarkers_collection = db.collection("biomarkers")
+    biomarkers_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
+    weights = []
+    labels = []
+    for biomarker in biomarkers_query:
+        data = biomarker.to_dict()
+        if 'weight' in data:
+            weights.append(data['weight'])
+            labels.append(data.get('timestamp'))
+    
 
-     # Get weight and height from the document
     weight = document_data.get('weight')
     height = document_data.get('height')
     
@@ -501,7 +510,7 @@ def patients_detail(request, document_name):
     'data_for_chartjs': data_for_chartjs,
     'data_for_chartjs_weekly': data_for_chartjs_weekly,
     'labels': labels,
-    'weights': weight_history,
+    'weights': weights,
     'bmi': bmi,
     }
     
