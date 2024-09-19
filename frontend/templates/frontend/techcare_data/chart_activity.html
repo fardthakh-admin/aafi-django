@@ -35,17 +35,15 @@
                     x: {
                         type: 'time',
                         time: {
-                            unit: 'hour',
-                            parser: 'HH:mm',
+                            unit: 'hour',  // Display time in hours
+                            tooltipFormat: 'YYYY-MM-DD HH:mm:ss',
                             displayFormats: {
-                                hour: 'HH:mm'
-                            },
-                            min: '00:00',
-                            max: '12:00'
+                                hour: 'HH:mm'  // Show only hours in X-axis
+                            }
                         },
                         title: {
                             display: true,
-                            text: 'Time (12 AM - 12 PM)'
+                            text: 'Time (Last 24 Hours)'  // Label for X-axis
                         }
                     },
                     y: {

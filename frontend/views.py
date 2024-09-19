@@ -433,7 +433,7 @@ def patients_detail(request, document_name):
     print("Cutoff time:", cutoff_time)
 
 
-    cutoff_time_weekly = now - timedelta(days=1)
+    cutoff_time_weekly = now - timedelta(days=7)
     # Check if query is returning data
     found_data = False
     for doc in chartData:
