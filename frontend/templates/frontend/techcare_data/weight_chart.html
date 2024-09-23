@@ -12,17 +12,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js"></script>
 </head>
 <body>
+    <h3>Weight Changes</h3>
     <canvas id="weightChart" width="400" height="200"></canvas>
 
     <script>
+        const weights = JSON.parse('{{ weights|safe }}');
+        const labels = JSON.parse('{{ labels|safe }}');
+
         var ctx = document.getElementById('weightChart').getContext('2d');
         var weightChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: {{ labels|safe }},  // Entry numbers (1, 2, 3, ...)
+                labels:labels,  // Entry numbers (1, 2, 3, ...)
                 datasets: [{
                     label: 'Weight Changes',
-                    data: {{ weights|safe }},  // List of weight values
+                    data:  weights,  // List of weight values
                     borderColor: 'rgba(192, 75, 192, 1)',
                     borderWidth: 2,
                     fill: false

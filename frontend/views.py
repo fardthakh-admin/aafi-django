@@ -253,12 +253,25 @@ def patients_detail(request, document_name):
     biomarkers_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
     weights = []
     labels = []
+        # Collect weights and corresponding timestamps
     for biomarker in biomarkers_query:
         data = biomarker.to_dict()
-        if 'weight' in data:
+        if 'weight' in data and 'time' in data:  # Ensure 'time' and 'weight' are both present
             weights.append(data['weight'])
-            labels.append(data.get('timestamp'))
-    
+            labels.append(data['time'])  # Assuming 'time' is a timestamp field
+
+    # Pair weights with corresponding labels (timestamps)
+    paired_weights_labels = list(zip(weights, labels))
+
+    # Sort the pairs by the 'labels' (time field)
+    sorted_paired_weights_labels = sorted(paired_weights_labels, key=lambda x: x[1])  # Sort by time
+
+    # Unzip the sorted pairs back into weights and labels
+    weights, labels = zip(*sorted_paired_weights_labels)
+
+    # If you need lists, convert back from tuples:
+    weights = list(weights)
+    labels = list(labels)
 
     weight = document_data.get('weight')
     height = document_data.get('height')
@@ -443,9 +456,12 @@ def patients_detail(request, document_name):
 
 
     cutoff_time_weekly = now - timedelta(days=7)
+    
+    sorted_chartData = sorted(chartData, key=lambda x: x['time'].astimezone(pytz.utc))
+
     # Check if query is returning data
     found_data = False
-    for doc in chartData:
+    for doc in sorted_chartData:
         found_data = True
        
 
@@ -472,7 +488,7 @@ def patients_detail(request, document_name):
     print(data_for_chartjs)
 
   
-    for doc in chartData:
+    for doc in sorted_chartData:
        
         if 'time' in doc and 'bloodGlucose' in doc :
             try:
