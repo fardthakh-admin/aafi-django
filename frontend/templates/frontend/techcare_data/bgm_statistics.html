@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BGM Statistics</title>
+    <style>
+        .bgm-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            width: 450px;
+            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+        }
+        .bgm-title {
+            font-size: 24px;  /* Make this the largest */
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .bgm-subtitle {
+            font-size: 20px;  /* Size for average glucose title */
+            font-weight: bold;
+            margin: 15px 0 5px 0; /* Spacing */
+        }
+        .bgm-stat-item {
+            margin: 10px 0;
+        }
+        .bgm-stat-item span {
+            display: block;
+        }
+        .bgm-stat-label {
+            font-weight: bold;
+        }
+        .target-range {
+            color: #888;  /* Dim color for target ranges */
+            font-size: 14px;  /* Adjust the size as needed */
+        }
+        .value {
+            color: darkblue;  /* Dark blue color for all values */
+            font-weight: normal; /* Normal weight for values */
+        }
+    </style>
+</head>
+<body>
+    <div class="bgm-box">
+        <div class="bgm-title">BGM Statistics</div>
+        <div class="bgm-stat-item">
+            <span class="bgm-stat-label">Number of Readings:</span>
+            <span class="value">{{ number_of_readings }}</span>  <!-- Dark blue -->
+        </div>
+        <div class="bgm-stat-item">
+            <span class="bgm-stat-label">Average Readings/Day:</span>
+            {% if average_readings_per_day %}
+                <span class="value">{{ average_readings_per_day }}</span>  <!-- Dark blue -->
+            {% endif %}
+        </div>
+        <div class="bgm-stat-item bgm-subtitle">Average Glucose: <p class="value">{{average_blood_glucose}}</p></div>  <!-- Sub-title added -->
+        
+        <div class="bgm-stat-item">
+            <span class="bgm-stat-label">Average Before Meal Glucose:<span class="value"> {{ avg_fasting_before_meal }}</span></span>
+            <span class="target-range">Fasting and Before Meal Target ----------------------- 70-130 mg/dL</span>  <!-- Dim color -->
+        </div>
+        
+        <div class="bgm-stat-item">
+            <span class="bgm-stat-label">Average After Meal Glucose:<span class="value"> {{ avg_after_meal }}</span></span>
+            <span class="target-range">After Meal Target --------------------------------- less than 180 mg/dL</span>  <!-- Dim color -->
+        </div>
+
+        <div class="bgm-stat-item">
+            <span class="bgm-stat-label">Lowest/Highest Glucose:</span>
+            <p>Highest Blood Glucose:<span class="value"> {{ highest_blood_glucose }}</span></p>  <!-- Dark blue -->
+            <p>Lowest Blood Glucose:<span class="value"> {{ lowest_blood_glucose }}</span></p>  <!-- Dark blue -->
+        </div>
+        <div class="bgm-stat-item">
+            <span class="bgm-stat-label">Glucose Variability:  </span>
+            <span class="target-range">Goal ≤ 36% </span>
+
+            <span class="value">{{ variation }}%</span>  <!-- Dark blue -->
+        </div>
+    </div>
+</body>
+</html>

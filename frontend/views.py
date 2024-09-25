@@ -234,6 +234,7 @@ def calculate_bmi(weight, height):
     return round(bmi, 1)
 
 from datetime import datetime, timedelta
+from math import sqrt
 def patients_detail(request, document_name):
     db = firestore.Client()
 
@@ -436,7 +437,9 @@ def patients_detail(request, document_name):
             'data': [],
             'borderColor': 'rgb(255, 99, 132)',
             'fill': False
-        }]
+        }],
+        'min_timestamp': None,  # To store min timestamp
+        'max_timestamp': None 
     }
 
     data_for_chartjs_weekly = {
@@ -478,6 +481,12 @@ def patients_detail(request, document_name):
                     if 'dailyCarbs' in doc:
                         data_for_chartjs['datasets'][2]['data'].append(doc['dailyCarbs'])
 
+                    # Set min and max timestamps
+                    if data_for_chartjs['min_timestamp'] is None or timestamp < data_for_chartjs['min_timestamp']:
+                        data_for_chartjs['min_timestamp'] = timestamp
+                    if data_for_chartjs['max_timestamp'] is None or timestamp > data_for_chartjs['max_timestamp']:
+                        data_for_chartjs['max_timestamp'] = timestamp
+                        
             except Exception as e:
                 print("Error processing timestamp:", e)
                 continue
@@ -485,7 +494,7 @@ def patients_detail(request, document_name):
     if not found_data:
         print("No documents found matching the query.")
 
-    print(data_for_chartjs)
+    print("data for chartr",data_for_chartjs)
 
   
     for doc in sorted_chartData:
@@ -504,8 +513,105 @@ def patients_detail(request, document_name):
 
     if not found_data:
         print("No documents found matching the query.")
+    biomarkers_collection = db.collection("biomarkers")
+    biomarkers_with_bloodGlucose_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
+    bloodGlucose_biomarkers_data = []
+    
+    for doc in biomarkers_with_bloodGlucose_query:
+        bloodGlucose_biomarkers_data.append(doc.to_dict())
+        
+        
 
+    fasting_and_before_meal = []
+    after_meal = []    
+    
+    # Loop through the data and categorize based on bloodGlucoseType
+    for doc in bloodGlucose_biomarkers_data:
+        if 'bloodGlucose' in doc and 'bloodGlucoseType' in doc:
+            if doc['bloodGlucoseType'] in ['صيامي', 'قبل الوجبة']:  
+                fasting_and_before_meal.append(doc['bloodGlucose'])
+            elif doc['bloodGlucoseType'] == 'بعد الوجبة':  
+                after_meal.append(doc['bloodGlucose'])
 
+    # Calculate averages
+    if fasting_and_before_meal:
+        avg_fasting_before_meal = sum(fasting_and_before_meal) / len(fasting_and_before_meal)
+    else:
+        avg_fasting_before_meal = None
+
+    if after_meal:
+        avg_after_meal = sum(after_meal) / len(after_meal)
+    else:
+        avg_after_meal = None
+
+    avg_fasting_before_meal = round(sum(fasting_and_before_meal) / len(fasting_and_before_meal), 2) if fasting_and_before_meal else None
+    avg_after_meal = round(sum(after_meal) / len(after_meal), 2) if after_meal else None
+    # Calculate highest and lowest blood glucose readings
+    all_readings = fasting_and_before_meal + after_meal
+    if all_readings:
+        highest_blood_glucose = max(all_readings)
+        lowest_blood_glucose = min(all_readings)
+    else:
+        highest_blood_glucose = None
+        lowest_blood_glucose = None
+
+    
+    
+    bloodGlucose =[]   
+    for doc in bloodGlucose_biomarkers_data:
+        if 'bloodGlucose' in doc and 'bloodGlucoseType' in doc:
+            bloodGlucose.append(doc)
+    
+    
+    number_of_readings=len(bloodGlucose)
+    
+    
+    bloodGlucose_values = []
+    for doc in bloodGlucose_biomarkers_data:
+        if 'bloodGlucose' in doc and 'bloodGlucoseType' in doc:
+            bloodGlucose_values.append(doc['bloodGlucose']) 
+
+    number_of_readings = len(bloodGlucose_values)
+    if number_of_readings > 0:
+        sum_blood_glucose = sum(bloodGlucose_values)
+        average_blood_glucose = sum_blood_glucose / number_of_readings
+    else:
+        average_blood_glucose = 0  
+
+    average_blood_glucose=round(average_blood_glucose,2)
+        
+        
+   
+    if number_of_readings > 0:
+   
+        timestamps = [doc['time'].astimezone(pytz.utc) for doc in bloodGlucose if 'time' in doc]
+        
+        if timestamps:
+            first_reading = min(timestamps)
+            last_reading = max(timestamps)
+
+            # Calculate the number of days between first and last reading
+            days_span = (last_reading - first_reading).days + 1  # Add 1 to include the last day
+
+            # Calculate average readings per day
+            average_readings_per_day = number_of_readings / days_span
+        else:
+            
+            average_readings_per_day = None
+    else:
+        average_readings_per_day = None
+
+    
+    
+    
+    average_readings_per_day=round(average_readings_per_day,2)
+    all_blood_glucose = []
+    for doc in bloodGlucose_biomarkers_data:
+        if 'bloodGlucose' in doc:
+            all_blood_glucose.append(doc['bloodGlucose'])
+            
+    all_cv = calculate_cv(all_blood_glucose)
+    
     context = {
     'document_data': document_data,
     'readbites_data': readbites_data, 
@@ -528,22 +634,32 @@ def patients_detail(request, document_name):
     'labels': labels,
     'weights': weights,
     'bmi': bmi,
+    'number_of_readings':number_of_readings,
+    'average_readings_per_day': average_readings_per_day,
+    'avg_fasting_before_meal': avg_fasting_before_meal,
+    'avg_after_meal': avg_after_meal,
+    'highest_blood_glucose': highest_blood_glucose,
+    'lowest_blood_glucose': lowest_blood_glucose,
+    'variation': all_cv,
+    'average_blood_glucose':average_blood_glucose
+    
     }
     
    
-   
-
-
-  
-
-   
-
-
-
-
     return render(request, 'frontend/techcare_data/patientssdocument.html', context)
 
+import statistics
 
+# Function to calculate Coefficient of Variation (CV)
+def calculate_cv(data):
+    if len(data) == 0:
+        return None  # Return None if no data
+
+    mean = statistics.mean(data)
+    std_dev = statistics.stdev(data)  # Standard deviation
+    cv = (std_dev / mean) * 100 if mean != 0 else None  # CV in percentage
+
+    return round(cv, 1)
 
 @login_required(login_url='/login')
 def doctor_chat_page(request):

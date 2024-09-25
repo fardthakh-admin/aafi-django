@@ -394,8 +394,9 @@
 
                     
                     {% endif %}
-                    
-                        
+                    {% if number_of_readings %}
+                    {% include "frontend/techcare_data/bgm_statistics.html"%}
+                    {%endif%}    
                     </div>
                 </div>
             </div>
