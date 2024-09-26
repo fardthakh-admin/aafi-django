@@ -631,6 +631,8 @@ def patients_detail(request, document_name):
 
             # Calculate average readings per day
             average_readings_per_day = number_of_readings / days_span
+            average_readings_per_day=round(average_readings_per_day,2)
+            
         else:
             
             average_readings_per_day = None
@@ -640,7 +642,6 @@ def patients_detail(request, document_name):
     
     
     
-    average_readings_per_day=round(average_readings_per_day,2)
     all_blood_glucose = []
     for doc in bloodGlucose_biomarkers_data:
         if 'bloodGlucose' in doc:
@@ -692,7 +693,7 @@ import statistics
 
 # Function to calculate Coefficient of Variation (CV)
 def calculate_cv(data):
-    if len(data) == 0:
+    if len(data) < 2 :
         return None  # Return None if no data
 
     mean = statistics.mean(data)
