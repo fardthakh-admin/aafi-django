@@ -250,6 +250,7 @@ def patients_detail(request, document_name):
 
     document_data = user_document.to_dict()
 
+    print(document_data)
     biomarkers_collection = db.collection("biomarkers")
     biomarkers_query = biomarkers_collection.where('user', '==', user_document.reference).stream()
     weights = []
@@ -565,6 +566,41 @@ def patients_detail(request, document_name):
     
     number_of_readings=len(bloodGlucose)
     
+    # Initialize counters for each range
+    very_low_count = 0
+    low_count = 0
+    target_count = 0
+    high_count = 0
+    very_high_count = 0
+
+    # Categorize blood glucose values
+    for doc in bloodGlucose:
+        value = doc['bloodGlucose']
+        if value < 54:
+            very_low_count += 1
+        elif 54 <= value < 70:
+            low_count += 1
+        elif 70 <= value < 180:
+            target_count += 1
+        elif 180 <= value < 250:
+            high_count += 1
+        else:  # value >= 250
+            very_high_count += 1
+            
+    # Calculate percentages for each range
+    very_low_percentage = (very_low_count / number_of_readings * 100) if number_of_readings > 0 else 0
+    low_percentage = (low_count / number_of_readings * 100) if number_of_readings > 0 else 0
+    target_percentage = (target_count / number_of_readings * 100) if number_of_readings > 0 else 0
+    high_percentage = (high_count / number_of_readings * 100) if number_of_readings > 0 else 0
+    very_high_percentage = (very_high_count / number_of_readings * 100) if number_of_readings > 0 else 0
+
+    # Round the percentages
+    very_low_percentage = round(very_low_percentage, 2)
+    low_percentage = round(low_percentage, 2)
+    target_percentage = round(target_percentage, 2)
+    high_percentage = round(high_percentage, 2)
+    very_high_percentage = round(very_high_percentage, 2)
+    
     
     bloodGlucose_values = []
     for doc in bloodGlucose_biomarkers_data:
@@ -641,8 +677,12 @@ def patients_detail(request, document_name):
     'highest_blood_glucose': highest_blood_glucose,
     'lowest_blood_glucose': lowest_blood_glucose,
     'variation': all_cv,
-    'average_blood_glucose':average_blood_glucose
-    
+    'average_blood_glucose':average_blood_glucose,
+    'very_low_percentage': very_low_percentage,
+    'low_percentage': low_percentage,
+    'target_percentage': target_percentage,
+    'high_percentage': high_percentage,
+    'very_high_percentage': very_high_percentage,
     }
     
    

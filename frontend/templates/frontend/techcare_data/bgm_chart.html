@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Glucose Monitoring Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Plugin for showing labels -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.2.2/dist/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chart-container {
+            width: 40%; /* Adjust to your preference */
+            margin: auto;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%; /* Ensure it takes full height of the card */
+            padding: 20px; /* Adjust padding as needed */
+        }
+    </style>
+</head>
+<body>
+    
+    
+    <div class="chart-container" style="height: 100%;">
+        <canvas id="glucoseChart" width="100%" height="100%" ></canvas>
+    </div>
+
+    <script>
+        
+        var ctx = document.getElementById('glucoseChart').getContext('2d');
+        var glucoseChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Blood Glucose Monitoring'], // Single label for the one vertical bar
+            datasets: [{
+                label: 'Very Low (below 54)',
+                data: [{{ very_low_percentage }}], // Use the calculated percentage
+                backgroundColor: '#8B0000',
+                barThickness: 40,
+                maxBarThickness: 40,
+            }, {
+                label: 'Low (54 - 70)',
+                data: [{{ low_percentage }}], // Use the calculated percentage
+                backgroundColor: '#E64A19',
+                barThickness: 40,
+                maxBarThickness: 40,
+            }, {
+                label: 'Target (70 - 180)',
+                data: [{{ target_percentage }}], // Use the calculated percentage
+                backgroundColor: '#81C784',
+                barThickness: 40,
+                maxBarThickness: 40,
+            }, {
+                label: 'High (180 - 250)',
+                data: [{{ high_percentage }}], // Use the calculated percentage
+                backgroundColor: '#FFBF00',
+                barThickness: 40,
+                maxBarThickness: 40,
+            }, {
+                label: 'Very High (above 250)',
+                data: [{{ very_high_percentage }}], // Use the calculated percentage
+                backgroundColor: '#FFA500',
+                barThickness: 40,
+                maxBarThickness: 40,
+            }]
+        },
+            options: {
+                responsive: true,
+                {% comment %} maintainAspectRatio: false {% endcomment %}
+                scales: {
+                    x: {
+                        stacked: true,
+                        barPercentage: 1.0, // Increase the percentage of the bar to the available width
+                        categoryPercentage: 0.8, // Control the width of each category (group)
+                        
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        suggestedMax: 100, // Set max to 100% for percentage display
+                        grid: {
+                           display: false // Light grid lines (optional)
+                        }
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        display: true,
+                        align: 'end',
+                        anchor: 'end',
+                        color: '#000',
+                        font: {
+                            weight: 'bold',
+                            size: 14
+                        },
+                        offset: 20,
+                        formatter: function(value) {
+                            return value + '%'; // Append percentage sign to the value
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Percent BGM Readings in Ranges'
+                    },
+                    legend: {
+                        display: true,
+                    position: 'bottom', // Change position to 'top' or 'bottom'
+                    labels: {
+                        boxWidth: 20, // Adjust width of legend box
+                        padding: 10,  // Add some padding between legend items
+                        font: {
+                            size: 12 // Adjust font size if needed
+                        }
+                    }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw + '%'; // Append % sign
+                            }
+                        }
+                    },
+                    
+                
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
