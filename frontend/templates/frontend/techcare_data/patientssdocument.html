@@ -53,7 +53,7 @@
                 {% include 'sidebar.html' %}
             </div>
             <div class="col-md-10">
-                <div class="card">
+                <div class="card pr-6" >
                     {% comment %} <div class="card-header">
                         <h2 class="mb-0">Document Detail
                             <div class="btn-group" role="group">
@@ -73,11 +73,7 @@
                             <li class="list-group-item"><strong>Height:</strong> {{ document_data.height }}</li>
                             <li class="list-group-item"><strong>Weight:</strong> {{ document_data.weight }}</li>
                             <li class="list-group-item"><strong>Type of Diabetes:</strong> {{ document_data.typeOfDiabetes }}</li>
-                            <li class="list-group-item"><strong>Created Time:</strong> {{ document_data.created_time }}</li>
-                            <li class="list-group-item"><strong>Rank:</strong> {{ document_data.rank }}</li>
-                            <li class="list-group-item"><strong>Physical Activity:</strong> {{ document_data.physiclActivity }}</li>
-                            <li class="list-group-item"><strong>Fresh:</strong> {{ document_data.fresh }}</li>
-                            <li class="list-group-item"><strong>Time Zone:</strong> {{ document_data.timeZone }}</li>
+                           
                             <li class="list-group-item"><strong>year of diagnosis:</strong> {{ document_data.yearOfDiagnosis }}</li>
                           
                           
@@ -100,7 +96,12 @@
                                 <li class="list-group-item"><strong>Stories Count:</strong> {{ document_data.storiesCount }}</li>
                                 <li class="list-group-item"><strong>Log Points:</strong> {{ document_data.logPoints }}</li>
                                 <li class="list-group-item"><strong>Interests:</strong> {{ document_data.interests | join:", " }}</li>
-                              </ul>
+                                <li class="list-group-item"><strong>Created Time:</strong> {{ document_data.created_time }}</li>
+                                <li class="list-group-item"><strong>Rank:</strong> {{ document_data.rank }}</li>
+                                <li class="list-group-item"><strong>Physical Activity:</strong> {{ document_data.physiclActivity }}</li>
+                                <li class="list-group-item"><strong>Fresh:</strong> {{ document_data.fresh }}</li>
+                                <li class="list-group-item"><strong>Time Zone:</strong> {{ document_data.timeZone }}</li>
+                            </ul>
                             </div>
                           </div>
                         
@@ -266,7 +267,7 @@
                     {% endif %} {% endcomment %}
                 
                     {% if bmi %}
-                    <div class="row mb-4">
+                    <div class="row ">
                         <!-- First Column: BMI and Chart -->
                         <div class="col-md-6">
                             <h4>BMI</h4>
@@ -274,30 +275,23 @@
                                 <p>BMI: {{ bmi }}</p>
                             </ul>
                             <!-- Add BGM Chart -->
-                            {% if number_of_readings %}
-                            <h4>BGM Statistics</h4>
-                          
-                        {% endif %}
+                <h4>Percent BGM readings per ranges</h4>
+
+                        {% include "frontend/techcare_data/bgm_chart.html" %}
+                            
                         </div>
     
                         <!-- Second Column: BGM Statistics -->
-                        <div class="col-mt-2">
-                            
+                        <div class="col-md-2">
+                            {% if number_of_readings %}
+                            <h4>BGM Statistics</h4>
+                            {% include "frontend/techcare_data/bgm_statistics.html" %}
+                        {% endif %}
                            
                         </div>
                     </div>
                 {% endif %}
               
-
-                
-                    <div class="row-md-6" >
-                        {% include "frontend/techcare_data/bgm_chart.html" %}
-                    </div><br>
-             
-                    <div class="row-md-6" align="center">
-                        {% include "frontend/techcare_data/bgm_statistics.html" %}
-                    </div>
-                
                  <br>
 
 
