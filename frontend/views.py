@@ -6196,21 +6196,105 @@ def import_selfawarenessScenarios_data(request):
 
                 # Add each row from the DataFrame to Firestore
                 for index, row in df.iterrows():
+                    
+                    activities_title = row.get('activity')
+
+                  
+                    activities_ref = db.collection("activities")
+                    activities_query = activities_ref.where('audiotrackTitle', '==', activities_title).limit(1).stream()
+                    activities_ref = None
+                    for activities in activities_query:
+                        activities_ref = activities.reference
+                        break
+
+                    if not activities_ref:
+                        messages.error(request, f'activity "{activities_title}" not found in activities collection.')
+                        continue
+                    
+                    inAppLink_title = row.get('inAppLink')
+
+                  
+                    inAppLink_ref = db.collection("inAppLinks")
+                    inAppLink_query = inAppLink_ref.where('title', '==', inAppLink_title).limit(1).stream()
+                    inAppLink_ref = None
+                    for inAppLink in inAppLink_query:
+                        inAppLink_ref = inAppLink.reference
+                        break
+
+                    if not inAppLink_ref:
+                        messages.error(request, f'inAppLink "{inAppLink_title}" not found in inAppLink collection.')
+                        continue
+                    
+                    
+                    wildcard_title = row.get('wildcard')
+                  
+                    wildcard_ref = db.collection("wildCard")
+                    wildcard_query = wildcard_ref.where('content', '==', wildcard_title).limit(1).stream()
+                    wildcard_ref = None
+                    for wildcard in wildcard_query:
+                        wildcard_ref = wildcard.reference
+                        break
+
+                    if not wildcard_ref:
+                        messages.error(request, f'wildcard "{wildcard_title}" not found in wildcard collection.')
+                        continue
+                    
+                    
+                    journal_title = row.get('journal')
+                  
+                    journal_ref = db.collection("journalPrompt")
+                    journal_query = journal_ref.where('title', '==', journal_title).limit(1).stream()
+                    journal_ref = None
+                    for journal in journal_query:
+                        journal_ref = journal.reference
+                        break
+
+                    if not journal_ref:
+                        messages.error(request, f'journal "{journal_title}" not found in journalPrompt collection.')
+                        continue
+                    
+                    normalBite_title = row.get('normalBite')
+                  
+                    normalBite_ref = db.collection("bites")
+                    normalBite_query = normalBite_ref.where('title', '==', normalBite_title).limit(1).stream()
+                    normalBite_ref = None
+                    for normalBite in normalBite_query:
+                        normalBite_ref = normalBite.reference
+                        break
+
+                    if not normalBite_ref:
+                        messages.error(request, f'normalBite "{normalBite_title}" not found in bites collection.')
+                        continue
+                    
+                    
+                    selfAwarnessBites_title = row.get('biteID')
+                  
+                    selfAwarnessBites_ref = db.collection("selfAwarnessBites")
+                    selfAwarnessBites_query = selfAwarnessBites_ref.where('selfawarenessBiteTitle', '==', selfAwarnessBites_title).limit(1).stream()
+                    selfAwarnessBites_ref = None
+                    for selfAwarnessBites in selfAwarnessBites_query:
+                        selfAwarnessBites_ref = selfAwarnessBites.reference
+                        break
+
+                    if not selfAwarnessBites_ref:
+                        messages.error(request, f'selfAwarnessBite "{selfAwarnessBites_title}" not found in selfAwarnessBites collection.')
+                        continue
+                    
                     document_data = {
-                        "activity": row.get('activity'),
-                        "biteID": row.get('biteID'),
+                        "activity": activities_ref,
+                        "biteID":selfAwarnessBites_ref,
                         "correction1from0to2": row.get('correction1from0to2'),
                         "correction2from3to5": row.get('correction2from3to5'),
-                        "inAppLink": row.get('inAppLink'),
+                        "inAppLink": inAppLink_ref,
                         "interactiveStatement": row.get('interactiveStatement'),
-                        "journal": row.get('journal'),
-                        "normalBite": row.get('normalBite'),
+                        "journal": journal_ref,
+                        "normalBite": normalBite_ref,
                         "recommendation1": row.get('recommendation1'),
                         "recommendation2": row.get('recommendation2'),
                         "scenarioID": row.get('scenarioID'),
                         "story": row.get('story'),
                         "storyTitle": row.get('storyTitle'),
-                        "wildcard": row.get('wildcard'),
+                        "wildcard": wildcard_ref,
                         
                     }
                     # Add document to Firestore with auto-generated ID
