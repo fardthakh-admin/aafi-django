@@ -744,7 +744,7 @@ def bites_view(request):
     documents = collection.stream()
     tags_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
 
-
+    
 
     form = BitesForm() 
 
@@ -876,15 +876,18 @@ def bitesdocument_detail(request, document_name):
     return render(request, 'frontend/techcare_data/bitesdocument.html', {'document_data': document_data})
 
 
-def create_document(request):
+
+def create_bite(request):
     if request.method == 'POST':
         form = BitesForm(request.POST)
+        db = firestore.client()
+        
         if form.is_valid():
             data = {
                 'title': form.cleaned_data['title'],
                 'tags': request.POST.get('tags'),
                 'difficulty': form.cleaned_data['difficulty'],
-                'categories': form.cleaned_data['categories'],
+                'categories': request.POST.get('categories'),
                 'content': form.cleaned_data['content'],
             }
             db.collection("bites").document().set(data)  
@@ -4803,33 +4806,64 @@ def import_bites_data(request):
             file_name = default_storage.save(file.name, file)
             file_path = Path(settings.MEDIA_ROOT) / file_name
 
-            # Process the file
+           
             try:
-                # Read the Excel file into a DataFrame
+               
                 df = pd.read_excel(file_path)
 
-                # Initialize Firestore client
+               
                 db = firestore.Client()
 
-                # Reference to the Firestore collection
+               
                 collection_ref = db.collection("bites")
 
-                # Add each row from the DataFrame to Firestore
+                # Check for headers and set to None if not present
+                headers = ["CBT_points", "Learning_points", "categories", "content", "difficulty", "image", "next", "order", "scenarioID", "tags", "title"]
+                for header in headers:
+                    if header not in df.columns:
+                        df[header] = None
                 for index, row in df.iterrows():
+                    
+                    categories_title = row.get('categories')
+
+                  
+                    categories_ref = db.collection("categories")
+                    categories_query = categories_ref.where('title', '==', categories_title).limit(1).stream()
+                    categories_ref = None
+                    for categories in categories_query:
+                        categories_ref = categories.reference
+                        break
+
+                    if not categories_ref:
+                        messages.error(request, f'Category "{categories_title}" not found in categories collection.')
+                        continue
+                    
+                    
+                    tag_title = row.get('tags')
+
+                  
+                    tags_ref = db.collection("tags")
+                    tag_query = tags_ref.where('title', '==', tag_title).limit(1).stream()
+                    tag_ref = None
+                    for tag in tag_query:
+                        tag_ref = tag.reference
+                        break
+
+                    if not tag_ref:
+                        messages.error(request, f'Tag "{tag_title}" not found in tags collection.')
+                        continue
+                    
                     document_data = {
                         "CBT_points": row.get('CBT_points'),
-                        "Learning_ponits": row.get('Learning_ponits'),
-                        "categories": row.get('categories'),
+                        "Learning_points": row.get('Learning_points'),
+                        "categories": categories_ref,
                         "content": row.get('content'),
                         "difficulty": row.get('difficulty'),
                         "image": row.get('image'),
                         "next": row.get('next'),
-                        "ngrams": row.get('ngrams'),
                         "order": row.get('order'),
                         "scenarioID": row.get('scenarioID'),
-                        "tags": row.get('tags'),
-                        "thumbs_down_users": row.get('thumbs_down_users'),
-                        "thumbs_up_users": row.get('thumbs_up_users'),
+                        "tags": tag_ref,
                         "title": row.get('title'),
 
                     }
@@ -6889,7 +6923,93 @@ def import_suggestedWildCards_data(request):
     return render(request, 'frontend/techcare_data/suggestedWildCards_view.html')
 
 
+def export_trivia_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("trivia")
+    documents = collection.stream()
 
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Trivia Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="trivia.xlsx"'
+    return response
+
+
+def import_trivia_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("trivia")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "answer_1": row.get('answer_1'),
+                        "answer_2": row.get('answer_2'),
+                        "answer_3": row.get('answer_3'),
+                        "answer_4": row.get('answer_4'),
+                        "correct_answer": row.get('correct_answer'),
+                        "question": row.get('question'),
+                        "question_ID": row.get('question_ID'),
+                        
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('trivia_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/suggestedWildCards_view.html')
 
 def nutrition_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7065,7 +7185,7 @@ def testTrivia_delete_selected(request):
     for document_id in document_ids:
         db.collection('testTrivia').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('testTrivia'))
+    return redirect(('testTrivia_view'))
 
 
 def trivia_delete_selected(request):
@@ -7075,7 +7195,7 @@ def trivia_delete_selected(request):
     for document_id in document_ids:
         db.collection('trivia').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('trivia'))
+    return redirect(('trivia_view'))
 
 def users_delete_selected(request):
     document_ids = request.POST.getlist('documents')

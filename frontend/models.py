@@ -37,7 +37,13 @@ class users(models.Model):
     def __str__(self):
          return self.__all__
 
+class categories(models.Model):
+    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    description = models.CharField(max_length=100, default=None)
+    title = models.CharField(max_length=100, default=None)
 
+    def __str__(self):
+       return self.__all__
 
 class bites(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
@@ -49,6 +55,7 @@ class bites(models.Model):
     display_name=models.ForeignKey(users, on_delete=models.CASCADE)
     image= models.CharField(max_length=100)
     order=models.IntegerField()
+    categories = models.ForeignKey(categories, on_delete=models.CASCADE)
 
     def __str__(self):
           return self.__all__
@@ -133,13 +140,7 @@ class biomarkers(models.Model):
 
 
  
-class categories(models.Model):
-    #document = models.ForeignKey(Document, on_delete=models.CASCADE)
-    description = models.CharField(max_length=100, default=None)
-    title = models.CharField(max_length=100, default=None)
 
-    def __str__(self):
-       return self.__all__
 
 class feelings(models.Model):
    # document = models.ForeignKey(Document, on_delete=models.CASCADE)

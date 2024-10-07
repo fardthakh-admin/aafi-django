@@ -228,10 +228,9 @@ class ShortBiteForm(forms.ModelForm):
         fields = "__all__"
 
 class BitesForm(forms.ModelForm):
-
     class Meta:
         model = bites
-        exclude = "__all__"
+        fields = ['content','difficulty','title']
 
 
 class TriviaForm(forms.ModelForm):

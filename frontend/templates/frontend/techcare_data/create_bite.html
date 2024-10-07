@@ -81,19 +81,25 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'create_document' %}">
+                                <form method="post" action="{% url 'create_bite' %}">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="tags">Tags</label>
+                                        <label for="tags">tags</label>
                                         <select name="tags" id="id_tags" class="form-control">
-                                            <option value="">Select Tag</option>
+                                            <option value="">Select tag</option>
                                             {% for entry in tags_data %}
                                             <option value="/tags/{{ entry.name }}">{{ entry.data.title }}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.categories.id_for_label }}">Categories</label> {% render_field form.categories class="form-control" %}
+                                        <label for="categories">Categories</label>
+                                        <select name="categories" id="id_categories" class="form-control">
+                                            <option value="">Select Category</option>
+                                            {% for entry in categories_data %}
+                                            <option value="/categories/{{ entry.name }}">{{ entry.data.title }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label for="{{ form.difficulty.id_for_label }}">Difficulty</label> {% render_field form.difficulty class="form-control" %}

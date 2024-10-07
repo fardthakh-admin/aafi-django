@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.views import LogoutView, LoginView
-from .views import create_document
+
 from .views import get_all_collections, handle_form_submission
 from.views import *
 from .views import admin_required
@@ -46,7 +46,7 @@ urlpatterns = [
     path('document/journalPrompt/<str:document_name>/', views.journalPromptdocument_detail, name='journalPromptdocument'),
     path('document/assessmentQuestion/<str:document_name>/', views.assessmentQuestiondocument_detail, name='assessmentQuestiondocument'),
     path('document/patients/<str:document_name>/', views.patients_detail, name='patientsdocument'),
-    path('create_document/', create_document, name='create_document'),
+    path('create_bite/', create_bite, name='create_bite'),
     path('create_activities/',create_activities, name='create_activities'),
     path('create_assets/', create_assets, name='create_assets'),
 
@@ -284,6 +284,9 @@ urlpatterns = [
     path('export/suggestedWildCards/', export_suggestedWildCards_data,name='export_suggestedWildCards_data'),
     path('import/suggestedWildCards/', import_suggestedWildCards_data, name='import_suggestedWildCards_data'),
 
+    path('export/trivia/', export_trivia_data,name='export_trivia_data'),
+    path('import/trivia/', import_trivia_data, name='import_trivia_data'),
+
     # path('nutrition/delete-selected/', nutrition_delete_selected, name='nutrition_delete_selected'),
 
     path('nutrition/deleteSelected/', nutrition_delete_selected, name='nutrition_delete_selected'),
@@ -302,8 +305,8 @@ urlpatterns = [
     path('scenarios/deleteSelected/', scenarios_delete_selected, name='scenarios_delete_selected'),
     path('shortBite/deleteSelected/', shortBite_delete_selected, name='shortBite_delete_selected'),
     path('tags/deleteSelected/', tags_delete_selected, name='tags_delete_selected'),
-    path('trivia/deleteSelected/', testTrivia_delete_selected, name='testTrivia_delete_selected'),
-    path('trivia/deleteSelected/', trivia_delete_selected, name='testTrivia_delete_selected'),
+    path('testTrivia/deleteSelected/', testTrivia_delete_selected, name='testTrivia_delete_selected'),
+    path('trivia/deleteSelected/', trivia_delete_selected, name='trivia_delete_selected'),
 
     path('users/deleteSelected/', users_delete_selected, name='users_delete_selected'),
     path('wildCards/deleteSelected/', wildCard_delete_selected, name='wildCard_delete_selected'),
