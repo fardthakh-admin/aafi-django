@@ -930,6 +930,7 @@ def handle_form_submission(request):
                 'users': 'users_view',
                 'selfawarenessScenarios': 'selfawarenessScenarios_view',
                 'assets': 'assets_view',
+                'notifications':'notifications_view',
                 'nutrition': 'nutrition_view',
                 'readBites': 'readBites_view',
                 'readStories': 'readStories_view',
@@ -1074,6 +1075,42 @@ def nutrition_view(request):
         'page_obj': page_obj,
         'query': query
     })
+
+
+def notifications_view(request):
+    db = firestore.Client()
+    
+    # Fetching nutrition data
+    collection = db.collection("notifications")
+    documents = collection.stream()
+    document_data = [{'name': doc.id, 'data': doc.to_dict()} for doc in documents]
+    
+    query = request.GET.get('q')  # Get search query from request
+    if query:
+        # Perform search based on 'unit', 'name_en', or 'name_ar' fields
+        query_lower = query.lower()
+        filtered_documents = []
+        for doc in document_data:
+            data = doc['data']
+            body = str(data.get('body', '')).lower()
+            title = str(data.get('title', '')).lower()
+            time = str(data.get('time', '')).lower()
+            if query_lower in body or query_lower in title or query_lower in time:
+                filtered_documents.append(doc)
+        document_data = filtered_documents
+
+    # Implementing pagination for nutrition data
+    paginator = Paginator(document_data, 20)  # Show 20 nutrition entries per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    form = NotificationsForm()
+    return render(request, 'frontend/techcare_data/notifications_table.html', {
+        'form': form, 
+        'page_obj': page_obj,
+        'query': query
+    })
+
 
 def readBites_view(request):
     db = firestore.Client()
@@ -2491,6 +2528,8 @@ def create_biomarkers(request):
             return redirect('biomarkers_view') 
 
 
+
+
    
 def create_categories(request):
     if request.method == 'POST':
@@ -2629,6 +2668,22 @@ def create_majorAssessment(request):
         else:
             messages.error(request, 'Error creating MajorAssessment. Please check your input.')
             return redirect('majorAssessment_view')
+
+def create_notifications(request):
+    if request.method == 'POST':
+        form = NotificationsForm(request.POST)
+        if form.is_valid():
+            data = {
+                'title': form.cleaned_data['title'],
+                'body': form.cleaned_data['body'],
+                'time': form.cleaned_data['time'],
+            }
+            db.collection("notifications").document().set(data)  
+            messages.success(request, 'Successfully created notification.') 
+            return redirect('notifications_view')
+        else:
+            messages.error(request, 'Error creating notification. Please check your input.')
+            return redirect('notifications_view')
 
 def create_psychomarkers(request):
     if request.method == 'POST':
@@ -4138,6 +4193,24 @@ def update_selfladder(request, document_name):
         messages.error(request, 'Error updating selfladder  . Please check your input.')
         return redirect('selfladder_view')    
     
+
+
+def update_notifications(request, document_name):
+    if request.method == 'POST':
+        entry_id = document_name
+        db = firestore.client()
+        data = {
+                'title': request.POST.get('title'),
+                'body': request.POST.get('body'),
+                'time':request.POST.get('time'),
+            }
+        db.collection("notifications").document(entry_id).update(data)
+        messages.success(request, 'notifications updated successfully.')
+        return redirect('notifications_view')
+    else:
+        messages.error(request, 'Error updating notification  . Please check your input.')
+        return redirect('notifications_view')  
+
 
 def patient_search(request):
     query = request.GET.get('q')
@@ -7159,7 +7232,7 @@ def categories_delete_selected(request):
     for document_id in document_ids:
         db.collection('categories').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('categories'))
+    return redirect(('categories_view'))
 
 def inAppLinks_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7168,7 +7241,7 @@ def inAppLinks_delete_selected(request):
     for document_id in document_ids:
         db.collection('inAppLinks').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('inAppLinks'))
+    return redirect(('inAppLinks_view'))
 
 def inquiry_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7177,7 +7250,7 @@ def inquiry_delete_selected(request):
     for document_id in document_ids:
         db.collection('inquiry').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('inquiry'))
+    return redirect(('inquiry_view'))
 
 def journalPrompt_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7186,7 +7259,7 @@ def journalPrompt_delete_selected(request):
     for document_id in document_ids:
         db.collection('journalPrompt').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('journalPrompt'))
+    return redirect(('journalPrompt_view'))
 
 def majorAssessment_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7195,7 +7268,7 @@ def majorAssessment_delete_selected(request):
     for document_id in document_ids:
         db.collection('majorAssessment').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('majorAssessment'))
+    return redirect(('majorAssessment_view'))
 
 
 def psychomarkers_delete_selected(request):
@@ -7205,7 +7278,7 @@ def psychomarkers_delete_selected(request):
     for document_id in document_ids:
         db.collection('psychomarkers').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('psychomarkers'))
+    return redirect(('psychomarkers_view'))
 
 def scenarios_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7214,7 +7287,7 @@ def scenarios_delete_selected(request):
     for document_id in document_ids:
         db.collection('scenarios').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('scenarios'))
+    return redirect(('scenarios_view'))
 
 def selfAwarnessBites_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7223,7 +7296,7 @@ def selfAwarnessBites_delete_selected(request):
     for document_id in document_ids:
         db.collection('selfAwarnessBites').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('selfAwarnessBites'))
+    return redirect(('selfAwarnessBites_view'))
 
 def selfawarenessScenarios_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7232,7 +7305,7 @@ def selfawarenessScenarios_delete_selected(request):
     for document_id in document_ids:
         db.collection('selfawarenessScenarios').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('selfawarenessScenarios'))
+    return redirect(('selfawarenessScenarios_view'))
 
 def selfawarenessCollection_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7241,7 +7314,16 @@ def selfawarenessCollection_delete_selected(request):
     for document_id in document_ids:
         db.collection('selfawarenessCollection').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('selfawarenessCollection'))
+    return redirect(('selfawarenessCollection_view'))
+
+def notifications_delete_selected(request):
+    document_ids = request.POST.getlist('documents')
+    
+    db = firestore.client()
+    for document_id in document_ids:
+        db.collection('notifications').document(document_id).delete()
+    messages.success(request, "Selected documents have been successfully deleted.")
+    return redirect(('notifications_view'))
 
 def shortBite_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7250,7 +7332,7 @@ def shortBite_delete_selected(request):
     for document_id in document_ids:
         db.collection('shortBite').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('shortBite'))
+    return redirect(('shortBite_view'))
 
 def tags_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7259,7 +7341,7 @@ def tags_delete_selected(request):
     for document_id in document_ids:
         db.collection('tags').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('tags'))
+    return redirect(('tags_view'))
 
 
 def testTrivia_delete_selected(request):
@@ -7288,7 +7370,7 @@ def users_delete_selected(request):
     for document_id in document_ids:
         db.collection('users').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('users'))
+    return redirect(('users_view'))
 
 def wildCard_delete_selected(request):
     document_ids = request.POST.getlist('documents')
@@ -7297,4 +7379,4 @@ def wildCard_delete_selected(request):
     for document_id in document_ids:
         db.collection('wildCard').document(document_id).delete()
     messages.success(request, "Selected documents have been successfully deleted.")
-    return redirect(('wildCard'))
+    return redirect(('wildCard_view'))

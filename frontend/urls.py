@@ -68,10 +68,7 @@ urlpatterns = [
     path('create_selfLadder/', create_selfLadder,  name='create_selfLadder'),
     path('create_selfAwarnessBites/', create_selfAwarnessBites,  name='create_selfAwarnessBites'),
     path('create_wildCard/', create_wildCard,  name='create_wildCard'),
-
-
-    
-
+    path('create_notifications/', create_notifications, name='create_notifications'),
 
     path('create_tags/', create_tags,  name='create_tags'),
     path('create_trivia/', create_trivia,  name='create_trivia'),
@@ -115,6 +112,8 @@ urlpatterns = [
     path('testTrivia_view/', views.testTrivia_view, name='testTrivia_view'),
     path('wildCard_view/', views.wildCard_view, name='wildCard_view'),
     path('selfladder_view/', views.selfladder_view, name='selfladder_view'),
+    path('notifications_view/', views.notifications_view, name='notifications_view'),
+    
 
     path('sidebar/', views.sidebar, name='sidebar'),
 
@@ -187,6 +186,8 @@ urlpatterns = [
     path('update/testTrivia/<str:document_name>', update_testTrivia, name='update_testTrivia'),
     path('update/wildCard/<str:document_name>', update_wildCard, name='update_wildCard'),
     path('update/selfladder/<str:document_name>', update_selfladder, name='update_selfladder'),
+    path('update/notifications/<str:document_name>', update_notifications, name='update_notifications'),
+    
     # path('update//<str:document_name>', update_, name='update_'),
     
 
@@ -313,13 +314,8 @@ urlpatterns = [
     path('selfawarenessScenarios/deleteSelected/', selfawarenessScenarios_delete_selected, name='selfawarenessScenarios_delete_selected'),
     path('selfAwarnessBites/deleteSelected/', selfAwarnessBites_delete_selected, name='selfAwarnessBites_delete_selected'),
     path('selfawarenessCollection/deleteSelected/', selfawarenessCollection_delete_selected, name='selfawarenessCollection_delete_selected'),
+    path('notifications/deleteSelected/', notifications_delete_selected, name='notifications_delete_selected'),
     
-
-
-
-
-
-
 
 
 ]

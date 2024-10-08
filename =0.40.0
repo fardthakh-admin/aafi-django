@@ -1,0 +1,26 @@
+Defaulting to user installation because normal site-packages is not writeable
+Collecting acme
+  Using cached acme-2.11.0-py3-none-any.whl.metadata (1.4 kB)
+Requirement already satisfied: cryptography>=3.2.1 in /home/waseem/.local/lib/python3.10/site-packages (from acme) (43.0.1)
+Collecting josepy>=1.13.0 (from acme)
+  Downloading josepy-1.14.0-py3-none-any.whl.metadata (1.8 kB)
+Requirement already satisfied: PyOpenSSL!=23.1.0,>=17.5.0 in /home/waseem/.local/lib/python3.10/site-packages (from acme) (19.0.0)
+Requirement already satisfied: pyrfc3339 in /usr/lib/python3/dist-packages (from acme) (1.1)
+Requirement already satisfied: pytz>=2019.3 in /usr/lib/python3/dist-packages (from acme) (2022.1)
+Requirement already satisfied: requests>=2.20.0 in /home/waseem/.local/lib/python3.10/site-packages (from acme) (2.26.0)
+Requirement already satisfied: setuptools>=41.6.0 in /home/waseem/.local/lib/python3.10/site-packages (from acme) (75.1.0)
+Requirement already satisfied: cffi>=1.12 in /home/waseem/.local/lib/python3.10/site-packages (from cryptography>=3.2.1->acme) (1.15.1)
+Requirement already satisfied: six>=1.5.2 in /home/waseem/.local/lib/python3.10/site-packages (from PyOpenSSL!=23.1.0,>=17.5.0->acme) (1.14.0)
+Requirement already satisfied: urllib3<1.27,>=1.21.1 in /home/waseem/.local/lib/python3.10/site-packages (from requests>=2.20.0->acme) (1.26.6)
+Requirement already satisfied: certifi>=2017.4.17 in /home/waseem/.local/lib/python3.10/site-packages (from requests>=2.20.0->acme) (2019.11.28)
+Requirement already satisfied: charset-normalizer~=2.0.0 in /home/waseem/.local/lib/python3.10/site-packages (from requests>=2.20.0->acme) (2.0.6)
+Requirement already satisfied: idna<4,>=2.5 in /home/waseem/.local/lib/python3.10/site-packages (from requests>=2.20.0->acme) (3.2)
+Requirement already satisfied: pycparser in /home/waseem/.local/lib/python3.10/site-packages (from cffi>=1.12->cryptography>=3.2.1->acme) (2.21)
+Downloading acme-2.11.0-py3-none-any.whl (95 kB)
+Downloading josepy-1.14.0-py3-none-any.whl (32 kB)
+Installing collected packages: josepy, acme
+  Attempting uninstall: josepy
+    Found existing installation: josepy 1.2.0
+    Uninstalling josepy-1.2.0:
+      Successfully uninstalled josepy-1.2.0
+Successfully installed acme-2.11.0 josepy-1.14.0

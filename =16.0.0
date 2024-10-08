@@ -1,0 +1,6 @@
+Defaulting to user installation because normal site-packages is not writeable
+Collecting attrs
+  Downloading attrs-24.2.0-py3-none-any.whl.metadata (11 kB)
+Downloading attrs-24.2.0-py3-none-any.whl (63 kB)
+Installing collected packages: attrs
+Successfully installed attrs-24.2.0

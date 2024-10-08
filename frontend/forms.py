@@ -3,6 +3,7 @@ from django.forms import ModelForm
 from api.models import Doctor, Patient
 from .models import *
 from django.forms import Textarea
+from django.core.validators import RegexValidator
 
 
 
@@ -166,6 +167,17 @@ class MajorAssessmentForm(forms.ModelForm):
         model=majorAssessment
         fields = "__all__"
 
+
+
+class NotificationsForm(forms.Form):
+    title = forms.CharField(max_length=255)
+    body = forms.CharField(widget=forms.Textarea)
+    time = forms.CharField(
+        max_length=5,
+        validators=[RegexValidator(regex=r'^\d{2}:\d{2}$', message='Time must be in HH:MM format')],
+        widget=forms.TimeInput(attrs={'placeholder': 'Eg. 19:00', 'class': 'form-control'})
+    )
+        
 class AssessmentQuestionForm(forms.ModelForm):
       class Meta:
         model=assessmentQuestion
