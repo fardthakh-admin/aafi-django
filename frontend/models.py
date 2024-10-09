@@ -164,6 +164,9 @@ class inAppLinks(models.Model):
     order = models.TextField()
     type = models.TextField()
     title = models.CharField(max_length=100, default=None)
+    link = models.CharField(max_length=100, default=None)
+    image = models.ImageField(upload_to='images/')
+    
 
     def __str__(self):
         return self.__all__
@@ -195,7 +198,7 @@ class journal(models.Model):
          return self.__all__
 
 class journalPrompt(models.Model):
-    title = models.CharField(max_length=100, default=None)
+    title = models.CharField(max_length=300, default=None)
 
     def __str__(self):
          return self.__all__
@@ -222,6 +225,21 @@ class scenarios(models.Model):
     def __str__(self):
         return self.__all__
 
+class selfAwarnessBites(models.Model):
+    scenarioID = models.CharField(max_length=100, default=None)
+    tags = models.CharField(max_length=100, default=None)
+    selfawarenessBiteTitle = models.CharField(max_length=100, default=None)
+    selfawarenessBiteText = models.TextField(max_length=100, default=None)
+    def __str__(self):
+        return self.selfawarenessBiteTitle
+     
+class wildCard(models.Model):
+  
+    content = models.TextField(max_length=100, default=None)
+
+    def __str__(self):
+        return self.__all__    
+
 class selfAwarenessScenarios(models.Model):
   
     correction1from0to2 = models.TextField()
@@ -233,7 +251,12 @@ class selfAwarenessScenarios(models.Model):
     story = models.TextField()
     storyTitle = models.CharField(max_length=100, default=None)
     journal= models.ForeignKey(journalPrompt, on_delete=models.CASCADE)
-
+    activity=models.ForeignKey(activities, on_delete=models.CASCADE)
+    selfAwarnessBite=models.ForeignKey(selfAwarnessBites, on_delete=models.CASCADE)
+    inAppLink=models.ForeignKey(inAppLinks, on_delete=models.CASCADE)
+    normalBite=models.ForeignKey(bites, on_delete=models.CASCADE)
+    wildCard=models.ForeignKey(wildCard, on_delete=models.CASCADE)
+    
 
     def __str__(self):
         return self.__all__
@@ -249,21 +272,9 @@ class selfLadder(models.Model):
         return self.__all__
     
 
-class selfAwarnessBites(models.Model):
-    scenarioID = models.CharField(max_length=100, default=None)
-    tags = models.CharField(max_length=100, default=None)
-    selfawarenessBiteTitle = models.CharField(max_length=100, default=None)
-    selfawarenessBiteText = models.TextField(max_length=100, default=None)
-    def __str__(self):
-        return self.selfawarenessBiteTitle
-     
-    
-class wildCard(models.Model):
-  
-    content = models.TextField(max_length=100, default=None)
 
-    def __str__(self):
-        return self.__all__      
+    
+  
 
 class trivia(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)

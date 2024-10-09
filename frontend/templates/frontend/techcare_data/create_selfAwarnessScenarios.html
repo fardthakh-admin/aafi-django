@@ -84,7 +84,60 @@
                                 <form method="post" action="{% url 'create_selfAwarenessScenarios' %}">
                                     {% csrf_token %}
 
-                    
+                                    <div class="form-group">
+                                        <label for="journal">journal</label>
+                                        <select name="journal" id="journal" class="form-control">
+                                            <option value="">Select journal</option>
+                                            {% for entry in journalPrompt_data %}
+                                            <option value="/journalPrompt/{{ entry.name }}">{{ entry.data.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="activity">activity</label>
+                                        <select name="activity" id="activity" class="form-control">
+                                            <option value="">Select activity</option>
+                                            {% for entry in activity_data %}
+                                            <option value="/activities/{{ entry.name }}">{{ entry.data.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="selfAwarnessBite">selfAwarnessBite</label>
+                                        <select name="selfAwarnessBite" id="selfAwarnessBite" class="form-control">
+                                            <option value="">Select selfAwarnessBite</option>
+                                            {% for entry in selfAwarnessBites_data %}
+                                            <option value="/selfAwarnessBites/{{ entry.name }}">{{ entry.data.selfawarenessBiteTitle }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inAppLink">inAppLink</label>
+                                        <select name="inAppLink" id="inAppLink" class="form-control">
+                                            <option value="">Select inAppLink</option>
+                                            {% for entry in inAppLinks_data %}
+                                            <option value="/inAppLinks/{{ entry.name }}">{{ entry.data.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="normalBite">normalBite</label>
+                                        <select name="normalBite" id="normalBite" class="form-control">
+                                            <option value="">Select normalBite</option>
+                                            {% for entry in bites_data %}
+                                            <option value="/bites/{{ entry.name }}">{{ entry.data.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="wildCard">wildCard</label>
+                                        <select name="wildCard" id="wildCard" class="form-control">
+                                            <option value="">Select wildCard</option>
+                                            {% for entry in wildCard_data %}
+                                            <option value="/wildCard/{{ entry.name }}">{{ entry.data.content }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                     <div class="form-group">
                                         <label for="{{ form.correction1from0to2.id_for_label }}">correction1from0to2</label> {% render_field form.correction1from0to2 class="form-control" %}
                                     </div>

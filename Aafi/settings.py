@@ -186,7 +186,9 @@ CORS_ALLOW_CREDENTIALS = True  # ALLOWS FRONTEND TO GET COOKIE
 
 cred = credentials.Certificate(
     "techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json")
-default_app = firebase_admin.initialize_app(cred)
+default_app = firebase_admin.initialize_app(cred, {
+    'storageBucket': 'techcare-diabetes.appspot.com'
+})
 db = firestore.client()
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "techcare-diabetes-firebase-adminsdk-i6cxk-c8c54ebaf3.json"

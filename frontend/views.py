@@ -2,7 +2,7 @@ from django.shortcuts import render
 import firebase_admin
 #simport pandas as pd
 from firebase_admin import credentials, initialize_app
-from firebase_admin import firestore
+from firebase_admin import firestore, storage
 from firebase import firebase
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -35,6 +35,8 @@ from pathlib import Path
 from django.http import HttpResponseForbidden, HttpResponse
 import logging
 import pytz
+from django.utils.html import strip_tags        
+
 
 
 
@@ -888,7 +890,7 @@ def create_bite(request):
                 'tags': request.POST.get('tags'),
                 'difficulty': form.cleaned_data['difficulty'],
                 'categories': request.POST.get('categories'),
-                'content': form.cleaned_data['content'],
+                'content': strip_tags(form.cleaned_data['content']),
             }
             db.collection("bites").document().set(data)  
             messages.success(request, 'Successfully created Bites.')  
@@ -1861,6 +1863,17 @@ def inAppLinks_view(request):
                 filtered_documents.append(doc)
         document_data = filtered_documents
 
+    links={
+        'move': 'move',
+        'selfLadder': 'selfLadder',
+        'weeklyCheckin': 'weeklyCheckin',
+        'trivia': 'trivia',
+        'carbs': 'carbs',
+        'infoBites': 'infoBites',
+        'infoBitesSingle': 'infoBitesSingle',
+        'suger': 'suger'
+    }
+    
     # Pagination for inAppLinks
     paginator = Paginator(document_data, 20)  # Show 20 inAppLinks per page
     page_number = request.GET.get('page')
@@ -1870,7 +1883,8 @@ def inAppLinks_view(request):
     return render(request, 'frontend/techcare_data/inAppLinks_table.html', {
         'form': form, 
         'page_obj': page_obj,
-        'query': query
+        'query': query,
+        'links':links
     })
 
 def inAppLinksdocument_detail(request, document_name):
@@ -2413,6 +2427,13 @@ def create_activities(request):
                 'description': form.cleaned_data['description'],
                 'title': form.cleaned_data['title'],
                 'duration': form.cleaned_data['duration'],
+                'type':form.cleaned_data['type'],
+                'track':form.cleaned_data['track'],
+                'audiotrackId':form.cleaned_data['audiotrackId'],
+                'audiotrackTitle':form.cleaned_data['type'],
+                'label':form.cleaned_data['label'],
+                
+                
             }
             
             db.collection("activities").document().set(data)
@@ -2572,13 +2593,21 @@ def create_feelings(request):
 
 def create_inAppLinks(request):
     if request.method == 'POST':
-        form = InAppLinksForm(request.POST)
+        form = InAppLinksForm(request.POST,request.FILES)
         if form.is_valid():
+            image = request.FILES['image']
+            bucket = storage.bucket()
+            blob = bucket.blob(image.name)
+            blob.upload_from_file(image)
+            blob.make_public()
+            image_url = blob.public_url
             data = {
                 'title': form.cleaned_data['title'],
                 'description': form.cleaned_data['description'],
                 'order': form.cleaned_data['order'],
                 'type': form.cleaned_data['type'],
+                'link':form.cleaned_data['link'],
+                'image':image_url
                 
             }
             db.collection("inAppLinks").document().set(data)
@@ -2725,6 +2754,12 @@ def create_selfAwarenessScenarios(request):
         form = SelfAwarenessScenariosForm(request.POST)
         if form.is_valid():
             data = {
+                'journal':request.POST.get('journal'), 
+                'activity':request.POST.get('activity'), 
+                'selfAwarnessBite':request.POST.get('selfAwarnessBite'), 
+                'inAppLink':request.POST.get('normalBite'), 
+                'normalBite':request.POST.get('user'), 
+                'wildCard':request.POST.get('wildCard'), 
                 'correction1from0to2': form.cleaned_data['correction1from0to2'],
                 'correction2from3to5': form.cleaned_data['correction2from3to5'],
                 'interactiveStatement': form.cleaned_data['interactiveStatement'],
@@ -2781,13 +2816,15 @@ def create_selfAwarnessBites(request):
             messages.error(request, 'Error creating selfAwarnessBites. Please check your input.')
             return redirect('selfAwarnessBites_view')        
         
+        
+        
 def create_wildCard(request):
     if request.method == 'POST':
         form = wildCardForm(request.POST)
         if form.is_valid():
             data = {
                 
-                'content': form.cleaned_data['content'],
+                'content': strip_tags(form.cleaned_data['content']),
                 
                 
             }

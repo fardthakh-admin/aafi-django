@@ -53,7 +53,7 @@
                                         <select name="majorAssessment" id="id_majorAssessment" class="form-control">
                                             <option value="">Select MajorAssessment</option>
                                             {% for major in majorAssessment %}
-                                        {% if major.name == entry.data.majorAssessment|slice:"17:" %}
+                                        {% if major.name == entry.data.majorAssessment.id %}
                                             <option value="/majorAssessment/{{ major.name }}" selected>{{ major.data.title }}</option>
                                         {% else %}
                                             <option value="/majorAssessment/{{ major.name }}">{{ major.data.title }}</option>
