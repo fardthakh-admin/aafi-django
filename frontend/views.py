@@ -4979,25 +4979,25 @@ def import_bites_data(request):
                 collection_ref = db.collection("bites")
 
                 # Check for headers and set to None if not present
-                headers = ["CBT_points", "Learning_points", "categories", "content", "difficulty", "image", "next", "order", "scenarioID", "tags", "title"]
+                headers = ["content", "difficulty", "scenarioID", "tags", "title"]
                 for header in headers:
                     if header not in df.columns:
                         df[header] = None
                 for index, row in df.iterrows():
                     
-                    categories_title = row.get('categories')
+                    # categories_title = row.get('categories')
 
                   
-                    categories_ref = db.collection("categories")
-                    categories_query = categories_ref.where('title', '==', categories_title).limit(1).stream()
-                    categories_ref = None
-                    for categories in categories_query:
-                        categories_ref = categories.reference
-                        break
+                    # categories_ref = db.collection("categories")
+                    # categories_query = categories_ref.where('title', '==', categories_title).limit(1).stream()
+                    # categories_ref = None
+                    # for categories in categories_query:
+                    #     categories_ref = categories.reference
+                    #     break
 
-                    if not categories_ref:
-                        messages.error(request, f'Category "{categories_title}" not found in categories collection.')
-                        continue
+                    # if not categories_ref:
+                    #     messages.error(request, f'Category "{categories_title}" not found in categories collection.')
+                    #     continue
                     
                     
                     tag_title = row.get('tags')
@@ -5015,14 +5015,10 @@ def import_bites_data(request):
                         continue
                     
                     document_data = {
-                        "CBT_points": row.get('CBT_points'),
-                        "Learning_points": row.get('Learning_points'),
-                        "categories": categories_ref,
+                       
+                        # "categories": categories_ref,
                         "content": row.get('content'),
                         "difficulty": row.get('difficulty'),
-                        "image": row.get('image'),
-                        "next": row.get('next'),
-                        "order": row.get('order'),
                         "scenarioID": row.get('scenarioID'),
                         "tags": tag_ref,
                         "title": row.get('title'),
