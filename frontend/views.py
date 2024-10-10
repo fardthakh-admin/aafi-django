@@ -2412,23 +2412,31 @@ def create_tags(request):
 
 def create_activities(request):
     if request.method == 'POST':
-        form = ActivitiesForm(request.POST)
-
+        form = ActivitiesForm(request.POST, request.FILES)
+        print(request.FILES)
         db = firestore.client()
         
-        
-
-        tags_path=request.POST.get('tags')
-
-        tags_ref=get_document_reference(tags_path)
+     
         if form.is_valid():
+            media_file = request.FILES.get('media')  # Use get() to avoid MultiValueDictKeyError
+            if media_file is None:
+                messages.error(request, 'No media file uploaded. Please select a file.')
+                return redirect('activities_view')
+
+            # Proceed with file upload
+            bucket = storage.bucket()
+            blob = bucket.blob(media_file.name)
+            blob.upload_from_file(media_file)
+            blob.make_public()
+            media_url = blob.public_url
+
             data = {
-                'tags': tags_ref,
+                'tags': request.POST.get('tags'),
                 'description': form.cleaned_data['description'],
                 'title': form.cleaned_data['title'],
                 'duration': form.cleaned_data['duration'],
                 'type':form.cleaned_data['type'],
-                'track':form.cleaned_data['track'],
+                'track':media_url,
                 'audiotrackId':form.cleaned_data['audiotrackId'],
                 'audiotrackTitle':form.cleaned_data['type'],
                 'label':form.cleaned_data['label'],
@@ -2619,7 +2627,7 @@ def create_inAppLinks(request):
 
         
     return render(request, 'frontend/techcare_data/create_inAppLinks.html', {'form': form})
-from django.contrib.auth import get_user_model
+
 
 from django.contrib.auth import get_user_model
 
@@ -2854,8 +2862,14 @@ def create_shortBite(request):
 
 def create_trivia(request):
     if request.method == 'POST':
-        form = TriviaForm(request.POST)
+        form = TriviaForm(request.POST,request.FILES)
         if form.is_valid():
+            image = request.FILES['image']
+            bucket = storage.bucket()
+            blob = bucket.blob(image.name)
+            blob.upload_from_file(image)
+            blob.make_public()
+            image_url = blob.public_url
             data = {
                 'CBT_points': form.cleaned_data['CBT_points'],
                 'answer_1': form.cleaned_data['answer_1'],
@@ -2864,7 +2878,7 @@ def create_trivia(request):
                 'correct_answer': form.cleaned_data['correct_answer'],
                 'description': form.cleaned_data['description'],
                 'explanation': form.cleaned_data['explanation'],
-                'image': form.cleaned_data['image'],
+                'image': image_url,
                 'learning_points': form.cleaned_data['learning_points'],
                 'order': form.cleaned_data['order'],
                 'question': form.cleaned_data['question'],
@@ -3375,23 +3389,35 @@ def users_delete(request, document_name):
 
 def update_activities(request, document_name):
     if request.method == 'POST':
-        form = ActivitiesForm(request.POST)
+        form = ActivitiesForm(request.POST, request.FILES)
         entry_id = document_name
 
         db = firestore.client()
         
-        
+        media_file = request.FILES.get('media')  # Use get() to avoid MultiValueDictKeyError
+        if media_file is None:
+            messages.error(request, 'No media file uploaded. Please select a file.')
+            return redirect('activities_view')
+
+           
+            
+        bucket = storage.bucket()
+        blob = bucket.blob(media_file.name)
+        blob.upload_from_file(media_file)
+        blob.make_public()
+        media_url = blob.public_url
         duration=int(request.POST.get('duration'))
         tags_path=request.POST.get('tags')
 
         tags_ref=get_document_reference(tags_path)
+        
         data = {
                 'tags': tags_ref,
                 'description': request.POST.get('description'),
                 'title': request.POST.get('title'),
                 'duration': duration,
                 'type': request.POST.get('type'),
-                'track': request.POST.get('track'),
+                'track': media_url,
                 'audiotrackId': request.POST.get('audiotrackId'),
                 'audiotrackTitle': request.POST.get('audiotrackTitle'),
                 'label': request.POST.get('label'),
@@ -3554,14 +3580,20 @@ def update_feelings(request, document_name):
         return redirect('feelings_view')
 def update_inAppLinks(request, document_name):
     if request.method == 'POST':
-        form = InAppLinksForm(request.POST)
+        form = InAppLinksForm(request.POST,request.FILES)
         entry_id = document_name
+        image = request.FILES['image']
+        bucket = storage.bucket()
+        blob = bucket.blob(image.name)
+        blob.upload_from_file(image)
+        blob.make_public()
+        image_url = blob.public_url
         data = {
                 'description': request.POST.get('description'),
                 'title': request.POST.get('title'),
                 'order': request.POST.get('order'),
                 'type': request.POST.get('type'),
-                'image': request.POST.get('image'),
+                'image': image_url,
                 'link': request.POST.get('link'),
             }
         db = firestore.client()
@@ -3777,8 +3809,14 @@ def update_tags(request, document_name):
     
 def update_trivia(request, document_name):
     if request.method == 'POST':
-        form = TriviaForm(request.POST)
+        form = TriviaForm(request.POST, request.FILES)
         entry_id = document_name
+        image = request.FILES['image']
+        bucket = storage.bucket()
+        blob = bucket.blob(image.name)
+        blob.upload_from_file(image)
+        blob.make_public()
+        image_url = blob.public_url
         data = {
                 'CBT_points': request.POST.get('CBT_points'),
                 'answer_1': request.POST.get('answer_1'),
@@ -3787,7 +3825,7 @@ def update_trivia(request, document_name):
                 'correct_answer': request.POST.get('correct_answer'),
                 'description': request.POST.get('description'),
                 'explanation': request.POST.get('explanation'),
-                'image': request.POST.get('image'),
+                'image': image_url,
                 'question': request.POST.get('question'),
                 'learning_points': request.POST.get('learning_points'),
                 'order': request.POST.get('order'),

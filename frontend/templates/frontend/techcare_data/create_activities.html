@@ -79,12 +79,12 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'create_activities' %}">
+                                <form method="post" action="{% url 'create_activities' %}" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="form-group">
-                                        <label for="tags">Tags</label>
+                                        <label for="tags">tags</label>
                                         <select name="tags" id="id_tags" class="form-control">
-                                            <option value="">Select Tag</option>
+                                            <option value="">Select tag</option>
                                             {% for entry in tags_data %}
                                             <option value="/tags/{{ entry.name }}">{{ entry.data.title }}</option>
                                             {% endfor %}
@@ -107,7 +107,8 @@
                                         <label for="{{ form.type.id_for_label }}">type</label> {% render_field form.type class="form-control" %}
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.track.id_for_label }}">track</label> {% render_field form.track class="form-control" %}
+                                        <label for="media">track (Audio)</label>
+                                        <input type="file" id="media" name="media" class="form-control" >
                                     </div>
                                     <div class="form-group">
                                         <label for="{{ form.audiotrackId.id_for_label }}">audiotrackId</label> {% render_field form.audiotrackId class="form-control" %}

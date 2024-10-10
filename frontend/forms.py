@@ -99,6 +99,7 @@ class ActivitiesForm(forms.ModelForm):
      class Meta:
         model=activities
         fields =  "__all__"
+        exclude= ['tags']
 
 
 class AssetsForm(forms.ModelForm):

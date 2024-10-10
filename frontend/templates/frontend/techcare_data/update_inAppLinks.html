@@ -43,7 +43,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'update_inAppLinks' document_name=entry.name %}">
+                                <form method="post" action="{% url 'update_inAppLinks' document_name=entry.name %}" enctype="multipart/form-data">
                                     {% csrf_token %}
 
                                     <div class="form-group">
@@ -63,8 +63,9 @@
                                         <input type="text" name="title" class="form-control" value="{{ entry.data.title }}">
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.image.id_for_label }}">Image</label> 
-                                        <input type="text" name="image" class="form-control" value="{{ entry.data.image }}">
+                                        <label for="{{ form.image.id_for_label }}">{{entry.data.image}}</label>
+                                
+                                        <input type="file" id="image" name="image" class="form-control">
                                     </div>
                                     <div class="form-group">
                                         <label for="link">Select link</label>

@@ -43,7 +43,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'update_activities' document_name=entry.name %}">
+                                <form method="post" action="{% url 'update_activities' document_name=entry.name %}" enctype="multipart/form-data">
                                     {% csrf_token %}
 
                                     <div class="form-group">
@@ -79,8 +79,9 @@
                                         <input type="text" name="type" class="form-control" value="{{ entry.data.type }}">
                                     </div>
                                     <div class="form-group">
-                                        <label for="{{ form.track.id_for_label }}">Track</label>
-                                        <input type="text" name="track" class="form-control" value="{{ entry.data.track }}">
+                                        <label for="{{ form.track.id_for_label }}">{{entry.data.track}}</label>
+                                
+                                        <input type="file" id="media" name="media" class="form-control">
                                     </div>
                                     <div class="form-group">
                                         <label for="{{ form.audiotrackId.id_for_label }}">AudiotrackId</label>
