@@ -53,7 +53,7 @@ class bites(models.Model):
     tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
     title = models.CharField(max_length=100)
     display_name=models.ForeignKey(users, on_delete=models.CASCADE)
-    image= models.CharField(max_length=100)
+    image= models.ImageField(upload_to='images/')
     order=models.IntegerField()
     categories = models.ForeignKey(categories, on_delete=models.CASCADE)
 

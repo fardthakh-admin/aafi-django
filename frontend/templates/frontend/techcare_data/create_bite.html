@@ -81,7 +81,7 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="{% url 'create_bite' %}">
+                                <form method="post" action="{% url 'create_bite' %}" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="form-group">
                                         <label for="tags">tags</label>
@@ -100,6 +100,10 @@
                                             <option value="/categories/{{ entry.name }}">{{ entry.data.title }}</option>
                                             {% endfor %}
                                         </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="image">Upload Image</label>
+                                        <input type="file" id="image" name="image" class="form-control">
                                     </div>
                                     <div class="form-group">
                                         <label for="{{ form.difficulty.id_for_label }}">Difficulty</label> {% render_field form.difficulty class="form-control" %}

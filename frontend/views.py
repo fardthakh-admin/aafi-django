@@ -881,16 +881,23 @@ def bitesdocument_detail(request, document_name):
 
 def create_bite(request):
     if request.method == 'POST':
-        form = BitesForm(request.POST)
+        form = BitesForm(request.POST, request.FILES)
         db = firestore.client()
         
         if form.is_valid():
+            image = request.FILES['image']
+            bucket = storage.bucket()
+            blob = bucket.blob(image.name)
+            blob.upload_from_file(image)
+            blob.make_public()
+            image_url = blob.public_url
             data = {
                 'title': form.cleaned_data['title'],
                 'tags': request.POST.get('tags'),
                 'difficulty': form.cleaned_data['difficulty'],
                 'categories': request.POST.get('categories'),
                 'content': strip_tags(form.cleaned_data['content']),
+                'image':image_url,
             }
             db.collection("bites").document().set(data)  
             messages.success(request, 'Successfully created Bites.')  
@@ -3497,8 +3504,14 @@ def update_biomarkers(request, document_name):
     
 def update_bites(request, document_name):
     if request.method == 'POST':
-        form = BitesForm(request.POST)
+        form = BitesForm(request.POST,request.FILES)
         entry_id = document_name
+        image = request.FILES['image']
+        bucket = storage.bucket()
+        blob = bucket.blob(image.name)
+        blob.upload_from_file(image)
+        blob.make_public()
+        image_url = blob.public_url
         db = firestore.client()
     
         
@@ -3515,7 +3528,7 @@ def update_bites(request, document_name):
 
 
         data = {
-                'image': request.POST.get('image'),
+                'image': image_url,
                 'order': request.POST.get('order'),
                 'Learning_ponits': request.POST.get('Learning_ponits'),
                 'CBT_points': request.POST.get('CBT_points'),
