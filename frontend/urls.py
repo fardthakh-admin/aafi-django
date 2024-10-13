@@ -288,6 +288,8 @@ urlpatterns = [
     path('export/trivia/', export_trivia_data,name='export_trivia_data'),
     path('import/trivia/', import_trivia_data, name='import_trivia_data'),
 
+    path('export/wildcard/', export_wildcard_data,name='export_wildcard_data'),
+    path('import/wildcard/', import_wildcard_data, name='import_wildcard_data'),
     # path('nutrition/delete-selected/', nutrition_delete_selected, name='nutrition_delete_selected'),
 
     path('nutrition/deleteSelected/', nutrition_delete_selected, name='nutrition_delete_selected'),

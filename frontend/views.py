@@ -7252,6 +7252,89 @@ def import_trivia_data(request):
 
     return render(request, 'frontend/techcare_data/suggestedWildCards_view.html')
 
+
+def export_wildcard_data(request):
+    # Fetch data from Firestore
+    db = firestore.client()
+    collection = db.collection("wildCard")
+    documents = collection.stream()
+
+    document_data = []
+    for doc in documents:
+        data = doc.to_dict()
+        # Handle specific Firestore types and flatten data
+        flat_data = {key: handle_value(value) for key, value in data.items()}
+        document_data.append(flat_data)
+
+    if not document_data:
+        return HttpResponse("No data available to export.", content_type="text/plain")
+
+    # Create a new Excel workbook and select the active worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "WildCard Data"
+
+    # Define the column headers
+    headers = list(set(header for entry in document_data for header in entry.keys()))  # Ensure all headers are included
+    worksheet.append(headers)
+
+    # Add rows to the worksheet
+    for entry in document_data:
+        row = [entry.get(header, '') for header in headers]
+        worksheet.append(row)
+
+    # Save the workbook to a BytesIO stream
+    stream = BytesIO()
+    workbook.save(stream)
+    stream.seek(0)
+
+    # Create the HTTP response with the Excel file
+    response = HttpResponse(
+        stream.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response['Content-Disposition'] = 'attachment; filename="wildcard.xlsx"'
+    return response
+
+
+def import_wildcard_data(request):
+    if request.method == 'POST' and request.FILES.get('import_file'):
+        file = request.FILES['import_file']
+        if file.name.endswith('.xlsx') or file.name.endswith('.xls'):
+            # Save the file temporarily
+            file_name = default_storage.save(file.name, file)
+            file_path = Path(settings.MEDIA_ROOT) / file_name
+
+            # Process the file
+            try:
+                # Read the Excel file into a DataFrame
+                df = pd.read_excel(file_path)
+
+                # Initialize Firestore client
+                db = firestore.Client()
+
+                # Reference to the Firestore collection
+                collection_ref = db.collection("wildCard")
+
+                # Add each row from the DataFrame to Firestore
+                for index, row in df.iterrows():
+                    document_data = {
+                        "content": row.get('content'),
+                        
+                    }
+                    # Add document to Firestore with auto-generated ID
+                    collection_ref.add(document_data)
+
+                messages.success(request, 'Data imported successfully!')
+            except Exception as e:
+                messages.error(request, f'Error importing data: {e}')
+        else:
+            messages.error(request, 'Invalid file format. Please upload an Excel file.')
+        
+        return redirect('wildCard_view')  # Redirect to the appropriate view
+
+    return render(request, 'frontend/techcare_data/WildCards_view.html')
+
 def nutrition_delete_selected(request):
     document_ids = request.POST.getlist('documents')
     
