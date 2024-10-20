@@ -67,6 +67,12 @@
                                 
                                         <input type="file" id="image" name="image" class="form-control">
                                     </div>
+
+                                     <div class="form-group">
+                                        <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> 
+                                        <input type="text" name="scenarioID" class="form-control" value="{{ entry.data.scenarioID }}">
+                                    </div> 
+
                                     <div class="form-group">
                                         <label for="link">Select link</label>
                                         <select id="link" name="link" class="form-control">

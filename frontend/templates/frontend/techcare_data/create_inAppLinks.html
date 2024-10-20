@@ -103,6 +103,10 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> {% render_field form.scenarioID class="form-control" %}
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="link">Select link</label>
                                         <select id="link" name="link" class="form-control">
                                             <option value="move">Move</option>

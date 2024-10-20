@@ -884,6 +884,13 @@ def create_bite(request):
         form = BitesForm(request.POST, request.FILES)
         db = firestore.client()
         
+        tags_path = request.POST.get('tags')
+        categories_path = request.POST.get('categories')
+            
+        tags_ref = get_document_reference(tags_path)
+        categories_ref = get_document_reference(categories_path)
+        
+        
         if form.is_valid():
             image = request.FILES['image']
             bucket = storage.bucket()
@@ -893,11 +900,12 @@ def create_bite(request):
             image_url = blob.public_url
             data = {
                 'title': form.cleaned_data['title'],
-                'tags': request.POST.get('tags'),
+                'tags': tags_ref,
                 'difficulty': form.cleaned_data['difficulty'],
-                'categories': request.POST.get('categories'),
+                'categories': categories_ref,
                 'content': strip_tags(form.cleaned_data['content']),
                 'image':image_url,
+                'scenarioID':form.cleaned_data['scenarioID'],
             }
             db.collection("bites").document().set(data)  
             messages.success(request, 'Successfully created Bites.')  
@@ -2077,7 +2085,7 @@ def journalPrompt_view(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    form = JournalForm()
+    form = JournalPromptForm()
     return render(request, 'frontend/techcare_data/journalPrompt_table.html', {
         'form': form, 
         'page_obj': page_obj,
@@ -2622,7 +2630,8 @@ def create_inAppLinks(request):
                 'order': form.cleaned_data['order'],
                 'type': form.cleaned_data['type'],
                 'link':form.cleaned_data['link'],
-                'image':image_url
+                'image':image_url,
+                'scenarioID':form.cleaned_data['scenarioID'],
                 
             }
             db.collection("inAppLinks").document().set(data)
@@ -2685,6 +2694,7 @@ def create_journalPrompt(request):
         if form.is_valid():
             data = {
                 'title': form.cleaned_data['title'],
+                'scenarioID':form.cleaned_data['scenarioID'],
               
             }
             db.collection("journalPrompt").document().set(data)  
@@ -2840,6 +2850,9 @@ def create_wildCard(request):
             data = {
                 
                 'content': strip_tags(form.cleaned_data['content']),
+                'scenarioID': form.cleaned_data['scenarioID'],
+                
+                
                 
                 
             }
@@ -3401,18 +3414,29 @@ def update_activities(request, document_name):
 
         db = firestore.client()
         
-        media_file = request.FILES.get('media')  # Use get() to avoid MultiValueDictKeyError
-        if media_file is None:
-            messages.error(request, 'No media file uploaded. Please select a file.')
+        doc_ref = db.collection("activities").document(entry_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            current_data = doc.to_dict()
+            current_media_url = current_data.get('track')
+        else:
+            messages.error(request, 'Activity not found.')
             return redirect('activities_view')
-
-           
+        
+        media_url=current_media_url
+        if 'image' in request.FILES:
+            media_file = request.FILES.get('media')  # Use get() to avoid MultiValueDictKeyError
+            if media_file:
+                # Upload new media file
+                bucket = storage.bucket()
+                blob = bucket.blob(media_file.name)
+                blob.upload_from_file(media_file)
+                blob.make_public()
+                media_url = blob.public_url
+            else:
+                # Use the existing media URL
+                media_url = current_media_url
             
-        bucket = storage.bucket()
-        blob = bucket.blob(media_file.name)
-        blob.upload_from_file(media_file)
-        blob.make_public()
-        media_url = blob.public_url
         duration=int(request.POST.get('duration'))
         tags_path=request.POST.get('tags')
 
@@ -3506,14 +3530,30 @@ def update_bites(request, document_name):
     if request.method == 'POST':
         form = BitesForm(request.POST,request.FILES)
         entry_id = document_name
-        image = request.FILES['image']
-        bucket = storage.bucket()
-        blob = bucket.blob(image.name)
-        blob.upload_from_file(image)
-        blob.make_public()
-        image_url = blob.public_url
+        
         db = firestore.client()
-    
+
+        doc_ref = db.collection("bites").document(entry_id)
+        doc = doc_ref.get()
+        
+        if doc.exists:
+            current_data = doc.to_dict()
+            current_image_url = current_data.get('image')
+        else:
+            messages.error(request, 'bite not found.')
+            return redirect('bites_view')
+
+        image_url = current_image_url  # Default to current image URL
+
+        if 'image' in request.FILES:
+            image_file = request.FILES['image']
+            if image_file:
+                # Upload new media file
+                bucket = storage.bucket()
+                blob = bucket.blob(image_file.name)
+                blob.upload_from_file(image_file)
+                blob.make_public()
+                image_url = blob.public_url
         
         thumbs_up_users_path= request.POST.get('thumbs_up_users')
         thumbs_down_users_path= request.POST.get('thumbs_down_users')
@@ -3527,20 +3567,26 @@ def update_bites(request, document_name):
         tags_ref=get_document_reference(tags_path)
 
 
+        order = int(request.POST.get('order') or 0)
+        learning_points = int(request.POST.get('Learning_points') or 0)
+        cbt_points = int(request.POST.get('CBT_points') or 0)
+        difficulty = int(request.POST.get('difficulty') or 0)
+
         data = {
-                'image': image_url,
-                'order': request.POST.get('order'),
-                'Learning_ponits': request.POST.get('Learning_ponits'),
-                'CBT_points': request.POST.get('CBT_points'),
-                'next': request.POST.get('next'),
-                'scenarioID': request.POST.get('scenarioID'),
-                'thumbs_up_users': thumbs_up_users_ref,
-                'thumbs_down_users':thumbs_down_users_ref,
-                'categories': categories_ref,
-                'content': request.POST.get('content'),
-                'difficulty': request.POST.get('difficulty'),
-                'tags':tags_ref,
-                'title': request.POST.get('title'),
+            'image': image_url,
+            'order': order,
+            'Learning_points': learning_points,
+            'CBT_points': cbt_points,
+            # 'next': request.POST.get('next'),
+            'scenarioID': request.POST.get('scenarioID'),
+            'thumbs_up_users': thumbs_up_users_ref,
+            'thumbs_down_users': thumbs_down_users_ref,
+            'categories': categories_ref,
+            'content': request.POST.get('content'),
+            'difficulty': difficulty,
+            'tags': tags_ref,
+            'title': request.POST.get('title'),
+                
             }
         db.collection("bites").document(entry_id).update(data)
         messages.success(request, 'bites updated successfully.')
@@ -3591,16 +3637,35 @@ def update_feelings(request, document_name):
     else:
         messages.error(request, 'Error updating feelings . Please check your input.')
         return redirect('feelings_view')
+    
 def update_inAppLinks(request, document_name):
     if request.method == 'POST':
         form = InAppLinksForm(request.POST,request.FILES)
         entry_id = document_name
-        image = request.FILES['image']
-        bucket = storage.bucket()
-        blob = bucket.blob(image.name)
-        blob.upload_from_file(image)
-        blob.make_public()
-        image_url = blob.public_url
+        db = firestore.client()
+        
+        doc_ref = db.collection("inAppLinks").document(entry_id)
+        doc = doc_ref.get()
+        if doc.exists:
+            current_data = doc.to_dict()
+            current_image_url = current_data.get('image')
+        else:
+            messages.error(request, 'inAppLinks not found.')
+            return redirect('inAppLinks_view')
+        
+        image_url = current_image_url
+        if 'image' in request.FILES:
+            image_file = request.FILES.get('image')  # Use get() to avoid MultiValueDictKeyError
+            if image_file:
+                # Upload new media file
+                bucket = storage.bucket()
+                blob = bucket.blob(image_file.name)
+                blob.upload_from_file(image_file)
+                blob.make_public()
+                image_url = blob.public_url
+            else:
+                # Use the existing media URL
+                image_url = current_image_url
         data = {
                 'description': request.POST.get('description'),
                 'title': request.POST.get('title'),
@@ -3608,8 +3673,8 @@ def update_inAppLinks(request, document_name):
                 'type': request.POST.get('type'),
                 'image': image_url,
                 'link': request.POST.get('link'),
+                'scenarioID':request.POST.get('scenarioID'),
             }
-        db = firestore.client()
         db.collection("inAppLinks").document(entry_id).update(data)
         messages.success(request, 'inAppLinks updated successfully.')
         return redirect('inAppLinks_view')
@@ -4249,7 +4314,8 @@ def update_wildCard(request, document_name):
     if request.method == 'POST':
         entry_id = document_name
         data = {
-                'content': request.POST.get('content'),
+                'content': strip_tags(request.POST.get('content')),
+                'scenarioID':request.POST.get('scenarioID'),
             }
         db = firestore.client()
         db.collection("wildCard").document(entry_id).update(data)
@@ -4979,7 +5045,7 @@ def import_bites_data(request):
                 collection_ref = db.collection("bites")
 
                 # Check for headers and set to None if not present
-                headers = ["content", "difficulty", "scenarioID", "tags", "title"]
+                headers = ["content", "difficulty", "scenarioID", "tags", "title", "image"]
                 for header in headers:
                     if header not in df.columns:
                         df[header] = None
@@ -6358,7 +6424,7 @@ def import_selfawarenessScenarios_data(request):
 
                   
                     activities_ref = db.collection("activities")
-                    activities_query = activities_ref.where('audiotrackTitle', '==', activities_title).limit(1).stream()
+                    activities_query = activities_ref.where('audiotrackId', '==', activities_title).limit(1).stream()
                     activities_ref = None
                     for activities in activities_query:
                         activities_ref = activities.reference
@@ -6368,11 +6434,11 @@ def import_selfawarenessScenarios_data(request):
                         messages.error(request, f'activity "{activities_title}" not found in activities collection.')
                         continue
                     
-                    inAppLink_title = row.get('inAppLink')
+                    inAppLink_title = row.get('scenarioID')
 
                   
                     inAppLink_ref = db.collection("inAppLinks")
-                    inAppLink_query = inAppLink_ref.where('title', '==', inAppLink_title).limit(1).stream()
+                    inAppLink_query = inAppLink_ref.where('scenarioID', '==', inAppLink_title).limit(1).stream()
                     inAppLink_ref = None
                     for inAppLink in inAppLink_query:
                         inAppLink_ref = inAppLink.reference
@@ -6383,10 +6449,10 @@ def import_selfawarenessScenarios_data(request):
                         continue
                     
                     
-                    wildcard_title = row.get('wildcard')
+                    wildcard_title = row.get('scenarioID')
                   
                     wildcard_ref = db.collection("wildCard")
-                    wildcard_query = wildcard_ref.where('content', '==', wildcard_title).limit(1).stream()
+                    wildcard_query = wildcard_ref.where('scenarioID', '==', wildcard_title).limit(1).stream()
                     wildcard_ref = None
                     for wildcard in wildcard_query:
                         wildcard_ref = wildcard.reference
@@ -6397,10 +6463,10 @@ def import_selfawarenessScenarios_data(request):
                         continue
                     
                     
-                    journal_title = row.get('journal')
+                    journal_title = row.get('scenarioID')
                   
                     journal_ref = db.collection("journalPrompt")
-                    journal_query = journal_ref.where('title', '==', journal_title).limit(1).stream()
+                    journal_query = journal_ref.where('scenarioID', '==', journal_title).limit(1).stream()
                     journal_ref = None
                     for journal in journal_query:
                         journal_ref = journal.reference
@@ -6410,10 +6476,10 @@ def import_selfawarenessScenarios_data(request):
                         messages.error(request, f'journal "{journal_title}" not found in journalPrompt collection.')
                         continue
                     
-                    normalBite_title = row.get('normalBite')
+                    normalBite_title = row.get('scenarioID')
                   
                     normalBite_ref = db.collection("bites")
-                    normalBite_query = normalBite_ref.where('title', '==', normalBite_title).limit(1).stream()
+                    normalBite_query = normalBite_ref.where('scenarioID', '==', normalBite_title).limit(1).stream()
                     normalBite_ref = None
                     for normalBite in normalBite_query:
                         normalBite_ref = normalBite.reference
@@ -6424,10 +6490,10 @@ def import_selfawarenessScenarios_data(request):
                         continue
                     
                     
-                    selfAwarnessBites_title = row.get('biteID')
+                    selfAwarnessBites_title = row.get('scenarioID')
                   
                     selfAwarnessBites_ref = db.collection("selfAwarnessBites")
-                    selfAwarnessBites_query = selfAwarnessBites_ref.where('selfawarenessBiteTitle', '==', selfAwarnessBites_title).limit(1).stream()
+                    selfAwarnessBites_query = selfAwarnessBites_ref.where('scenarioID', '==', selfAwarnessBites_title).limit(1).stream()
                     selfAwarnessBites_ref = None
                     for selfAwarnessBites in selfAwarnessBites_query:
                         selfAwarnessBites_ref = selfAwarnessBites.reference

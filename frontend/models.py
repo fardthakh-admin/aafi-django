@@ -49,13 +49,15 @@ class bites(models.Model):
   #  document = models.ForeignKey(Document, on_delete=models.CASCADE)
     # categories = models.ForeignKey(categories, on_delete=models.CASCADE)
     content = models.TextField()
-    difficulty = models.IntegerField()
-    tags = models.ForeignKey(tags, on_delete=models.CASCADE, default=1)
+    difficulty = models.IntegerField(default=0)
+    tags = models.ForeignKey(tags, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     display_name=models.ForeignKey(users, on_delete=models.CASCADE)
     image= models.ImageField(upload_to='images/')
-    order=models.IntegerField()
+    order=models.IntegerField(default=0)
     categories = models.ForeignKey(categories, on_delete=models.CASCADE)
+    scenarioID=models.CharField(max_length=300, default=None)
+    
 
     def __str__(self):
           return self.__all__
@@ -166,6 +168,8 @@ class inAppLinks(models.Model):
     title = models.CharField(max_length=100, default=None)
     link = models.CharField(max_length=100, default=None)
     image = models.ImageField(upload_to='images/')
+    scenarioID=models.CharField(max_length=300, default=None)
+    
     
 
     def __str__(self):
@@ -199,6 +203,7 @@ class journal(models.Model):
 
 class journalPrompt(models.Model):
     title = models.CharField(max_length=300, default=None)
+    scenarioID=models.CharField(max_length=300, default=None)
 
     def __str__(self):
          return self.__all__
@@ -236,6 +241,8 @@ class selfAwarnessBites(models.Model):
 class wildCard(models.Model):
   
     content = models.TextField(max_length=100, default=None)
+    scenarioID = models.CharField(max_length=100, default=None)
+
 
     def __str__(self):
         return self.__all__    

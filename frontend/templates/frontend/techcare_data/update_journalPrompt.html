@@ -51,6 +51,11 @@
                                         <input type="text" name="title" class="form-control" value="{{ entry.data.title }}">
                                     </div>
 
+                                    <div class="form-group">
+                                        <label for="{{ form.scenarioID.id_for_label }}">ScenarioID</label> 
+                                        <input type="text" name="scenarioID" class="form-control" value="{{ entry.data.scenarioID }}">
+                                    </div>
+                                    
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                         <button type="submit" class="btn btn-primary">Save</button>

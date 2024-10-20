@@ -122,18 +122,15 @@
                                     </div>
                                     
                              
-                                    <div class="form-group">
+                                    {% comment %} <div class="form-group">
                                         <label for="{{ form.next.id_for_label }}">Next</label> 
                                         <input type="text" name="next" class="form-control" value="{{ entry.data.next }}">
-                                    </div>
+                                    </div> {% endcomment %}
 
                                     <div class="form-group">
                                         <label for="{{ form.scenarioID.id_for_label }}">scenarioID</label> 
                                         <input type="text" name="scenarioID" class="form-control" value="{{ entry.data.scenarioID }}">
                                     </div>
-
-
-                             
              
                                     <div class="form-group">
                                         <label for="{{ form.difficulty.id_for_label }}">Difficulty</label> 

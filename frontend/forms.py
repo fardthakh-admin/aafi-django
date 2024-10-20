@@ -243,7 +243,7 @@ class ShortBiteForm(forms.ModelForm):
 class BitesForm(forms.ModelForm):
     class Meta:
         model = bites
-        fields = ['content','difficulty','title']
+        fields = ['content','difficulty','title','scenarioID']
 
 
 class TriviaForm(forms.ModelForm):
