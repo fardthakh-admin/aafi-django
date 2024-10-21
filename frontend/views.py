@@ -3582,7 +3582,7 @@ def update_bites(request, document_name):
             'thumbs_up_users': thumbs_up_users_ref,
             'thumbs_down_users': thumbs_down_users_ref,
             'categories': categories_ref,
-            'content': request.POST.get('content'),
+            'content': strip_tags(request.POST.get('content')),
             'difficulty': difficulty,
             'tags': tags_ref,
             'title': request.POST.get('title'),
